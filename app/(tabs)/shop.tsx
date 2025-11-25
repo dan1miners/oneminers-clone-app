@@ -1,22 +1,50 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInput, Dimensions, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useState, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 // Move static data outside component to prevent re-renders
 const featuredBanners = [
-  { id: 1, image: '🔄', title: 'Summer Sale', subtitle: 'Up to 30% OFF' },
-  { id: 2, image: '🎯', title: 'New Arrivals', subtitle: 'Latest Mining Rigs' },
-  { id: 3, image: '⚡', title: 'Flash Deal', subtitle: 'Limited Time Offer' },
+  { 
+    id: 1, 
+    image: '🔄', 
+    title: 'Summer Sale', 
+    subtitle: 'Up to 30% OFF on Mining Rigs',
+    backgroundColor: '#007AFF'
+  },
+  { 
+    id: 2, 
+    image: '🎯', 
+    title: 'New Arrivals', 
+    subtitle: 'Latest Mining Equipment',
+    backgroundColor: '#34C759'
+  },
+  { 
+    id: 3, 
+    image: '⚡', 
+    title: 'Flash Deal', 
+    subtitle: 'Limited Time Offers',
+    backgroundColor: '#FF9500'
+  },
+  { 
+    id: 4, 
+    image: '🔥', 
+    title: 'Hot Products', 
+    subtitle: 'Best Selling Miners',
+    backgroundColor: '#FF3B30'
+  },
 ];
 
 const filterTags = ['All', 'BTC', 'KAS', 'ALEO', 'ETH', 'Others'];
 
+// Updated products with consistent information
 const recommendedProducts = [
-  { id: 1, name: 'Antminer S19 XP', price: '$4,200', image: '⚙️', coin: 'BTC' },
-  { id: 2, name: 'Goldshell KD6', price: '$3,800', image: '🔧', coin: 'KAS' },
-  { id: 3, name: 'Aleo Miner F1', price: '$2,900', image: '⚡', coin: 'ALEO' },
-  { id: 4, name: 'Whatsminer M50', price: '$3,500', image: '🔩', coin: 'BTC' },
+  { id: 1, name: 'Antminer S19 XP', price: '$4,200', image: '⚙️', coin: 'BTC', hashrate: '140 TH/s', algorithm: 'SHA-256', profit: '$18/day' },
+  { id: 2, name: 'Goldshell KD6', price: '$3,800', image: '🔧', coin: 'KAS', hashrate: '29.2 TH/s', algorithm: 'kHeavyHash', profit: '$22/day' },
+  { id: 3, name: 'Aleo Miner F1', price: '$2,900', image: '⚡', coin: 'ALEO', hashrate: '250 G/s', algorithm: 'AleoPoW', profit: '$16/day' },
+  { id: 4, name: 'Whatsminer M50', price: '$3,500', image: '🔩', coin: 'BTC', hashrate: '118 TH/s', algorithm: 'SHA-256', profit: '$17/day' },
 ];
 
 const allProducts = [
@@ -33,6 +61,7 @@ type BannerItem = {
   image: string;
   title: string;
   subtitle: string;
+  backgroundColor: string;
 };
 
 type ProductItem = {
@@ -46,17 +75,116 @@ type ProductItem = {
   profit?: string;
 };
 
-// Memoized components to prevent unnecessary re-renders
-const FeaturedBanner = React.memo<{ item: BannerItem }>(({ item }) => (
-  <View style={styles.banner}>
-    <Text style={styles.bannerEmoji}>{item.image}</Text>
-    <View style={styles.bannerText}>
-      <Text style={styles.bannerTitle}>{item.title}</Text>
-      <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
-    </View>
-  </View>
-));
+// Auto-scrolling Carousel Component
+const BannerCarousel = () => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const flatListRef = useRef<FlatList>(null);
+  const scrollX = useRef(new Animated.Value(0)).current;
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nextIndex = (currentIndex + 1) % featuredBanners.length;
+      setCurrentIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({
+        index: nextIndex,
+        animated: true,
+      });
+    }, 4000); // Change slide every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [currentIndex]);
+
+  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
+    if (viewableItems[0]) {
+      setCurrentIndex(viewableItems[0].index);
+    }
+  }).current;
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+  }).current;
+
+  const renderBannerItem = useCallback(({ item, index }: { item: BannerItem; index: number }) => (
+    <View style={[styles.bannerItem, { backgroundColor: item.backgroundColor }]}>
+      <View style={styles.bannerContent}>
+        <View style={styles.bannerTextContainer}>
+          <Text style={styles.bannerTitle}>{item.title}</Text>
+          <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
+          <TouchableOpacity style={styles.bannerButton}>
+            <Text style={styles.bannerButtonText}>Shop Now</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.bannerImagePlaceholder}>
+          <Text style={styles.bannerImageText}>📸 Banner Image</Text>
+        </View>
+      </View>
+    </View>
+  ), []);
+
+  const renderDot = useCallback((_: any, index: number) => {
+    const inputRange = [
+      (index - 1) * screenWidth,
+      index * screenWidth,
+      (index + 1) * screenWidth,
+    ];
+
+    const dotWidth = scrollX.interpolate({
+      inputRange,
+      outputRange: [8, 20, 8],
+      extrapolate: 'clamp',
+    });
+
+    const opacity = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.3, 1, 0.3],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <Animated.View
+        key={index}
+        style={[
+          styles.dot,
+          {
+            width: dotWidth,
+            opacity: opacity,
+          },
+        ]}
+      />
+    );
+  }, [scrollX]);
+
+  return (
+    <View style={styles.carouselContainer}>
+      <FlatList
+        ref={flatListRef}
+        data={featuredBanners}
+        renderItem={renderBannerItem}
+        keyExtractor={(item) => item.id.toString()}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        onViewableItemsChanged={onViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+          { useNativeDriver: false }
+        )}
+        scrollEventThrottle={16}
+        getItemLayout={(_, index) => ({
+          length: screenWidth - 32,
+          offset: (screenWidth - 32) * index,
+          index,
+        })}
+      />
+      <View style={styles.dotsContainer}>
+        {featuredBanners.map((_, index) => renderDot(_, index))}
+      </View>
+    </View>
+  );
+};
+
+// Memoized components to prevent unnecessary re-renders
 const ProductCard = React.memo<{ item: ProductItem; horizontal?: boolean }>(({ item, horizontal = false }) => (
   <TouchableOpacity style={[styles.productCard, horizontal && styles.horizontalCard]}>
     <View style={styles.productImage}>
@@ -64,13 +192,18 @@ const ProductCard = React.memo<{ item: ProductItem; horizontal?: boolean }>(({ i
     </View>
     <View style={styles.productInfo}>
       <Text style={styles.productName} numberOfLines={1}>{item.name}</Text>
-      <Text style={styles.productPrice}>{item.price}</Text>
-      {!horizontal && (
-        <>
-          <Text style={styles.productCoin}>{item.coin}</Text>
-          <Text style={styles.productProfit}>{item.profit}</Text>
-        </>
-      )}
+      
+      {/* Compact row for price and profit */}
+      <View style={styles.priceProfitRow}>
+        <Text style={styles.productPrice}>{item.price}</Text>
+        <Text style={styles.productProfit}>{item.profit}</Text>
+      </View>
+      
+      {/* Coin and hashrate info */}
+      <View style={styles.productDetails}>
+        <Text style={styles.productCoin}>{item.coin}</Text>
+          <Text style={styles.productHashrate} numberOfLines={1}>{item.hashrate}</Text>
+      </View>
     </View>
   </TouchableOpacity>
 ));
@@ -147,10 +280,6 @@ export default function ShopScreen() {
   });
 
   // Memoized list renderers
-  const renderFeaturedBanner = useCallback(({ item }: { item: BannerItem }) => (
-    <FeaturedBanner item={item} />
-  ), []);
-
   const renderProductCard = useCallback(({ item, horizontal = false }: { item: ProductItem; horizontal?: boolean }) => (
     <ProductCard item={item} horizontal={horizontal} />
   ), []);
@@ -260,17 +389,7 @@ export default function ShopScreen() {
           removeClippedSubviews={true}
         >
           {/* Featured Banner Carousel */}
-          <Text style={styles.sectionTitle}>Featured</Text>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.bannerContainer}
-            removeClippedSubviews={true}
-          >
-            {featuredBanners.map(banner => (
-              <FeaturedBanner key={banner.id} item={banner} />
-            ))}
-          </ScrollView>
+          <BannerCarousel />
 
           {/* Recommended Section */}
           <View style={styles.sectionHeader}>
@@ -291,7 +410,6 @@ export default function ShopScreen() {
           </ScrollView>
 
           {/* Filter Tags */}
-          <Text style={styles.sectionTitle}>Browse by Coin</Text>
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false} 
@@ -326,7 +444,6 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E9ECEF',
   },
@@ -378,7 +495,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   sectionTitle: {
     fontSize: 20,
@@ -387,7 +504,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   seeAllText: {
-    color: '#007AFF',
+    color: '#6C757D',
     fontWeight: '600',
     fontSize: 14,
   },
@@ -395,44 +512,86 @@ const styles = StyleSheet.create({
     color: '#6C757D',
     fontSize: 14,
   },
-  bannerContainer: {
+  // Carousel Styles
+  carouselContainer: {
     marginBottom: 24,
   },
-  banner: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#007AFF',
+  bannerItem: {
+    width: screenWidth - 32,
+    height: 250,
     borderRadius: 16,
-    padding: 20,
-    marginRight: 12,
-    minWidth: 280,
+    marginRight: 0,
+    overflow: 'hidden',
   },
-  bannerEmoji: {
-    fontSize: 40,
-    marginRight: 16,
-  },
-  bannerText: {
+  bannerContent: {
     flex: 1,
+    flexDirection: 'row',
+    padding: 20,
+  },
+  bannerTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
   bannerTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 4,
+    marginBottom: 8,
   },
   bannerSubtitle: {
+    fontSize: 16,
+    color: '#FFFFFF',
+    opacity: 0.9,
+    marginBottom: 16,
+  },
+  bannerButton: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    alignSelf: 'flex-start',
+  },
+  bannerButtonText: {
     fontSize: 14,
-    color: '#E7F3FF',
+    fontWeight: '600',
+    color: '#000000',
+  },
+  bannerImagePlaceholder: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+  },
+  bannerImageText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  dotsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  dot: {
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FFC000',
+    marginHorizontal: 4,
   },
   recommendedContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   tagsContainer: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   tag: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginRight: 8,
@@ -440,8 +599,8 @@ const styles = StyleSheet.create({
     borderColor: '#E9ECEF',
   },
   tagSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: '#FFC000',
+    borderColor: '#FFC000',
   },
   tagText: {
     color: '#6C757D',
@@ -455,59 +614,79 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    paddingBottom: 16,
   },
   productCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
     width: '48%',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
-    shadowRadius: 8,
+    shadowRadius: 4,
     elevation: 2,
   },
   horizontalCard: {
     width: 160,
     marginRight: 12,
+    padding: 10,
   },
+  //Recommended and All Products Card Styles
   productImage: {
     width: '100%',
-    height: 100,
+    height: 150,
     backgroundColor: '#F8F9FA',
-    borderRadius: 12,
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   productEmoji: {
-    fontSize: 40,
+    fontSize: 32,
   },
   productInfo: {
     flex: 1,
   },
   productName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
     color: '#212529',
+    marginBottom: 6,
+  },
+  priceProfitRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 4,
   },
   productPrice: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#007AFF',
-    marginBottom: 2,
-  },
-  productCoin: {
-    fontSize: 12,
-    color: '#6C757D',
-    marginBottom: 2,
+    color: '#FFC000',
   },
   productProfit: {
-    fontSize: 12,
-    color: '#28A745',
+    fontSize: 11,
+    color: '#34C759',
     fontWeight: '600',
+  },
+  productDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  productCoin: {
+    fontSize: 11,
+    color: '#6C757D',
+    fontWeight: '500',
+  },
+  productHashrate: {
+    fontSize: 10,
+    color: '#8E8E93',
+    flex: 1,
+    textAlign: 'right',
+    marginLeft: 4,
   },
   searchResults: {
     flex: 1,
