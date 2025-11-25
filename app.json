@@ -1,5 +1,6 @@
 {
   "expo": {
+    "scheme": "oneminers-clone-app",
     "name": "oneminers-clone-app",
     "slug": "oneminers-clone-app",
     "version": "1.0.0",
@@ -24,6 +25,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
