@@ -37,16 +37,22 @@ const featuredBanners = [
   },
 ];
 
-const filterTags = ['All', 'BTC', 'KAS', 'ALEO', 'ETH', 'Others'];
-
-// Updated products with consistent information
-const recommendedProducts = [
-  { id: 1, name: 'Antminer S19 XP', price: '$4,200', image: '⚙️', coin: 'BTC', hashrate: '140 TH/s', algorithm: 'SHA-256', profit: '$18/day' },
-  { id: 2, name: 'Goldshell KD6', price: '$3,800', image: '🔧', coin: 'KAS', hashrate: '29.2 TH/s', algorithm: 'kHeavyHash', profit: '$22/day' },
-  { id: 3, name: 'Aleo Miner F1', price: '$2,900', image: '⚡', coin: 'ALEO', hashrate: '250 G/s', algorithm: 'AleoPoW', profit: '$16/day' },
-  { id: 4, name: 'Whatsminer M50', price: '$3,500', image: '🔩', coin: 'BTC', hashrate: '118 TH/s', algorithm: 'SHA-256', profit: '$17/day' },
+// Updated categories to be a list of coins
+const categories = [
+  { id: 'BTC', name: 'BTC', icon: '₿' },
+  { id: 'KAS', name: 'KAS', icon: '💠' },
+  { id: 'ALEO', name: 'ALEO', icon: '🔒' },
+  { id: 'ETC', name: 'ETC', icon: '💚' },
+  { id: 'DOGE', name: 'DOGE', icon: '🐕' },
+  { id: 'SEC', name: 'SEC', icon: '🛡️' },
+  { id: 'ALPH', name: 'ALPH', icon: '⚛️' },
+  { id: 'CKB', name: 'CKB', icon: '🧱' },
+  { id: 'DASH', name: 'DASH', icon: '💨' },
+  { id: 'KDA', name: 'KDA', icon: '🔗' },
+  { id: 'XTM', name: 'XTM', icon: '💎' },
 ];
 
+// All products will be displayed in the main grid
 const allProducts = [
   { id: 1, name: 'Antminer S19 Pro', price: '$3,500', image: '⚙️', coin: 'BTC', hashrate: '110 TH/s', algorithm: 'SHA-256', profit: '$15/day' },
   { id: 2, name: 'Whatsminer M30S+', price: '$2,800', image: '🔧', coin: 'BTC', hashrate: '100 TH/s', algorithm: 'SHA-256', profit: '$12/day' },
@@ -54,6 +60,8 @@ const allProducts = [
   { id: 4, name: 'Goldshell KD6', price: '$3,800', image: '🔩', coin: 'KAS', hashrate: '29.2 TH/s', algorithm: 'kHeavyHash', profit: '$18/day' },
   { id: 5, name: 'Aleo Miner F1', price: '$2,900', image: '💎', coin: 'ALEO', hashrate: '250 G/s', algorithm: 'AleoPoW', profit: '$16/day' },
   { id: 6, name: 'iPollo V1 Mini', price: '$1,200', image: '📱', coin: 'ETH', hashrate: '320 MH/s', algorithm: 'Ethash', profit: '$8/day' },
+  { id: 7, name: 'Antminer S19 XP', price: '$4,200', image: '⚙️', coin: 'BTC', hashrate: '140 TH/s', algorithm: 'SHA-256', profit: '$18/day' },
+  { id: 8, name: 'Whatsminer M50', price: '$3,500', image: '🔩', coin: 'BTC', hashrate: '118 TH/s', algorithm: 'SHA-256', profit: '$17/day' },
 ];
 
 type BannerItem = {
@@ -184,9 +192,9 @@ const BannerCarousel = () => {
   );
 };
 
-// Memoized components to prevent unnecessary re-renders
-const ProductCard = React.memo<{ item: ProductItem; horizontal?: boolean }>(({ item, horizontal = false }) => (
-  <TouchableOpacity style={[styles.productCard, horizontal && styles.horizontalCard]}>
+// Memoized ProductCard component
+const ProductCard = React.memo<{ item: ProductItem }>(({ item }) => (
+  <TouchableOpacity style={styles.productCard}>
     <View style={styles.productImage}>
       <Text style={styles.productEmoji}>{item.image}</Text>
     </View>
@@ -208,34 +216,31 @@ const ProductCard = React.memo<{ item: ProductItem; horizontal?: boolean }>(({ i
   </TouchableOpacity>
 ));
 
+// New CategoryItem Component
+const CategoryItem = React.memo<{ item: { id: string; name: string; icon: string }; onPress: () => void }>(({ item, onPress }) => (
+  <TouchableOpacity style={styles.categoryItem} onPress={onPress} activeOpacity={0.7}>
+    <View style={styles.categoryAvatar}>
+      <Text style={styles.categoryIcon}>{item.icon}</Text>
+    </View>
+    <Text style={styles.categoryName}>{item.name}</Text>
+  </TouchableOpacity>
+));
+
+
 export default function ShopScreen() {
-  const [selectedTag, setSelectedTag] = useState('All');
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
   const searchBarWidth = useRef(new Animated.Value(0)).current;
 
-  // Memoized filtered products
-  const filteredProducts = useMemo(() => 
-    selectedTag === 'All' 
-      ? allProducts 
-      : allProducts.filter(product => product.coin === selectedTag),
-    [selectedTag]
-  );
-
-  // Memoized search results
-  const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    return allProducts.filter(product =>
-      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.coin.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery]);
+  // Placeholder function for category press
+  const handleCategoryPress = useCallback((categoryId: string) => {
+    console.log(`Category pressed: ${categoryId}`);
+    // Future functionality will go here
+  }, []);
 
   // Optimized handlers with useCallback
   const handleSearchPress = useCallback(() => {
     if (showSearchBar) {
-      // Hide search bar
       Animated.timing(searchBarWidth, {
         toValue: 0,
         duration: 300,
@@ -243,10 +248,8 @@ export default function ShopScreen() {
       }).start(() => {
         setShowSearchBar(false);
         setSearchQuery('');
-        setIsSearching(false);
       });
     } else {
-      // Show search bar
       setShowSearchBar(true);
       Animated.timing(searchBarWidth, {
         toValue: 1,
@@ -264,44 +267,19 @@ export default function ShopScreen() {
     }).start(() => {
       setShowSearchBar(false);
       setSearchQuery('');
-      setIsSearching(false);
     });
   }, [searchBarWidth]);
-
-  const handleSearchSubmit = useCallback(() => {
-    if (searchQuery.trim()) {
-      setIsSearching(true);
-    }
-  }, [searchQuery]);
 
   const searchBarInterpolatedWidth = searchBarWidth.interpolate({
     inputRange: [0, 1],
     outputRange: ['0%', '100%'],
   });
 
-  // Memoized list renderers
-  const renderProductCard = useCallback(({ item, horizontal = false }: { item: ProductItem; horizontal?: boolean }) => (
-    <ProductCard item={item} horizontal={horizontal} />
-  ), []);
-
-  const renderTag = useCallback((tag: string) => (
-    <TouchableOpacity
-      key={tag}
-      style={[styles.tag, selectedTag === tag && styles.tagSelected]}
-      onPress={() => setSelectedTag(tag)}
-    >
-      <Text style={[styles.tagText, selectedTag === tag && styles.tagTextSelected]}>
-        {tag}
-      </Text>
-    </TouchableOpacity>
-  ), [selectedTag]);
-
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header with Search and Cart */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          {/* Animated Search Bar */}
           <Animated.View
             style={[
               styles.searchBarContainer,
@@ -319,8 +297,6 @@ export default function ShopScreen() {
                     onChangeText={setSearchQuery}
                     placeholderTextColor="#8E8E93"
                     autoFocus={true}
-                    onSubmitEditing={handleSearchSubmit}
-                    returnKeyType="search"
                   />
                   <TouchableOpacity onPress={handleCloseSearch}>
                     <Ionicons name="close-outline" size={24} color="#8E8E93" />
@@ -330,7 +306,6 @@ export default function ShopScreen() {
             )}
           </Animated.View>
 
-          {/* Header actions: search + cart */}
           <View style={styles.headerActions}>
             <TouchableOpacity
               style={styles.headerButton}
@@ -355,43 +330,32 @@ export default function ShopScreen() {
         >
           {/* Featured Banner Carousel */}
           <BannerCarousel />
-
-          {/* Recommended Section */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recommended</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAllText}>See All</Text>
-            </TouchableOpacity>
+            <Text style={styles.sectionTitle}>Coins</Text>
           </View>
+          {/* Categories Section */}
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false} 
-            style={styles.recommendedContainer}
-            removeClippedSubviews={true}
+            style={styles.categoriesContainer}
+            contentContainerStyle={styles.categoriesContentContainer}
           >
-            {recommendedProducts.map(product => (
-              <ProductCard key={product.id} item={product} horizontal />
+            {categories.map(category => (
+              <CategoryItem
+                key={category.id}
+                item={category}
+                onPress={() => handleCategoryPress(category.id)}
+              />
             ))}
-          </ScrollView>
-
-          {/* Filter Tags */}
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false} 
-            style={styles.tagsContainer}
-            removeClippedSubviews={true}
-          >
-            {filterTags.map(renderTag)}
           </ScrollView>
 
           {/* Products Grid */}
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>All Products</Text>
-            <Text style={styles.productCount}>{filteredProducts.length} items</Text>
+            <Text style={styles.sectionTitle}>For You</Text>
           </View>
           
           <View style={styles.productsGrid}>
-            {filteredProducts.map(product => (
+            {allProducts.map(product => (
               <ProductCard key={product.id} item={product} />
             ))}
           </View>
@@ -457,25 +421,12 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginBottom: 12,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#212529',
-    marginBottom: 12,
-  },
-  seeAllText: {
-    color: '#6C757D',
-    fontWeight: '600',
-    fontSize: 14,
-  },
-  productCount: {
-    color: '#6C757D',
-    fontSize: 14,
   },
   // Carousel Styles
   carouselContainer: {
@@ -548,33 +499,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFC000',
     marginHorizontal: 4,
   },
-  recommendedContainer: {
+  // Categories Styles
+  categoriesContainer: {
     marginBottom: 20,
   },
-  tagsContainer: {
-    marginBottom: 20,
+  categoriesContentContainer: {
+    paddingRight: 16,
   },
-  tag: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
+  categoryItem: {
+    alignItems: 'center',
+    marginRight: 20,
   },
-  tagSelected: {
-    backgroundColor: '#FFC000',
-    borderColor: '#FFC000',
+  categoryAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#F2F2F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
   },
-  tagText: {
-    color: '#6C757D',
-    fontWeight: '600',
-    fontSize: 14,
+  categoryIcon: {
+    fontSize: 28,
   },
-  tagTextSelected: {
-    color: '#FFFFFF',
+  categoryName: {
+    fontSize: 12,
+    color: '#212529',
+    fontWeight: '500',
+    textAlign: 'center',
   },
+  // Products Grid Styles
   productsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -582,33 +536,28 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   productCard: {
+    width: '48%',
+    borderRadius: 12,
     padding: 12,
     marginBottom: 12,
-    width: '48%',
   },
-  horizontalCard: {
-    width: 160,
-    marginRight: 12,
-    padding: 10,
-  },
-  //Recommended and All Products Card Styles
   productImage: {
     width: '100%',
-    height: 150,
-    backgroundColor: '#ffbf002c',
-    borderRadius: 1,
+    height: 120,
+    backgroundColor: '#F2F2F7',
+    borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
   productEmoji: {
-    fontSize: 32,
+    fontSize: 40,
   },
   productInfo: {
     flex: 1,
   },
   productName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#212529',
     marginBottom: 6,
@@ -620,12 +569,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   productPrice: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
     color: '#FFC000',
   },
   productProfit: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#34C759',
     fontWeight: '600',
   },
@@ -635,58 +584,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   productCoin: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#6C757D',
     fontWeight: '500',
   },
   productHashrate: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#8E8E93',
     flex: 1,
     textAlign: 'right',
     marginLeft: 4,
-  },
-  searchResults: {
-    flex: 1,
-  },
-  searchResultsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  backButton: {
-    marginRight: 12,
-  },
-  searchResultsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#212529',
-    flex: 1,
-  },
-  searchResultsList: {
-    flex: 1,
-    padding: 16,
-  },
-  placeholderResults: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  placeholderText: {
-    marginTop: 16,
-    fontSize: 18,
-    color: '#8E8E93',
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  placeholderSubtext: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#8E8E93',
-    textAlign: 'center',
   },
 });

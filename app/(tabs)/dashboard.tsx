@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, FlatL
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Rect, Circle, G, Text as SvgText } from 'react-native-svg';
+import { Link } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
@@ -298,17 +299,18 @@ export default function DashboardScreen() {
             </TouchableOpacity>
 
             {/* Refer & Earn */}
-            <TouchableOpacity style={styles.quickActionItem}>
-              <View style={styles.quickActionIcon}>
-                <Ionicons name="people-outline" size={20} color="#007AFF" />
-              </View>
-              <View style={styles.quickActionContent}>
-                <Text style={styles.quickActionText}>Refer & Earn</Text>
-                <Text style={styles.quickActionSubtext}>Invite friends</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
-            </TouchableOpacity>
-
+            <Link href="/referral" asChild>
+              <TouchableOpacity style={styles.quickActionItem}>
+                <View style={styles.quickActionIcon}>
+                  <Ionicons name="people-outline" size={20} color="#007AFF" />
+                </View>
+                <View style={styles.quickActionContent}>
+                  <Text style={styles.quickActionText}>Refer & Earn</Text>
+                  <Text style={styles.quickActionSubtext}>Invite friends</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
+              </TouchableOpacity>
+            </Link>
             {/* AI Boost */}
             <View style={styles.quickActionItem}>
               <View style={styles.quickActionIcon}>
@@ -329,21 +331,23 @@ export default function DashboardScreen() {
                 style={styles.hintButton}
                 onPress={() => setShowAiBoostHint(!showAiBoostHint)}
               >
-                <Ionicons name="help-circle-outline" size={16} color="#8E8E93" />
+                <Ionicons name="help-circle-outline" size={20} color="#8E8E93" />
               </TouchableOpacity>
             </View>
 
             {/* View Orders */}
-            <TouchableOpacity style={styles.quickActionItem}>
-              <View style={styles.quickActionIcon}>
-                <Ionicons name="document-text-outline" size={20} color="#FF9500" />
-              </View>
-              <View style={styles.quickActionContent}>
-                <Text style={styles.quickActionText}>View Orders</Text>
-                <Text style={styles.quickActionSubtext}>Manage purchases</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
-            </TouchableOpacity>
+            <Link href="/orders" asChild>
+              <TouchableOpacity style={styles.quickActionItem}>
+                <View style={styles.quickActionIcon}>
+                  <Ionicons name="document-text-outline" size={20} color="#FF9500" />
+                </View>
+                <View style={styles.quickActionContent}>
+                  <Text style={styles.quickActionText}>View Orders</Text>
+                  <Text style={styles.quickActionSubtext}>Manage purchases</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
+              </TouchableOpacity>
+            </Link>
           </View>
 
           {/* AI Boost Hint */}
@@ -599,7 +603,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   switch: {
-    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+    transform: [{ scaleX: 1.4 }, { scaleY: 1.4}],
     marginRight: 8,
   },
   hintButton: {

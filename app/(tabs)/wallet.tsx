@@ -118,22 +118,21 @@ export default function WalletScreen() {
           </View>
         </View>
 
-        {/* Assets Section */}
+        {/* Assets Section - NEW LAYOUT */}
         <View style={styles.assetsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Assets</Text>
-          </View>
-
-          {assets.map((asset, index) => (
-            <TouchableOpacity key={asset.ticker} style={styles.assetCard}>
-              <View style={styles.assetMain}>
+          <Text style={styles.sectionTitle}>Assets</Text>
+          
+          {/* Single Card Container for the entire list */}
+          <View style={styles.assetsListContainer}>
+            {assets.map((asset, index) => (
+              <TouchableOpacity key={asset.ticker} style={styles.assetItem}>
                 <View style={styles.assetLeft}>
                   <View style={styles.assetIconContainer}>
                     <Text style={styles.assetIcon}>{asset.icon}</Text>
                   </View>
                   <View style={styles.assetInfo}>
                     <Text style={styles.assetName}>{asset.name}</Text>
-                    <Text style={styles.assetTicker}>{asset.ticker}</Text>
+                    <Text style={styles.assetHoldings}>{asset.holdings}</Text>
                   </View>
                 </View>
                 
@@ -146,13 +145,9 @@ export default function WalletScreen() {
                     {asset.change}
                   </Text>
                 </View>
-              </View>
-              
-              <View style={styles.assetBottom}>
-                <Text style={styles.assetHoldings}>{asset.holdings}</Text>
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -271,34 +266,28 @@ const styles = StyleSheet.create({
   assetsSection: {
     marginBottom: 24,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000000',
+    marginBottom: 16,
   },
-  // Asset Cards
-  assetCard: {
+  // NEW: Single Card Container for the list
+  assetsListContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+ 
   },
-  assetMain: {
+  // NEW: Style for each row in the list
+  assetItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    // Add a bottom border to all items except the last one
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
   },
   assetLeft: {
     flexDirection: 'row',
@@ -324,11 +313,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#000000',
-    marginBottom: 2,
   },
-  assetTicker: {
+  assetHoldings: {
     fontSize: 14,
     color: '#8E8E93',
+    marginTop: 2,
   },
   assetRight: {
     alignItems: 'flex-end',
@@ -337,23 +326,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: '#000000',
-    marginBottom: 2,
   },
   assetChange: {
     fontSize: 12,
     fontWeight: '600',
-  },
-  assetBottom: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F2F2F7',
-  },
-  assetHoldings: {
-    fontSize: 14,
-    color: '#8E8E93',
-    fontWeight: '500',
+    marginTop: 2,
   },
 });

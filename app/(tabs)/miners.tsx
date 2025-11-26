@@ -12,12 +12,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, router } from 'expo-router';
 
 const { width } = Dimensions.get('window');
 
 // Types
 type MinerStatus = 'running' | 'stopped' | 'restarting' | 'broken';
-type MinerHealth = 'healthy' | 'maintenance' | 'warning';
 
 type Miner = {
   id: string;
@@ -27,7 +27,6 @@ type Miner = {
   hashrate: string;
   hashrateUnit: string;
   status: MinerStatus;
-  health: MinerHealth;
   location: string;
   energyFee: string;
   dailyProfit: string;
@@ -47,7 +46,6 @@ const MINERS_DATA: Miner[] = [
     hashrate: '15.00',
     hashrateUnit: 'TH/s',
     status: 'running',
-    health: 'healthy',
     location: 'USA',
     energyFee: '0.065',
     dailyProfit: '0.12',
@@ -65,7 +63,6 @@ const MINERS_DATA: Miner[] = [
     hashrate: '110.00',
     hashrateUnit: 'TH/s',
     status: 'running',
-    health: 'healthy',
     location: 'Germany',
     energyFee: '0.072',
     dailyProfit: '0.89',
@@ -83,7 +80,6 @@ const MINERS_DATA: Miner[] = [
     hashrate: '118.00',
     hashrateUnit: 'TH/s',
     status: 'stopped',
-    health: 'maintenance',
     location: 'Canada',
     energyFee: '0.068',
     dailyProfit: '0.00',
@@ -101,7 +97,6 @@ const MINERS_DATA: Miner[] = [
     hashrate: '90.00',
     hashrateUnit: 'TH/s',
     status: 'broken',
-    health: 'warning',
     location: 'USA',
     energyFee: '0.061',
     dailyProfit: '0.00',
@@ -119,7 +114,6 @@ const MINERS_DATA: Miner[] = [
     hashrate: '200.00',
     hashrateUnit: 'TH/s',
     status: 'restarting',
-    health: 'maintenance',
     location: 'Singapore',
     energyFee: '0.058',
     dailyProfit: '1.45',
@@ -160,7 +154,6 @@ export default function MinersScreen() {
 
   const handleSearchPress = () => {
     if (showSearchBar) {
-      // Hide search bar and clear search
       setSearchQuery('');
       Animated.timing(searchBarAnim, {
         toValue: 0,
@@ -168,7 +161,6 @@ export default function MinersScreen() {
         useNativeDriver: false,
       }).start(() => setShowSearchBar(false));
     } else {
-      // Show search bar
       setShowSearchBar(true);
       Animated.timing(searchBarAnim, {
         toValue: 1,
@@ -179,9 +171,8 @@ export default function MinersScreen() {
   };
 
   const handleMinerPress = (miner: Miner) => {
-    // Navigate to miner detail screen
     console.log('Navigate to miner detail:', miner.id);
-    // navigation.navigate('MinerDetail', { minerId: miner.id });
+    router.push(`/(essentials)/miner/${miner.id}`);
   };
 
   const getStatusStyle = (status: MinerStatus) => {
@@ -196,7 +187,7 @@ export default function MinersScreen() {
 
   const searchBarWidth = searchBarAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, width - 80], // Full width minus button space
+    outputRange: [0, width - 80],
   });
 
   const renderMinerItem = ({ item }: { item: Miner }) => (
@@ -212,7 +203,6 @@ export default function MinersScreen() {
           <View style={styles.minerDetails}>
             <Text style={styles.minerName}>{item.name}</Text>
             <Text style={styles.minerModel}>{item.model}</Text>
-            <Text style={styles.minerId}>{item.minerId}</Text>
           </View>
         </View>
         <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
@@ -246,11 +236,11 @@ export default function MinersScreen() {
 
       <View style={styles.minerFooter}>
         <View style={styles.location}>
-          <Ionicons name="location-outline" size={12} color="#8E8E93" />
+          <Ionicons name="location-outline" size={12} color="#6B7280" />
           <Text style={styles.locationText}>{item.location}</Text>
         </View>
         <View style={styles.energyFee}>
-          <Ionicons name="flash-outline" size={12} color="#8E8E93" />
+          <Ionicons name="flash-outline" size={12} color="#6B7280" />
           <Text style={styles.energyFeeText}>{item.energyFee} USD/kWh</Text>
         </View>
       </View>
@@ -262,29 +252,27 @@ export default function MinersScreen() {
       {/* Header with inline search bar */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          {/* Animated Search Bar */}
           <Animated.View style={[styles.searchBarContainer, { width: searchBarWidth }]}>
             {showSearchBar && (
               <View style={styles.searchBarContent}>
                 <View style={styles.searchInputContainer}>
-                  <Ionicons name="search-outline" size={20} color="#8E8E93" />
+                  <Ionicons name="search-outline" size={20} color="#6B7280" />
                   <TextInput
                     style={styles.searchInput}
                     placeholder="Search miners..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
-                    placeholderTextColor="#8E8E93"
+                    placeholderTextColor="#6B7280"
                     autoFocus={true}
                   />
                   <TouchableOpacity onPress={handleSearchPress}>
-                    <Ionicons name="close-outline" size={24} color="#8E8E93" />
+                    <Ionicons name="close-outline" size={24} color="#6B7280" />
                   </TouchableOpacity>
                 </View>
               </View>
             )}
           </Animated.View>
 
-          {/* Header Actions - Only Add button when search is not active */}
           <View style={styles.headerActions}>
             {!showSearchBar && (
               <TouchableOpacity 
@@ -294,91 +282,52 @@ export default function MinersScreen() {
                 <Ionicons name="search-outline" size={20} color="#000" />
               </TouchableOpacity>
             )}
+            <Link href="/shop" asChild>
             <TouchableOpacity style={styles.headerButton}>
               <Ionicons name="add-outline" size={20} color="#000" />
             </TouchableOpacity>
+            </Link>
           </View>
         </View>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Overview Section */}
-        <View style={styles.overviewCard}>
-          <View style={styles.overviewHeaderRow}>
-            <View style={styles.overviewHeaderText}>
-              <Text style={styles.overviewLabel}>Cluster overview</Text>
-              <Text style={styles.overviewTitle}>Mining overview</Text>
+        {/* --- SIMPLIFIED OVERVIEW SECTION --- */}
+        
+        {/* Card 1: Primary Metrics */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Mining Overview</Text>
+          <View style={styles.metricsRow}>
+            <View style={styles.metricItem}>
+              <Text style={styles.metricValue}>{OVERVIEW_DATA.totalHashrate}</Text>
+              <Text style={styles.metricUnit}>{OVERVIEW_DATA.totalHashrateUnit}</Text>
             </View>
-            <View style={styles.overviewBadge}>
-              <View style={styles.overviewBadgeDot} />
-              <Text style={styles.overviewBadgeText}>Stable</Text>
+            <View style={styles.profitChip}>
+              <Text style={styles.profitChipText}>{OVERVIEW_DATA.totalDailyProfit} / day</Text>
             </View>
-          </View>
-
-          <View style={styles.overviewMainRow}>
-            {/* Left side: primary metric */}
-            <View style={styles.overviewPrimaryMetric}>
-              <Text style={styles.overviewMetricLabel}>Total hashrate</Text>
-              <View style={styles.overviewMetricRow}>
-                <Text style={styles.overviewMetricValue}>
-                  {OVERVIEW_DATA.totalHashrate}
-                </Text>
-                <Text style={styles.overviewMetricUnit}>
-                  {OVERVIEW_DATA.totalHashrateUnit}
-                </Text>
-              </View>
-
-              <View style={styles.overviewChipRow}>
-                <View style={styles.overviewChip}>
-                  <Ionicons name="flash-outline" size={14} color="#000000" />
-                  <Text style={styles.overviewChipText}>
-                    {OVERVIEW_DATA.totalDailyProfit} / day
-                  </Text>
-                </View>
-                <Text style={styles.overviewSecondaryText} numberOfLines={1}>
-                  {OVERVIEW_DATA.totalMiners} miners total
-                </Text>
-              </View>
-            </View>
-
-            {/* Right side: status breakdown */}
-            <View style={styles.overviewStatusColumn}>
-              {[
-                { label: 'Active', value: OVERVIEW_DATA.active, color: '#34C759' },
-                { label: 'Restarting', value: OVERVIEW_DATA.restarting, color: '#007AFF' },
-                { label: 'Stopped', value: OVERVIEW_DATA.stopped, color: '#FF9500' },
-                { label: 'Broken', value: OVERVIEW_DATA.broken, color: '#FF3B30' },
-              ].map((item) => (
-                <View key={item.label} style={styles.overviewStatusRow}>
-                  <View
-                    style={[
-                      styles.overviewStatusDot,
-                      { backgroundColor: item.color },
-                    ]}
-                  />
-                  <Text style={styles.overviewStatusLabel}>{item.label}</Text>
-                  <Text style={styles.overviewStatusValue}>{item.value}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          <View style={styles.overviewFooterRow}>
-            <View style={styles.overviewProgressTrack}>
-              <View
-                style={[
-                  styles.overviewProgressFill,
-                  {
-                    width: `${(OVERVIEW_DATA.active / OVERVIEW_DATA.totalMiners) * 100}%`,
-                  },
-                ]}
-              />
-            </View>
-            <Text style={styles.overviewFooterText} numberOfLines={1}>
-              {OVERVIEW_DATA.active} / {OVERVIEW_DATA.totalMiners} miners online
-            </Text>
           </View>
         </View>
+
+        {/* Card 2: Status Summary */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Miner Status</Text>
+          <View style={styles.statusGrid}>
+            {[
+              { label: 'Active', value: OVERVIEW_DATA.active, color: '#34C759' },
+              { label: 'Stopped', value: OVERVIEW_DATA.stopped, color: '#FF9500' },
+              { label: 'Restarting', value: OVERVIEW_DATA.restarting, color: '#007AFF' },
+              { label: 'Broken', value: OVERVIEW_DATA.broken, color: '#FF3B30' },
+            ].map((item) => (
+              <View key={item.label} style={styles.statusGridItem}>
+                <View style={[styles.statusDot, { backgroundColor: item.color }]} />
+                <Text style={styles.statusGridLabel}>{item.label}</Text>
+                <Text style={styles.statusGridValue}>{item.value}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* --- END OF OVERVIEW SECTION --- */}
 
         {/* Filter Options */}
         <ScrollView
@@ -387,76 +336,23 @@ export default function MinersScreen() {
           style={styles.filterContainer}
           contentContainerStyle={styles.filterContent}
         >
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              selectedFilter === 'all' && styles.filterButtonActive,
-            ]}
-            onPress={() => setSelectedFilter('all')}
-          >
-            <Text style={[
-              styles.filterButtonText,
-              selectedFilter === 'all' && styles.filterButtonTextActive,
-            ]}>
-              All Miners
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              selectedFilter === 'running' && styles.filterButtonActive,
-            ]}
-            onPress={() => setSelectedFilter('running')}
-          >
-            <Text style={[
-              styles.filterButtonText,
-              selectedFilter === 'running' && styles.filterButtonTextActive,
-            ]}>
-              Running
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              selectedFilter === 'stopped' && styles.filterButtonActive,
-            ]}
-            onPress={() => setSelectedFilter('stopped')}
-          >
-            <Text style={[
-              styles.filterButtonText,
-              selectedFilter === 'stopped' && styles.filterButtonTextActive,
-            ]}>
-              Stopped
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              selectedFilter === 'restarting' && styles.filterButtonActive,
-            ]}
-            onPress={() => setSelectedFilter('restarting')}
-          >
-            <Text style={[
-              styles.filterButtonText,
-              selectedFilter === 'restarting' && styles.filterButtonTextActive,
-            ]}>
-              Restarting
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.filterButton,
-              selectedFilter === 'broken' && styles.filterButtonActive,
-            ]}
-            onPress={() => setSelectedFilter('broken')}
-          >
-            <Text style={[
-              styles.filterButtonText,
-              selectedFilter === 'broken' && styles.filterButtonTextActive,
-            ]}>
-              Broken
-            </Text>
-          </TouchableOpacity>
+          {['all', 'running', 'stopped', 'restarting', 'broken'].map((filter) => (
+            <TouchableOpacity
+              key={filter}
+              style={[
+                styles.filterButton,
+                selectedFilter === filter && styles.filterButtonActive,
+              ]}
+              onPress={() => setSelectedFilter(filter as MinerStatus | 'all')}
+            >
+              <Text style={[
+                styles.filterButtonText,
+                selectedFilter === filter && styles.filterButtonTextActive,
+              ]}>
+                {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ))}
         </ScrollView>
 
         {/* Miners List */}
@@ -478,6 +374,8 @@ export default function MinersScreen() {
   );
 }
 
+// --- STYLES ---
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -487,7 +385,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5EA',
+    borderBottomColor: '#E5E7EB',
     height: 60,
   },
   headerContent: {
@@ -504,14 +402,17 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 12,
-    backgroundColor: '#FFC000',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB'
   },
-  // Inline Search Bar
   searchBarContainer: {
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
+    marginRight: 12,
+    borderRadius: 12,
   },
   searchBarContent: {
     flex: 1,
@@ -519,7 +420,7 @@ const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#F3F4F6',
     borderRadius: 12,
     paddingHorizontal: 12,
     height: 40,
@@ -535,180 +436,82 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  // Overview Section
-  overviewCard: {
+  // --- New Simplified Card Styles ---
+  card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 18,
+    borderRadius: 16,
+    padding: 20,
     marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#F2F2F7',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
+    borderColor: '#FFC000',
+    borderWidth: 1,  
   },
-  overviewHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  overviewHeaderText: {
-    flex: 1,
-    marginRight: 12,
-  },
-  overviewLabel: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    textTransform: 'uppercase',
-    letterSpacing: 0.6,
-  },
-  overviewTitle: {
-    fontSize: 20,
+  cardTitle: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#000000',
-    marginTop: 2,
-  },
-  overviewBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: '#E5F9E7',
-    flexShrink: 0,
-  },
-  overviewBadgeDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#34C759',
-    marginRight: 6,
-  },
-  overviewBadgeText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: '#166534',
-  },
-  overviewMainRow: {
-    flexDirection: 'row',
     marginBottom: 16,
-    alignItems: 'flex-start',
   },
-  overviewPrimaryMetric: {
-    flex: 1,
-    paddingRight: 16,
-    minWidth: 0,
+  metricsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
-  overviewMetricLabel: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    marginBottom: 4,
-  },
-  overviewMetricRow: {
+  metricItem: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    flexWrap: 'wrap',
   },
-  overviewMetricValue: {
-    fontSize: 30,
+  metricValue: {
+    fontSize: 36,
     fontWeight: '800',
     color: '#000000',
-    marginRight: 6,
-    lineHeight: 36,
+    lineHeight: 42,
   },
-  overviewMetricUnit: {
-    fontSize: 14,
+  metricUnit: {
+    fontSize: 16,
     fontWeight: '600',
     color: '#6B7280',
-    lineHeight: 20,
-  },
-  overviewChipRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-    flexWrap: 'wrap',
-  },
-  overviewChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFC00033',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    marginRight: 10,
-    marginBottom: 4,
-    flexShrink: 0,
-  },
-  overviewChipText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#000000',
     marginLeft: 4,
   },
-  overviewSecondaryText: {
-    fontSize: 12,
-    color: '#6B7280',
-    flexShrink: 1,
-    minWidth: 0,
+  profitChip: {
+    backgroundColor: '#FFC000',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
-  overviewStatusColumn: {
-    width: 110,
-    flexShrink: 0,
-  },
-  overviewStatusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  overviewStatusDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    marginRight: 8,
-    flexShrink: 0,
-  },
-  overviewStatusLabel: {
-    fontSize: 12,
-    color: '#4B5563',
-    flex: 1,
-    marginRight: 4,
-    minWidth: 0,
-  },
-  overviewStatusValue: {
+  profitChipText: {
     fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-    flexShrink: 0,
+    fontWeight: '700',
+    color: '#000000',
   },
-  overviewFooterRow: {
+  statusGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
-  overviewProgressTrack: {
-    flex: 1,
-    height: 6,
-    borderRadius: 999,
-    backgroundColor: '#F3F4F6',
-    overflow: 'hidden',
-    marginRight: 12,
-    minWidth: 0,
+  statusGridItem: {
+    width: '48%', // Two items per row
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  overviewProgressFill: {
-    height: '100%',
-    borderRadius: 999,
-    backgroundColor: '#FFC000',
+  statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginRight: 8,
   },
-  overviewFooterText: {
-    fontSize: 12,
+  statusGridLabel: {
+    fontSize: 14,
     color: '#6B7280',
-    flexShrink: 0,
-    minWidth: 0,
+    flex: 1,
   },
-  // Filter Options
+  statusGridValue: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000000',
+    marginLeft: 8,
+  },
+  // --- Filter Styles ---
   filterContainer: {
     marginBottom: 16,
   },
@@ -719,43 +522,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#FFFFFF',
     marginRight: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB'
   },
   filterButtonActive: {
     backgroundColor: '#FFC000',
+    borderColor: '#FFC000',
   },
   filterButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#8E8E93',
+    color: '#6B7280',
   },
   filterButtonTextActive: {
     color: '#000000',
   },
-  // Miners Section
+  // --- Miners List Styles ---
   minersSection: {
     marginBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#000000',
     marginBottom: 12,
   },
   minersList: {
     gap: 12,
+    paddingBottom: 16,
   },
-  // Miner Card
   minerCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   minerHeader: {
     flexDirection: 'row',
@@ -771,7 +572,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 10,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#F3F4F6',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -784,18 +585,13 @@ const styles = StyleSheet.create({
   },
   minerName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: '#000000',
     marginBottom: 2,
   },
   minerModel: {
     fontSize: 14,
-    color: '#8E8E93',
-    marginBottom: 2,
-  },
-  minerId: {
-    fontSize: 12,
-    color: '#8E8E93',
+    color: '#6B7280',
   },
   statusBadge: {
     paddingHorizontal: 8,
@@ -833,7 +629,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: '#8E8E93',
+    color: '#6B7280',
     marginBottom: 4,
   },
   statValue: {
@@ -842,7 +638,7 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   zeroProfit: {
-    color: '#8E8E93',
+    color: '#6B7280',
   },
   minerFooter: {
     flexDirection: 'row',
@@ -850,7 +646,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#F2F2F7',
+    borderTopColor: '#F3F4F6',
   },
   location: {
     flexDirection: 'row',
@@ -859,7 +655,7 @@ const styles = StyleSheet.create({
   },
   locationText: {
     fontSize: 12,
-    color: '#8E8E93',
+    color: '#6B7280',
   },
   energyFee: {
     flexDirection: 'row',
@@ -868,6 +664,6 @@ const styles = StyleSheet.create({
   },
   energyFeeText: {
     fontSize: 12,
-    color: '#8E8E93',
+    color: '#6B7280',
   },
 });
