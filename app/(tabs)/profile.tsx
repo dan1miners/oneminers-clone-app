@@ -35,15 +35,9 @@ export default function ProfileScreen() {
             
             <View style={styles.profileInfoCompact}>
               <Text style={styles.profileName}>{userInfo.name}</Text>
-              <Text style={styles.profileLevel}>{userInfo.miningLevel}</Text>
               <Text style={styles.profileEmail}>{userInfo.email}</Text>
-              <Text style={styles.profileDetail}>{userInfo.phone}</Text>
-              <Text style={styles.memberSince}>{userInfo.memberSince}</Text>
             </View>
 
-            <TouchableOpacity style={styles.editProfileButton}>
-              <Ionicons name="create-outline" size={18} color="#007AFF" />
-            </TouchableOpacity>
           </View>
         </View>
 

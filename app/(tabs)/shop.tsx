@@ -348,41 +348,6 @@ export default function ShopScreen() {
           </View>
         </View>
       </View>
-
-      {/* Main Content */}
-      {isSearching ? (
-        // Search Results View - Only shows when user submits search
-        <View style={styles.searchResults}>
-          <View style={styles.searchResultsHeader}>
-            <TouchableOpacity onPress={() => setIsSearching(false)} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#007AFF" />
-            </TouchableOpacity>
-            <Text style={styles.searchResultsTitle}>
-              {searchResults.length} results for "{searchQuery}"
-            </Text>
-          </View>
-          
-          {searchResults.length > 0 ? (
-            <ScrollView 
-              style={styles.searchResultsList}
-              showsVerticalScrollIndicator={false}
-            >
-              <View style={styles.productsGrid}>
-                {searchResults.map(product => (
-                  <ProductCard key={product.id} item={product} />
-                ))}
-              </View>
-            </ScrollView>
-          ) : (
-            <View style={styles.placeholderResults}>
-              <Ionicons name="search-outline" size={64} color="#E5E5EA" />
-              <Text style={styles.placeholderText}>No results found</Text>
-              <Text style={styles.placeholderSubtext}>Try different keywords</Text>
-            </View>
-          )}
-        </View>
-      ) : (
-        // Main Shop Content
         <ScrollView 
           style={styles.content} 
           showsVerticalScrollIndicator={false}
@@ -431,7 +396,6 @@ export default function ShopScreen() {
             ))}
           </View>
         </ScrollView>
-      )}
     </SafeAreaView>
   );
 }
@@ -465,7 +429,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F2F2F7',
     borderRadius: 12,
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    height: 40,
   },
   searchInput: {
     flex: 1,
@@ -473,6 +437,7 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     marginRight: 8,
     color: '#000000',
+    paddingVertical: 4,
   },
   headerActions: {
     flexDirection: 'row',
@@ -518,7 +483,7 @@ const styles = StyleSheet.create({
   },
   bannerItem: {
     width: screenWidth - 32,
-    height: 250,
+    height: 180,
     borderRadius: 16,
     marginRight: 0,
     overflow: 'hidden',
@@ -617,16 +582,9 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   productCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
     padding: 12,
     marginBottom: 12,
     width: '48%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
   },
   horizontalCard: {
     width: 160,
@@ -637,8 +595,8 @@ const styles = StyleSheet.create({
   productImage: {
     width: '100%',
     height: 150,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
+    backgroundColor: '#ffbf002c',
+    borderRadius: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,

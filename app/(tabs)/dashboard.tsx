@@ -152,7 +152,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, color = '#FFC000', height = 1
 
 // News Carousel Item
 const NewsItem = ({ item, index }: { item: any; index: number }) => (
-  <TouchableOpacity style={[styles.newsCard, index === 0 && { marginLeft: 0 }]}>
+  <TouchableOpacity style={[styles.newsCard, index === 0 && { marginLeft: 16 }]}>
     <View style={styles.newsImageContainer}>
       <Text style={styles.newsImage}>{item.image}</Text>
     </View>
@@ -169,26 +169,10 @@ const NewsItem = ({ item, index }: { item: any; index: number }) => (
 
 // Oneminers Logo SVG Component
 const OneminersLogo = () => (
-  <Svg width={120} height={32} viewBox="0 0 120 32">
-    <Path
-      d="M20 8L24 16L20 24L12 24L8 16L12 8L20 8Z"
-      fill="#FFC000"
-    />
-    <Path
-      d="M20 8L24 16L20 24M20 8L12 8L8 16L12 24L20 24M20 8V24"
-      stroke="#000000"
-      strokeWidth="1.5"
-    />
-    <Path
-      d="M16 12L16 20"
-      stroke="#000000"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-    />
-    <SvgText x="35" y="20" fontSize="18" fontWeight="bold" fill="#000000">
-      oneminers
-    </SvgText>
-  </Svg>
+  <View style={styles.logoContainer}>
+    <Text style={styles.oneText}>one</Text>
+    <Text style={styles.minersText}>miners</Text>
+  </View>
 );
 
 export default function DashboardScreen() {
@@ -391,7 +375,7 @@ export default function DashboardScreen() {
             contentContainerStyle={styles.newsCarousel}
             snapToAlignment="start"
             decelerationRate="fast"
-            snapToInterval={width * 0.8}
+            snapToInterval={width * 0.8 + 12}
           />
         </View>
       </ScrollView>
@@ -420,8 +404,17 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     marginBottom: 4,
   },
-  headerTitle: {
-    fontSize: 28,
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  oneText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFC000',
+  },
+  minersText: {
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#000000',
   },
@@ -456,11 +449,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#F2F2F7',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
   },
   statHeader: {
     flexDirection: 'row',
@@ -501,11 +489,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
   chartHeader: {
     flexDirection: 'row',
@@ -576,11 +559,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
     borderWidth: 1,
     borderColor: '#F2F2F7',
   },
@@ -651,27 +629,25 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginRight: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    flexDirection: 'row',
+    flexDirection: 'column',
   },
   newsImageContainer: {
-    width: 60,
-    height: 60,
+    // Image now spans the full width of the card
+    width: '100%',
+    // Increased height for a banner image
+    height: 180,
     borderRadius: 12,
     backgroundColor: '#F2F2F7',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    // Removed marginRight as it's no longer needed
   },
   newsImage: {
-    fontSize: 24,
+    fontSize: 48,
   },
   newsContent: {
     flex: 1,
+    marginTop: 12,
   },
   newsCategory: {
     backgroundColor: '#FFC00020',
