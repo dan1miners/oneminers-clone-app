@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
 
 export default function WalletScreen() {
+  // 2. Add state for hiding balance
+  const [isBalanceHidden, setIsBalanceHidden] = useState(false);
+
   const assets = [
     {
       name: 'Bitcoin',
@@ -55,6 +59,11 @@ export default function WalletScreen() {
     }
   ];
 
+  // 3. Create a function to toggle the balance visibility
+  const handleToggleBalance = () => {
+    setIsBalanceHidden(!isBalanceHidden);
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -62,16 +71,27 @@ export default function WalletScreen() {
         <View style={styles.goldCard}>
           <View style={styles.balanceHeader}>
             <Text style={styles.totalBalanceLabel}>Total Balance</Text>
-            <TouchableOpacity>
-              <Ionicons name="eye-outline" size={20} color="#000" />
+            {/* 4. Add the onPress handler and dynamic icon to the eye button */}
+            <TouchableOpacity onPress={handleToggleBalance}>
+              <Ionicons 
+                name={isBalanceHidden ? 'eye-off-outline' : 'eye-outline'} 
+                size={20} 
+                color="#000" 
+              />
             </TouchableOpacity>
           </View>
-          <Text style={styles.totalBalance}>$50,770.46</Text>
+          {/* 5. Conditionally render the total balance */}
+          <Text style={styles.totalBalance}>
+            {isBalanceHidden ? '*****' : '$50,770.46'}
+          </Text>
           
           <View style={styles.unpaidSection}>
             <View style={styles.unpaidRow}>
               <Text style={styles.unpaidLabel}>Unpaid Balance</Text>
-              <Text style={styles.unpaidAmount}>$13.66</Text>
+              {/* 6. Conditionally render the unpaid amount */}
+              <Text style={styles.unpaidAmount}>
+                {isBalanceHidden ? '*****' : '$13.66'}
+              </Text>
             </View>
             <View style={styles.progressBar}>
               <View style={styles.progressFill} />
@@ -82,12 +102,14 @@ export default function WalletScreen() {
         {/* Circular Action Buttons */}
         <View style={styles.actionGrid}>
           <View style={styles.actionColumn}>
-            <TouchableOpacity style={styles.circleButton}>
-              <View style={styles.circleButtonIcon}>
-                <Ionicons name="arrow-down" size={20} color="#000" />
-              </View>
-              <Text style={styles.circleButtonText}>Deposit</Text>
-            </TouchableOpacity>
+            <Link href="/(essentials)/deposit">
+              <TouchableOpacity style={styles.circleButton}>
+                <View style={styles.circleButtonIcon}>
+                  <Ionicons name="arrow-down" size={20} color="#000" />
+                </View>
+                <Text style={styles.circleButtonText}>Deposit</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
           
           <View style={styles.actionColumn}>
@@ -118,26 +140,36 @@ export default function WalletScreen() {
           </View>
         </View>
 
-        {/* Assets Section - NEW LAYOUT */}
+        {/* Assets Section */}
         <View style={styles.assetsSection}>
           <Text style={styles.sectionTitle}>Assets</Text>
           
-          {/* Single Card Container for the entire list */}
           <View style={styles.assetsListContainer}>
             {assets.map((asset, index) => (
-              <TouchableOpacity key={asset.ticker} style={styles.assetItem}>
+              // --- CHANGE IS HERE ---
+              // Replaced TouchableOpacity with View and removed onPress
+              <View 
+                key={asset.ticker} 
+                style={styles.assetItem}
+              >
                 <View style={styles.assetLeft}>
                   <View style={styles.assetIconContainer}>
                     <Text style={styles.assetIcon}>{asset.icon}</Text>
                   </View>
                   <View style={styles.assetInfo}>
                     <Text style={styles.assetName}>{asset.name}</Text>
-                    <Text style={styles.assetHoldings}>{asset.holdings}</Text>
+                    {/* 8. Conditionally render holdings */}
+                    <Text style={styles.assetHoldings}>
+                      {isBalanceHidden ? '*****' : asset.holdings}
+                    </Text>
                   </View>
                 </View>
                 
                 <View style={styles.assetRight}>
-                  <Text style={styles.assetEstimated}>{asset.estimated}</Text>
+                  {/* 9. Conditionally render estimated value */}
+                  <Text style={styles.assetEstimated}>
+                    {isBalanceHidden ? '*****' : asset.estimated}
+                  </Text>
                   <Text style={[
                     styles.assetChange,
                     { color: asset.change.startsWith('+') ? '#34C759' : asset.change.startsWith('-') ? '#FF3B30' : '#8E8E93' }
@@ -145,7 +177,7 @@ export default function WalletScreen() {
                     {asset.change}
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </View>
             ))}
           </View>
         </View>
@@ -154,6 +186,7 @@ export default function WalletScreen() {
   );
 }
 
+// No changes needed in the StyleSheet
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -272,20 +305,16 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginBottom: 16,
   },
-  // NEW: Single Card Container for the list
   assetsListContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
- 
   },
-  // NEW: Style for each row in the list
   assetItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
-    // Add a bottom border to all items except the last one
     borderBottomWidth: 1,
     borderBottomColor: '#F2F2F7',
   },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Link, router } from 'expo-router';
-
+import AnimatedStatusDot from '../components/m_overview';
 const { width } = Dimensions.get('window');
 
 // Types
@@ -142,6 +142,28 @@ export default function MinersScreen() {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false);
   const [searchBarAnim] = useState(new Animated.Value(0));
 
+  const glowScaleAnim = useRef(new Animated.Value(1.0)).current;
+
+  useEffect(() => {
+    // Create a looping pulsing animation for the glow
+    Animated.loop(
+      Animated.sequence([
+        // Animate to a larger scale
+        Animated.timing(glowScaleAnim, {
+          toValue: 1.15, // Scale up to 115%
+          duration: 1500,
+          useNativeDriver: true, // Can use native driver for scale
+        }),
+        // Animate back to the original scale
+        Animated.timing(glowScaleAnim, {
+          toValue: 1.0, // Scale back to 100%
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
   const filteredMiners = MINERS_DATA.filter((miner) => {
     const q = searchQuery.toLowerCase();
     const matchesSearch =
@@ -246,6 +268,7 @@ export default function MinersScreen() {
       </View>
     </TouchableOpacity>
   );
+  
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -295,36 +318,41 @@ export default function MinersScreen() {
         {/* --- SIMPLIFIED OVERVIEW SECTION --- */}
         
         {/* Card 1: Primary Metrics */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Mining Overview</Text>
-          <View style={styles.metricsRow}>
-            <View style={styles.metricItem}>
-              <Text style={styles.metricValue}>{OVERVIEW_DATA.totalHashrate}</Text>
-              <Text style={styles.metricUnit}>{OVERVIEW_DATA.totalHashrateUnit}</Text>
-            </View>
-            <View style={styles.profitChip}>
-              <Text style={styles.profitChipText}>{OVERVIEW_DATA.totalDailyProfit} / day</Text>
-            </View>
+        <View style={styles.overviewCoinContainer}>
+          {/* NEW: Glowing Background Effect */}
+          <Animated.View
+            style={[
+              styles.overviewCoinGlow,
+              {
+                transform: [{ scale: glowScaleAnim }],
+              },
+            ]}
+          />
+
+          {/* The solid ring on top */}
+          <View style={styles.overviewCoinRing} />
+
+          {/* Static Inner Circle with Text (no changes here) */}
+          <View style={styles.overviewCoinInner}>
+            <Text style={styles.overviewCoinHashrate}>{OVERVIEW_DATA.totalHashrate}</Text>
+            <Text style={styles.overviewCoinUnit}>{OVERVIEW_DATA.totalHashrateUnit}</Text>
+            <Text style={styles.overviewCoinProfit}>{OVERVIEW_DATA.totalDailyProfit} / day</Text>
           </View>
         </View>
-
         {/* Card 2: Status Summary */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Miner Status</Text>
-          <View style={styles.statusGrid}>
-            {[
-              { label: 'Active', value: OVERVIEW_DATA.active, color: '#34C759' },
-              { label: 'Stopped', value: OVERVIEW_DATA.stopped, color: '#FF9500' },
-              { label: 'Restarting', value: OVERVIEW_DATA.restarting, color: '#007AFF' },
-              { label: 'Broken', value: OVERVIEW_DATA.broken, color: '#FF3B30' },
-            ].map((item) => (
-              <View key={item.label} style={styles.statusGridItem}>
-                <View style={[styles.statusDot, { backgroundColor: item.color }]} />
-                <Text style={styles.statusGridLabel}>{item.label}</Text>
-                <Text style={styles.statusGridValue}>{item.value}</Text>
-              </View>
-            ))}
-          </View>
+        <View style={styles.statusIndicatorsRow}>
+          {[
+            { label: 'Active', value: OVERVIEW_DATA.active, color: '#34C759', isActive: true },
+            { label: 'Stopped', value: OVERVIEW_DATA.stopped, color: '#FF9500', isActive: false },
+            { label: 'Restarting', value: OVERVIEW_DATA.restarting, color: '#007AFF', isActive: false },
+            { label: 'Broken', value: OVERVIEW_DATA.broken, color: '#FF3B30', isActive: false },
+          ].map((item) => (
+            <View key={item.label} style={styles.statusIndicatorItem}>
+              <AnimatedStatusDot color={item.color} isActive={item.isActive} />
+              <Text style={styles.statusIndicatorLabel}>{item.label}</Text>
+              <Text style={styles.statusIndicatorValue}>{item.value}</Text>
+            </View>
+          ))}
         </View>
 
         {/* --- END OF OVERVIEW SECTION --- */}
@@ -374,7 +402,6 @@ export default function MinersScreen() {
   );
 }
 
-// --- STYLES ---
 
 const styles = StyleSheet.create({
   container: {
@@ -436,80 +463,81 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
-  // --- New Simplified Card Styles ---
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
+  // --- New "Running Coin" Overview Styles ---
+  overviewCoinContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 32,
+    position: 'relative',
+  },
+  overviewCoinGlow: {
+    position: 'absolute',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    backgroundColor: 'rgba(255, 192, 0, 0.4)', // Semi-transparent gold
+  },
+  // SIMPLIFIED: Style for the solid ring
+  overviewCoinRing: {
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    borderWidth: 12,
     borderColor: '#FFC000',
-    borderWidth: 1,  
+    // --- REMOVE ALL SHADOW PROPERTIES ---
   },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 16,
+  overviewCoinInner: {
+    position: 'absolute',
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  metricsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  metricItem: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  metricValue: {
-    fontSize: 36,
+  overviewCoinHashrate: {
+    fontSize: 32,
     fontWeight: '800',
     color: '#000000',
-    lineHeight: 42,
+    lineHeight: 38,
+    textAlign: 'center',
   },
-  metricUnit: {
+  overviewCoinUnit: {
     fontSize: 16,
     fontWeight: '600',
     color: '#6B7280',
-    marginLeft: 4,
+    marginBottom: 4,
   },
-  profitChip: {
-    backgroundColor: '#FFC000',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  profitChipText: {
+  overviewCoinProfit: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#000000',
+    color: '#FFC000',
+    textAlign: 'center',
   },
-  statusGrid: {
+  // --- Status Indicators Styles ---
+  statusIndicatorsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+    marginBottom: 24,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    paddingVertical: 16,
   },
-  statusGridItem: {
-    width: '48%', // Two items per row
-    flexDirection: 'row',
+  statusIndicatorItem: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 8,
   },
-  statusDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  statusGridLabel: {
+  statusIndicatorLabel: {
     fontSize: 14,
     color: '#6B7280',
-    flex: 1,
+    marginLeft: 8,
   },
-  statusGridValue: {
+  statusIndicatorValue: {
     fontSize: 16,
     fontWeight: '700',
     color: '#000000',
-    marginLeft: 8,
+    marginLeft: 4,
   },
   // --- Filter Styles ---
   filterContainer: {
