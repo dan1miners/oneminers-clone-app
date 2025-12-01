@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInp
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { Link, useRouter } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -231,6 +232,7 @@ export default function ShopScreen() {
   const [showSearchBar, setShowSearchBar] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchBarWidth = useRef(new Animated.Value(0)).current;
+  const router = useRouter();
 
   // Placeholder function for category press
   const handleCategoryPress = useCallback((categoryId: string) => {
@@ -238,17 +240,33 @@ export default function ShopScreen() {
     // Future functionality will go here
   }, []);
 
+  // Handle search submission
+  const handleSearchSubmit = useCallback(() => {
+    if (searchQuery.trim()) {
+      // Navigate to search results page with the query as parameter
+      router.push(`/(essentials)/search/${encodeURIComponent(searchQuery.trim())}`);
+      // Close search bar after submission
+      handleCloseSearch();
+    }
+  }, [searchQuery, router]);
+
   // Optimized handlers with useCallback
   const handleSearchPress = useCallback(() => {
     if (showSearchBar) {
-      Animated.timing(searchBarWidth, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: false,
-      }).start(() => {
-        setShowSearchBar(false);
-        setSearchQuery('');
-      });
+      // If search bar is already open and has text, submit the search
+      if (searchQuery.trim()) {
+        handleSearchSubmit();
+      } else {
+        // Otherwise close the search bar
+        Animated.timing(searchBarWidth, {
+          toValue: 0,
+          duration: 300,
+          useNativeDriver: false,
+        }).start(() => {
+          setShowSearchBar(false);
+          setSearchQuery('');
+        });
+      }
     } else {
       setShowSearchBar(true);
       Animated.timing(searchBarWidth, {
@@ -257,7 +275,7 @@ export default function ShopScreen() {
         useNativeDriver: false,
       }).start();
     }
-  }, [showSearchBar, searchBarWidth]);
+  }, [showSearchBar, searchBarWidth, searchQuery, handleSearchSubmit]);
 
   const handleCloseSearch = useCallback(() => {
     Animated.timing(searchBarWidth, {
@@ -297,10 +315,18 @@ export default function ShopScreen() {
                     onChangeText={setSearchQuery}
                     placeholderTextColor="#8E8E93"
                     autoFocus={true}
+                    onSubmitEditing={handleSearchSubmit}
+                    returnKeyType="search"
                   />
-                  <TouchableOpacity onPress={handleCloseSearch}>
-                    <Ionicons name="close-outline" size={24} color="#8E8E93" />
-                  </TouchableOpacity>
+                  {searchQuery ? (
+                    <TouchableOpacity onPress={handleSearchSubmit}>
+                      <Ionicons name="search-outline" size={24} color="#007AFF" />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity onPress={handleCloseSearch}>
+                      <Ionicons name="close-outline" size={24} color="#8E8E93" />
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
             )}
@@ -312,14 +338,16 @@ export default function ShopScreen() {
               onPress={handleSearchPress}
             >
               <Ionicons 
-                name={showSearchBar ? "search" : "search-outline"} 
+                name={showSearchBar && searchQuery ? "search" : "search-outline"} 
                 size={20} 
-                color="#000" 
+                color={showSearchBar && searchQuery ? "#007AFF" : "#000"} 
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton}>
-              <Ionicons name="cart-outline" size={20} color="#000" />
-            </TouchableOpacity>
+            <Link href="/cart" asChild>
+              <TouchableOpacity style={styles.headerButton}>
+                <Ionicons name="cart-outline" size={20} color="#000" />
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
       </View>

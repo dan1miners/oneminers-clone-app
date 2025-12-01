@@ -102,7 +102,7 @@ export default function WalletScreen() {
         {/* Circular Action Buttons */}
         <View style={styles.actionGrid}>
           <View style={styles.actionColumn}>
-            <Link href="/(essentials)/deposit">
+            <Link href="deposit" asChild>
               <TouchableOpacity style={styles.circleButton}>
                 <View style={styles.circleButtonIcon}>
                   <Ionicons name="arrow-down" size={20} color="#000" />
@@ -113,30 +113,36 @@ export default function WalletScreen() {
           </View>
           
           <View style={styles.actionColumn}>
-            <TouchableOpacity style={styles.circleButton}>
-              <View style={styles.circleButtonIcon}>
-                <Ionicons name="arrow-up" size={20} color="#000" />
-              </View>
-              <Text style={styles.circleButtonText}>Withdraw</Text>
-            </TouchableOpacity>
+            <Link href="withdraw" asChild>
+              <TouchableOpacity style={styles.circleButton}>
+                <View style={styles.circleButtonIcon}>
+                  <Ionicons name="arrow-up" size={20} color="#000" />
+                </View>
+                <Text style={styles.circleButtonText}>Withdraw</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
           
           <View style={styles.actionColumn}>
-            <TouchableOpacity style={styles.circleButton}>
-              <View style={styles.circleButtonIcon}>
-                <Ionicons name="swap-horizontal" size={20} color="#000" />
-              </View>
-              <Text style={styles.circleButtonText}>Exchange</Text>
-            </TouchableOpacity>
+            <Link href="exchange" asChild>
+              <TouchableOpacity style={styles.circleButton}>
+                <View style={styles.circleButtonIcon}>
+                  <Ionicons name="swap-horizontal" size={20} color="#000" />
+                </View>
+                <Text style={styles.circleButtonText}>Exchange</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
           
           <View style={styles.actionColumn}>
-            <TouchableOpacity style={styles.circleButton}>
-              <View style={styles.circleButtonIcon}>
-                <Ionicons name="list" size={20} color="#000" />
-              </View>
-              <Text style={styles.circleButtonText}>Transactions</Text>
-            </TouchableOpacity>
+            <Link href="transactions" asChild>
+              <TouchableOpacity style={styles.circleButton}>
+                <View style={styles.circleButtonIcon}>
+                  <Ionicons name="list" size={20} color="#000" />
+                </View>
+                <Text style={styles.circleButtonText}>Transactions</Text>
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
 
