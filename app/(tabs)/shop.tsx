@@ -195,6 +195,7 @@ const BannerCarousel = () => {
 
 // Memoized ProductCard component
 const ProductCard = React.memo<{ item: ProductItem }>(({ item }) => (
+  <Link href={`/(shop)/product/${item.id}`} asChild>
   <TouchableOpacity style={styles.productCard}>
     <View style={styles.productImage}>
       <Text style={styles.productEmoji}>{item.image}</Text>
@@ -215,6 +216,7 @@ const ProductCard = React.memo<{ item: ProductItem }>(({ item }) => (
       </View>
     </View>
   </TouchableOpacity>
+  </Link>
 ));
 
 // New CategoryItem Component
@@ -237,6 +239,7 @@ export default function ShopScreen() {
   // Placeholder function for category press
   const handleCategoryPress = useCallback((categoryId: string) => {
     console.log(`Category pressed: ${categoryId}`);
+    router.push(`/(essentials)/search/${categoryId}`);
     // Future functionality will go here
   }, []);
 

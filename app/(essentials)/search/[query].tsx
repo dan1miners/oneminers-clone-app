@@ -8,6 +8,7 @@ import {
   ScrollView,
   TextInput,
   Dimensions,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -149,27 +150,34 @@ export default function SearchResultsPage() {
     </TouchableOpacity>
   );
 
-  const renderFilterButton = (filter: typeof filterOptions[0]) => (
-    <TouchableOpacity
-      key={filter.id}
-      style={[
-        styles.filterChip,
-        activeFilter === filter.id && styles.filterChipActive
-      ]}
-      onPress={() => setActiveFilter(filter.id)}
-    >
-      <Text style={styles.filterChipIcon}>{filter.icon}</Text>
-      <Text style={[
-        styles.filterChipText,
-        activeFilter === filter.id && styles.filterChipTextActive
-      ]}>
-        {filter.name}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderFilterButton = (filter: typeof filterOptions[0]) => {
+    const isActive = activeFilter === filter.id;
+    return (
+      <TouchableOpacity
+        key={filter.id}
+        style={[
+          styles.filterChip,
+          isActive && styles.filterChipActive
+        ]}
+        onPress={() => setActiveFilter(filter.id)}
+      >
+        <Text style={styles.filterChipIcon}>{filter.icon}</Text>
+        <Text 
+          style={[
+            styles.filterChipText,
+            isActive && styles.filterChipTextActive
+          ]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {filter.name}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
@@ -209,25 +217,26 @@ export default function SearchResultsPage() {
           style={styles.sortButton}
           onPress={() => setShowSortModal(true)}
         >
-          <Ionicons name="filter" size={16} color="#007AFF" />
+          <Ionicons name="filter" size={16} color="#FFC000" />
           <Text style={styles.sortButtonText}>
             {sortBy === 'relevance' ? 'Relevance' :
              sortBy === 'price-low' ? 'Price: Low to High' :
              sortBy === 'price-high' ? 'Price: High to Low' : 'Best Profit'}
           </Text>
-          <Ionicons name="chevron-down" size={16} color="#007AFF" />
+          <Ionicons name="chevron-down" size={16} color="#FFC000" />
         </TouchableOpacity>
       </View>
 
-      {/* Filter Chips */}
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        style={styles.filtersContainer}
-        contentContainerStyle={styles.filtersContent}
-      >
-        {filterOptions.map(renderFilterButton)}
-      </ScrollView>
+      {/* Filter Chips - FIXED VERSION */}
+      <View style={styles.filtersWrapper}>
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filtersContent}
+        >
+          {filterOptions.map(renderFilterButton)}
+        </ScrollView>
+      </View>
 
       {/* Products Grid */}
       {sortedProducts.length > 0 ? (
@@ -240,12 +249,8 @@ export default function SearchResultsPage() {
           contentContainerStyle={styles.productsGrid}
           showsVerticalScrollIndicator={false}
           columnWrapperStyle={styles.columnWrapper}
-          // Key prop to help React identify when to reset scroll position
           key={`${activeFilter}-${sortBy}`}
-          // Maintain scroll position better
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
-          }}
+          ListFooterComponent={<View style={styles.listFooter} />}
         />
       ) : (
         <View style={styles.emptyState}>
@@ -268,7 +273,11 @@ export default function SearchResultsPage() {
 
       {/* Sort Modal */}
       {showSortModal && (
-        <View style={styles.modalOverlay}>
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowSortModal(false)}
+        >
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Sort By</Text>
             
@@ -286,21 +295,19 @@ export default function SearchResultsPage() {
                   setShowSortModal(false);
                 }}
               >
-                <Text style={styles.sortOptionText}>{option.label}</Text>
+                <Text style={[
+                  styles.sortOptionText,
+                  sortBy === option.id && styles.sortOptionTextActive
+                ]}>
+                  {option.label}
+                </Text>
                 {sortBy === option.id && (
-                  <Ionicons name="checkmark" size={20} color="#007AFF" />
+                  <Ionicons name="checkmark" size={20} color="#FFC000" />
                 )}
               </TouchableOpacity>
             ))}
-            
-            <TouchableOpacity 
-              style={styles.closeModalButton}
-              onPress={() => setShowSortModal(false)}
-            >
-              <Text style={styles.closeModalText}>Close</Text>
-            </TouchableOpacity>
           </View>
-        </View>
+        </TouchableOpacity>
       )}
     </SafeAreaView>
   );
@@ -340,13 +347,16 @@ const styles = StyleSheet.create({
     marginRight: 8,
     color: '#000000',
     paddingVertical: 4,
+    includeFontPadding: false,
   },
   resultsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
   },
   resultsInfo: {
     flex: 1,
@@ -368,54 +378,64 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 8,
+    minHeight: 36,
   },
   sortButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#007AFF',
+    color: '#FFC000',
     marginHorizontal: 4,
   },
-  filtersContainer: {
-    marginBottom: 8, // Reduced from 16 to 8 to decrease space
+  filtersWrapper: {
+    backgroundColor: '#F8F9FA',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
   },
   filtersContent: {
     paddingHorizontal: 16,
+    alignItems: 'center',
   },
-  // Fixed Filter Chip Styles
+  // FIXED Filter Chip Styles - Consistent sizing
   filterChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8F9FA',
     paddingHorizontal: 16,
     paddingVertical: 8,
-    height: 36, // Fixed height for consistency
-    borderRadius: 18, // Half of height for perfect rounded shape
+    borderRadius: 20,
     marginRight: 8,
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    minWidth: 80, // Minimum width for consistency
+    maxWidth: 120, // Maximum width to prevent overflow
+    height: 36, // Fixed height
+    justifyContent: 'center',
   },
   filterChipActive: {
     backgroundColor: '#FFC000',
     borderColor: '#FFC000',
   },
   filterChipIcon: {
-    fontSize: 16, // Consistent icon size
+    fontSize: 16,
     marginRight: 6,
+    includeFontPadding: false,
   },
   filterChipText: {
     fontSize: 14,
     fontWeight: '500',
     color: '#6B7280',
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   filterChipTextActive: {
     color: '#000000',
+    fontWeight: '600',
   },
-  // Products Grid - Removed top padding to reduce space
   productsGrid: {
     paddingHorizontal: 16,
+    paddingTop: 16,
     paddingBottom: 20,
-    paddingTop: 0, // Ensure no top padding
   },
   columnWrapper: {
     justifyContent: 'space-between',
@@ -423,15 +443,8 @@ const styles = StyleSheet.create({
   },
   productCard: {
     width: '48%',
-    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
   },
   productImage: {
     width: '100%',
@@ -453,6 +466,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#212529',
     marginBottom: 6,
+    lineHeight: 18,
   },
   priceProfitRow: {
     flexDirection: 'row',
@@ -483,7 +497,7 @@ const styles = StyleSheet.create({
   productHashrate: {
     fontSize: 11,
     color: '#8E8E93',
-    flex: 1,
+    flexShrink: 1,
     textAlign: 'right',
     marginLeft: 4,
   },
@@ -492,6 +506,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 80,
+    paddingHorizontal: 20,
   },
   emptyTitle: {
     fontSize: 20,
@@ -505,9 +520,10 @@ const styles = StyleSheet.create({
     color: '#8E8E93',
     textAlign: 'center',
     marginBottom: 24,
+    lineHeight: 22,
   },
   resetButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFC000',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -526,13 +542,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
   },
   modalContent: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
-    width: '100%',
+    width: '80%',
     maxWidth: 300,
   },
   modalTitle: {
@@ -554,16 +569,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000000',
   },
-  closeModalButton: {
-    marginTop: 16,
-    padding: 12,
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-  },
-  closeModalText: {
-    fontSize: 16,
+  sortOptionTextActive: {
     fontWeight: '600',
-    color: '#007AFF',
+    color: '#FFC000',
+  },
+  listFooter: {
+    height: 20,
   },
 });
