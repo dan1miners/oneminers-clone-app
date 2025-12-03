@@ -89,14 +89,14 @@ export default function SecurityScreen() {
       id: 'biometric',
       title: 'Biometric Login',
       description: 'Use fingerprint or face ID to log in',
-      icon: 'fingerprint',
+      icon: 'finger-print-outline',
       color: '#34C759',
     },
     {
       id: 'session',
       title: 'Session Management',
       description: 'Manage active sessions and devices',
-      icon: 'devices',
+      icon: 'phone-portrait-sharp',
       color: '#007AFF',
     },
     {
@@ -227,7 +227,7 @@ export default function SecurityScreen() {
           
           <View style={styles.settingItem}>
             <View style={styles.settingInfo}>
-              <Ionicons name="finger-print" size={22} color="#FFC000" />
+              <Ionicons name="finger-print-outline" size={22} color="#FFC000" />
               <View style={styles.settingTexts}>
                 <Text style={styles.settingTitle}>Biometric Login</Text>
                 <Text style={styles.settingDescription}>
