@@ -8,9 +8,13 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+// FIX 1: Import the StatusBar component
+import { StatusBar } from 'expo-status-bar';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -19,344 +23,284 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     if (email && password) {
-      // TODO: replace with real auth later
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/dashboard');
     }
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.container}
-      >
-        {/* Background accent */}
-        <View style={styles.bgAccent} />
-
-        {/* Main content */}
-        <View style={styles.contentWrapper}>
-          {/* Branding / Intro section */}
-          <View style={styles.introSection}>
-            <View style={styles.logoWrapper}>
-              <View style={styles.logoContainer}>
-                <Image
-                  source={require('../../assets/om-logo-black.png')}
-                  style={styles.logo}
-                  resizeMode="contain"
-                />
+    <>
+      {/* FIX 2: Add the StatusBar component to control its appearance */}
+      <StatusBar style="dark" />
+      
+      {/* FIX 3: Update SafeAreaView to handle the top edge explicitly */}
+      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.brandContainer}>
+                <Text style={styles.brandOne}>one</Text>
+                <Text style={styles.brandMiners}>miners</Text>
               </View>
-            </View>
-            <Text style={styles.appName}><Text style={styles.appNameHighlight}>one</Text>
-                miners</Text>
-            <Text style={styles.appTagline}>Secure crypto mining dashboard</Text>
-          </View>
-
-          {/* Login card */}
-          <View style={styles.formCard}>
-            <Text style={styles.formTitle}>Sign in to your account</Text>
-            <Text style={styles.formSubtitle}>
-              Monitor miners, hosting, and payouts from one place.
-            </Text>
-
-            {/* Email */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="name@example.com"
-                placeholderTextColor="#9CA3AF"
-                value={email}
-                onChangeText={setEmail}
-                autoCapitalize="none"
-                keyboardType="email-address"
-                autoComplete="email"
-              />
+              <Text style={styles.tagline}>Professional Mining Management</Text>
             </View>
 
-            {/* Password */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Password</Text>
-              <View style={styles.passwordContainer}>
-                <TextInput
-                  style={styles.passwordInput}
-                  placeholder="Enter your password"
-                  placeholderTextColor="#9CA3AF"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.visibilityButton}
-                >
-                  <Text style={styles.visibilityText}>
-                    {showPassword ? 'Hide' : 'Show'}
-                  </Text>
-                </TouchableOpacity>
+            {/* Login Card */}
+            <View style={styles.card}>
+              <Text style={styles.title}>Welcome Back</Text>
+              <Text style={styles.subtitle}>Sign in to manage your mining operations</Text>
+
+              {/* Email Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Email Address</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="mail-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your email"
+                    placeholderTextColor="#9CA3AF"
+                    value={email}
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    autoComplete="email"
+                  />
+                </View>
               </View>
-            </View>
 
-            {/* Forgot password */}
-            <Link href="/(auth)/forgot" asChild>
-                <TouchableOpacity style={styles.forgotPassword}>
-                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
-                </TouchableOpacity>
-            </Link>
+              {/* Password Input */}
+              <View style={styles.inputContainer}>
+                <Text style={styles.inputLabel}>Password</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter your password"
+                    placeholderTextColor="#9CA3AF"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeButton}
+                  >
+                    <Ionicons 
+                      name={showPassword ? "eye-off-outline" : "eye-outline"} 
+                      size={20} 
+                      color="#6B7280" 
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
 
-            {/* Login button */}
-            <TouchableOpacity
-              style={[
-                styles.loginButton,
-                (!email || !password) && styles.loginButtonDisabled,
-              ]}
-              onPress={handleLogin}
-              disabled={!email || !password}
-            >
-              <Text style={styles.loginButtonText}>Sign In</Text>
-            </TouchableOpacity>
-
-            {/* Demo hint */}
-            <View style={styles.demoHint}>
-              <Text style={styles.demoText}>
-                Demo mode: any email & password will continue.
-              </Text>
-            </View>
-
-            {/* Divider */}
-            <View style={styles.dividerRow}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>or</Text>
-              <View style={styles.divider} />
-            </View>
-
-            {/* Signup link */}
-            <View style={styles.signupRow}>
-              <Text style={styles.signupText}>New to OneMiners?</Text>
-              <Link href="/(auth)/register" asChild>
-                <TouchableOpacity>
-                  <Text style={styles.signupLink}>Create account</Text>
-                </TouchableOpacity>
+              {/* Forgot Password */}
+              <Link href="/(auth)/forgot" asChild>
+              <TouchableOpacity style={styles.forgotButton}>
+                <Text style={styles.forgotText}>Forgot Password?</Text>
+              </TouchableOpacity>
               </Link>
-            </View>
-          </View>
+              {/* Login Button */}
+              <TouchableOpacity
+                style={[styles.loginButton, (!email || !password) && styles.loginButtonDisabled]}
+                onPress={handleLogin}
+                disabled={!email || !password}
+              >
+                <Text style={styles.loginButtonText}>Sign In</Text>
+              </TouchableOpacity>
 
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              ⚡ Powering crypto mining worldwide
-            </Text>
-          </View>
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+              {/* Divider */}
+              <View style={styles.dividerContainer}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>or</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              {/* Sign Up Link */}
+              <View style={styles.signupContainer}>
+                <Text style={styles.signupText}>Don't have an account? </Text>
+                <Link href="/(auth)/register" asChild>
+                  <TouchableOpacity>
+                    <Text style={styles.signupLink}>Sign Up</Text>
+                  </TouchableOpacity>
+                </Link>
+              </View>
+            </View>
+
+            {/* Footer */}
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>© 2024 OneMiners. All rights reserved.</Text>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </>
   );
 }
 
+// No changes needed in your styles object
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F3F4F6', // light gray background
+    backgroundColor: '#FFFFFF',
   },
   container: {
     flex: 1,
   },
-  bgAccent: {
-    position: 'absolute',
-    width: 260,
-    height: 260,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,192,0,0.12)',
-    top: -70,
-    right: -70,
-  },
-  contentWrapper: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 24,
-    paddingVertical: 32,
+    paddingVertical: 40,
     justifyContent: 'center',
   },
-  // Intro / logo section
-  introSection: {
+  header: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 48,
+    paddingTop: 20,
   },
-  logoWrapper: {
-    marginBottom: 12,
-  },
-  logoContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 24,
-    backgroundColor: '#FFFFFF',
+  brandContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    marginBottom: 8,
   },
-  logo: {
-    width: '70%',
-    height: '70%',
-  },
-  appName: {
-    fontSize: 28,
+  brandOne: {
+    fontSize: 32,
     fontWeight: '700',
-    color: '#111827',
-    letterSpacing: 0.5,
+    color: '#FFC000',
+    textTransform: 'lowercase',
   },
-    appNameHighlight: {
-    color: '#FFC000', // yellow for "one"
-},
-  appTagline: {
-    fontSize: 14,
+  brandMiners: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    textTransform: 'lowercase',
+  },
+  tagline: {
+    fontSize: 16,
     color: '#6B7280',
-    marginTop: 4,
+    textTransform: 'lowercase',
   },
-  // Form card
-  formCard: {
+  card: {
     backgroundColor: '#FFFFFF',
     borderRadius: 20,
-    padding: 20,
-    marginTop: 12,
-    marginBottom: 24,
+    padding: 24,
     borderWidth: 1,
-    borderColor: 'rgba(17,24,39,0.04)',
+    borderColor: '#F3F4F6',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 3,
   },
-  formTitle: {
-    fontSize: 20,
+  title: {
+    fontSize: 24,
     fontWeight: '700',
-    color: '#111827',
-    marginBottom: 4,
+    color: '#000000',
+    marginBottom: 8,
+    textAlign: 'center',
   },
-  formSubtitle: {
-    fontSize: 13,
+  subtitle: {
+    fontSize: 14,
     color: '#6B7280',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  inputContainer: {
     marginBottom: 20,
   },
-  inputGroup: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 13,
-    color: '#4B5563',
-    marginBottom: 6,
+  inputLabel: {
+    fontSize: 14,
     fontWeight: '500',
+    color: '#374151',
+    marginBottom: 8,
   },
-  input: {
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
-    color: '#111827',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  passwordContainer: {
+  inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#F9FAFB',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E5E7EB',
+    paddingHorizontal: 16,
   },
-  passwordInput: {
+  inputIcon: {
+    marginRight: 12,
+  },
+  input: {
     flex: 1,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    fontSize: 15,
+    paddingVertical: 14,
+    fontSize: 16,
     color: '#111827',
+    minHeight: 48,
   },
-  visibilityButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 10,
+  eyeButton: {
+    padding: 4,
   },
-  visibilityText: {
-    color: '#F59E0B',
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  forgotPassword: {
+  forgotButton: {
     alignSelf: 'flex-end',
-    marginBottom: 16,
+    marginBottom: 24,
   },
-  forgotPasswordText: {
-    color: '#F59E0B',
-    fontSize: 13,
+  forgotText: {
+    fontSize: 14,
+    color: '#FFC000',
     fontWeight: '500',
   },
   loginButton: {
     backgroundColor: '#FFC000',
     borderRadius: 12,
-    paddingVertical: 14,
+    paddingVertical: 16,
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 24,
   },
   loginButtonDisabled: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: '#F3F4F6',
   },
   loginButtonText: {
-    color: '#111827',
+    color: '#000000',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
   },
-  demoHint: {
-    backgroundColor: 'rgba(255,192,0,0.12)',
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 4,
-  },
-  demoText: {
-    color: '#92400E',
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  dividerRow: {
+  dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 18,
-    marginBottom: 8,
+    marginBottom: 24,
   },
-  divider: {
+  dividerLine: {
     flex: 1,
     height: 1,
     backgroundColor: '#E5E7EB',
   },
   dividerText: {
-    marginHorizontal: 8,
-    fontSize: 12,
-    color: '#9CA3AF',
+    marginHorizontal: 16,
+    fontSize: 14,
+    color: '#6B7280',
   },
-  signupRow: {
+  signupContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 4,
   },
   signupText: {
     fontSize: 14,
-    color: '#4B5563',
-    marginRight: 4,
+    color: '#6B7280',
   },
   signupLink: {
     fontSize: 14,
-    color: '#F59E0B',
+    color: '#FFC000',
     fontWeight: '600',
   },
   footer: {
+    marginTop: 40,
     alignItems: 'center',
-    marginTop: 8,
   },
   footerText: {
-    fontSize: 11,
+    fontSize: 12,
     color: '#9CA3AF',
-    textAlign: 'center',
   },
 });

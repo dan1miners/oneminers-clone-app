@@ -588,7 +588,35 @@ export default function ProductDetailsPage() {
       </ScrollView>
 
       {/* Fixed Action Buttons - Yellow Theme */}
+      {/* Fixed Action Buttons - Simple & Clean */}
       <View style={styles.actionButtonsContainer}>
+        <View style={styles.buttonRow}>
+          {/* Support Button - Just Icon */}
+          <TouchableOpacity 
+            style={styles.supportButton}
+            onPress={handleSupport}
+          >
+            <Ionicons name="help-circle-outline" size={24} color="#000" />
+          </TouchableOpacity>
+          
+          {/* Add to Cart Button - White with yellow outline */}
+          <TouchableOpacity 
+            style={styles.addToCartButton}
+            onPress={handleAddToCart}
+          >
+            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+          </TouchableOpacity>
+          
+          {/* Buy Now Button - Solid yellow */}
+          <TouchableOpacity 
+            style={styles.buyNowButton}
+            onPress={handleBuyNow}
+          >
+            <Text style={styles.buyNowButtonText}>Buy Now</Text>
+          </TouchableOpacity>
+        </View>
+        
+        {/* Price Summary */}
         <View style={styles.priceSummary}>
           <View style={styles.totalSection}>
             <Text style={styles.totalLabel}>Total:</Text>
@@ -596,49 +624,11 @@ export default function ProductDetailsPage() {
           </View>
           {product.originalPrice && (
             <View style={styles.savingsSection}>
-              <Ionicons name="pricetag-outline" size={14} color="#FFC000" />
               <Text style={styles.savingsLabel}>
                 Save ${calculateSavings() * quantity}
               </Text>
             </View>
           )}
-        </View>
-        
-        <View style={styles.buttonRow}>
-          {/* Support Button - Unique yellow variant */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.supportButton]}
-            onPress={handleSupport}
-          >
-            <View style={styles.supportButtonContent}>
-              <MaterialCommunityIcons name="headset" size={22} color="#000" />
-              <View style={styles.supportButtonTextContainer}>
-                <Text style={styles.supportButtonMainText}>Expert</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          
-          {/* Add to Cart Button - Primary yellow */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.cartButton]}
-            onPress={handleAddToCart}
-          >
-            <View style={styles.cartButtonContent}>
-              <Ionicons name="cart-outline" size={22} color="#000" />
-              <Text style={styles.cartButtonText}>Add to Cart</Text>
-            </View>
-          </TouchableOpacity>
-          
-          {/* Buy Now Button - Darker yellow for emphasis */}
-          <TouchableOpacity 
-            style={[styles.actionButton, styles.buyButton]}
-            onPress={handleBuyNow}
-          >
-            <View style={styles.buyButtonContent}>
-              <Ionicons name="flash" size={22} color="#000" />
-              <Text style={styles.buyButtonText}>Buy Now</Text>
-            </View>
-          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -1192,20 +1182,21 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
-    borderTopColor: '#FFF8E6',
+    borderTopColor: '#F2F2F7',
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: -4 },
+    shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 10,
+    shadowRadius: 4,
+    elevation: 8,
   },
   priceSummary: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
   },
   totalSection: {
     flexDirection: 'row',
@@ -1215,9 +1206,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#6C757D',
     marginRight: 8,
+    fontWeight: '500',
   },
   totalPrice: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
     color: '#FFC000',
   },
@@ -1226,91 +1218,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFF8E6',
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 6,
     borderRadius: 12,
   },
   savingsLabel: {
     fontSize: 12,
     color: '#000',
     fontWeight: '600',
-    marginLeft: 4,
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    alignItems: 'center',
     gap: 12,
   },
-  actionButton: {
-    borderRadius: 12,
-    paddingVertical: 16,
-    flex: 1,
-  },
-  // Support Button - Unique yellow variant
+  // Support Button - Just Icon
   supportButton: {
-    backgroundColor: '#FFF8E6',
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  // Add to Cart Button - White with yellow outline
+  addToCartButton: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingVertical: 15,
+    alignItems: 'center',
     borderWidth: 2,
     borderColor: '#FFC000',
-    flex: 0.8,
   },
-  supportButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  supportButtonTextContainer: {
-    alignItems: 'center',
-  },
-  supportButtonMainText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#000',
-  },
-  supportButtonSubText: {
-    fontSize: 10,
-    color: '#666',
-    fontWeight: '500',
-  },
-  // Cart Button - Primary yellow
-  cartButton: {
-    backgroundColor: '#FFC000',
-    flex: 1.2,
-    shadowColor: '#FFC000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  cartButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  cartButtonText: {
+  addToCartButtonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#000',
   },
-  // Buy Now Button - Darker yellow for emphasis
-  buyButton: {
-    backgroundColor: '#FFA000',
+  // Buy Now Button - Solid yellow
+  buyNowButton: {
     flex: 1,
-    shadowColor: '#FFA000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  buyButtonContent: {
-    flexDirection: 'row',
+    backgroundColor: '#FFC000',
+    borderRadius: 12,
+    paddingVertical: 15,
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
   },
-  buyButtonText: {
+  buyNowButtonText: {
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
     color: '#000',
   },
 });
