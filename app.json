@@ -25,6 +25,7 @@
       "package": "com.dan1miners.oneminerscloneapp"
     },
     "web": {
+      "bundler": "metro",
       "favicon": "./assets/favicon.png"
     },
     "plugins": [

@@ -252,7 +252,7 @@ export default function TermsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#F8F9FA',
   },
   header: {
     flexDirection: 'row',
