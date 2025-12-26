@@ -1,6 +1,4 @@
 import { Stack } from 'expo-router';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function AuthLayout() {
   return (
@@ -10,9 +8,3 @@ export default function AuthLayout() {
     </Stack>
   );
 }
-
-const styles = StyleSheet.create({
-  backButton: {
-    marginLeft: 8,
-  },
-});

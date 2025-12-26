@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   TextInput,
@@ -199,11 +198,11 @@ export default function MinersScreen() {
 
   const getStatusStyle = (status: MinerStatus) => {
     switch (status) {
-      case 'running': return styles.statusRunning;
-      case 'stopped': return styles.statusStopped;
-      case 'restarting': return styles.statusRestarting;
-      case 'broken': return styles.statusBroken;
-      default: return styles.statusRunning;
+      case 'running': return 'bg-[#34C759]';
+      case 'stopped': return 'bg-[#FF9500]';
+      case 'restarting': return 'bg-[#007AFF]';
+      case 'broken': return 'bg-[#FF3B30]';
+      default: return 'bg-[#34C759]';
     }
   };
 
@@ -214,56 +213,53 @@ export default function MinersScreen() {
 
   const renderMinerItem = ({ item }: { item: Miner }) => (
     <TouchableOpacity
-      style={styles.minerCard}
+      className="bg-white rounded-2xl p-4"
       onPress={() => handleMinerPress(item)}
     >
-      <View style={styles.minerHeader}>
-        <View style={styles.minerInfo}>
-          <View style={styles.minerImageContainer}>
-            <Text style={styles.minerImage}>{item.image}</Text>
+      <View className="flex-row justify-between items-start mb-3">
+        <View className="flex-row flex-1">
+          <View className="w-10 h-10 rounded-[10px] bg-gray-100 items-center justify-center mr-3">
+            <Text className="text-lg">{item.image}</Text>
           </View>
-          <View style={styles.minerDetails}>
-            <Text style={styles.minerName}>{item.name}</Text>
-            <Text style={styles.minerModel}>{item.model}</Text>
+          <View className="flex-1">
+            <Text className="text-base font-bold text-black mb-0.5">{item.name}</Text>
+            <Text className="text-sm text-gray-500">{item.model}</Text>
           </View>
         </View>
-        <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
-          <Text style={styles.statusText}>{item.status}</Text>
+        <View className={`px-2 py-1 rounded-lg ${getStatusStyle(item.status)}`}>
+          <Text className="text-white text-[10px] font-semibold uppercase">{item.status}</Text>
         </View>
       </View>
 
-      <View style={styles.minerStats}>
-        <View style={styles.statRow}>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Hash Rate</Text>
-            <Text style={styles.statValue}>
+      <View className="mb-3">
+        <View className="flex-row justify-between">
+          <View className="items-center flex-1">
+            <Text className="text-xs text-gray-500 mb-1">Hash Rate</Text>
+            <Text className="text-sm font-semibold text-black">
               {item.hashrate} {item.hashrateUnit}
             </Text>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Daily Profit</Text>
-            <Text style={[
-              styles.statValue,
-              item.dailyProfit === '0.00' && styles.zeroProfit
-            ]}>
+          <View className="items-center flex-1">
+            <Text className="text-xs text-gray-500 mb-1">Daily Profit</Text>
+            <Text className={`text-sm font-semibold ${item.dailyProfit === '0.00' ? 'text-gray-500' : 'text-black'}`}>
               ${item.dailyProfit}
             </Text>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statLabel}>Uptime</Text>
-            <Text style={styles.statValue}>{item.uptime}</Text>
+          <View className="items-center flex-1">
+            <Text className="text-xs text-gray-500 mb-1">Uptime</Text>
+            <Text className="text-sm font-semibold text-black">{item.uptime}</Text>
           </View>
         </View>
       </View>
 
-      <View style={styles.minerFooter}>
-        <View style={styles.location}>
+      <View className="flex-row justify-between items-center pt-3 border-t border-gray-100">
+        <View className="flex-row items-center gap-1">
           <Ionicons name="location-outline" size={12} color="#6B7280" />
-          <Text style={styles.locationText}>{item.location}</Text>
+          <Text className="text-xs text-gray-500">{item.location}</Text>
         </View>
-        <View style={styles.energyFee}>
+        <View className="flex-row items-center gap-1">
           <Ionicons name="flash-outline" size={12} color="#6B7280" />
-          <Text style={styles.energyFeeText}>{item.energyFee} USD/kWh</Text>
+          <Text className="text-xs text-gray-500">{item.energyFee} USD/kWh</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -271,17 +267,17 @@ export default function MinersScreen() {
   
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       {/* Header with inline search bar */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Animated.View style={[styles.searchBarContainer, { width: searchBarWidth }]}>
+      <View className="py-2 px-4 border-b border-gray-200 h-[60px]">
+        <View className="flex-row items-center justify-between flex-1">
+          <Animated.View className="bg-white overflow-hidden mr-3 rounded-xl" style={{ width: searchBarWidth }}>
             {showSearchBar && (
-              <View style={styles.searchBarContent}>
-                <View style={styles.searchInputContainer}>
+              <View className="flex-1">
+                <View className="flex-row items-center bg-gray-100 rounded-xl px-3 h-10">
                   <Ionicons name="search-outline" size={20} color="#6B7280" />
                   <TextInput
-                    style={styles.searchInput}
+                    className="flex-1 ml-2 mr-2 text-base text-black"
                     placeholder="Search miners..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -296,87 +292,77 @@ export default function MinersScreen() {
             )}
           </Animated.View>
 
-          <View style={styles.headerActions}>
+          <View className="flex-row gap-2">
             {!showSearchBar && (
               <TouchableOpacity 
-                style={styles.headerButton}
+                className="w-10 h-10 rounded-xl bg-white items-center justify-center border border-gray-200"
                 onPress={handleSearchPress}
               >
                 <Ionicons name="search-outline" size={20} color="#000" />
               </TouchableOpacity>
             )}
             <Link href="/shop" asChild>
-            <TouchableOpacity style={styles.headerButton}>
-              <Ionicons name="add-outline" size={20} color="#000" />
-            </TouchableOpacity>
+              <TouchableOpacity className="w-10 h-10 rounded-xl bg-white items-center justify-center border border-gray-200">
+                <Ionicons name="add-outline" size={20} color="#000" />
+              </TouchableOpacity>
             </Link>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* --- SIMPLIFIED OVERVIEW SECTION --- */}
-        
-        {/* Card 1: Primary Metrics */}
-        <View style={styles.overviewCoinContainer}>
-          {/* NEW: Glowing Background Effect */}
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+        {/* Overview Section */}
+        <View className="items-center justify-center mb-8 relative">
+          {/* Glowing Background Effect */}
           <Animated.View
-            style={[
-              styles.overviewCoinGlow,
-              {
-                transform: [{ scale: glowScaleAnim }],
-              },
-            ]}
+            className="absolute w-[180px] h-[180px] rounded-full"
+            style={{
+              backgroundColor: 'rgba(255, 192, 0, 0.4)',
+              transform: [{ scale: glowScaleAnim }],
+            }}
           />
 
           {/* The solid ring on top */}
-          <View style={styles.overviewCoinRing} />
+          <View className="w-[180px] h-[180px] rounded-full border-[12px] border-[#FFC000]" />
 
-          {/* Static Inner Circle with Text (no changes here) */}
-          <View style={styles.overviewCoinInner}>
-            <Text style={styles.overviewCoinHashrate}>{OVERVIEW_DATA.totalHashrate}</Text>
-            <Text style={styles.overviewCoinUnit}>{OVERVIEW_DATA.totalHashrateUnit}</Text>
-            <Text style={styles.overviewCoinProfit}>{OVERVIEW_DATA.totalDailyProfit} / day</Text>
+          {/* Static Inner Circle with Text */}
+          <View className="absolute w-[150px] h-[150px] rounded-full bg-white justify-center items-center">
+            <Text className="text-[32px] font-extrabold text-black leading-[38px] text-center">{OVERVIEW_DATA.totalHashrate}</Text>
+            <Text className="text-base font-semibold text-gray-500 mb-1">{OVERVIEW_DATA.totalHashrateUnit}</Text>
+            <Text className="text-sm font-bold text-[#FFC000] text-center">{OVERVIEW_DATA.totalDailyProfit} / day</Text>
           </View>
         </View>
-        {/* Card 2: Status Summary */}
-        <View style={styles.statusIndicatorsRow}>
+        
+        {/* Status Summary */}
+        <View className="flex-row justify-around px-5 mb-6 bg-white rounded-2xl py-4">
           {[
             { label: 'Active', value: OVERVIEW_DATA.active, color: '#34C759', isActive: true },
             { label: 'Stopped', value: OVERVIEW_DATA.stopped, color: '#FF9500', isActive: false },
             { label: 'Restarting', value: OVERVIEW_DATA.restarting, color: '#007AFF', isActive: false },
             { label: 'Broken', value: OVERVIEW_DATA.broken, color: '#FF3B30', isActive: false },
           ].map((item) => (
-            <View key={item.label} style={styles.statusIndicatorItem}>
+            <View key={item.label} className="items-center mb-2">
               <AnimatedStatusDot color={item.color} isActive={item.isActive} />
-              <Text style={styles.statusIndicatorLabel}>{item.label}</Text>
-              <Text style={styles.statusIndicatorValue}>{item.value}</Text>
+              <Text className="text-sm text-gray-500 ml-2">{item.label}</Text>
+              <Text className="text-base font-bold text-black ml-1">{item.value}</Text>
             </View>
           ))}
         </View>
-
-        {/* --- END OF OVERVIEW SECTION --- */}
 
         {/* Filter Options */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.filterContainer}
-          contentContainerStyle={styles.filterContent}
+          className="mb-4"
+          contentContainerStyle={{ paddingRight: 16 }}
         >
           {['all', 'running', 'stopped', 'restarting', 'broken'].map((filter) => (
             <TouchableOpacity
               key={filter}
-              style={[
-                styles.filterButton,
-                selectedFilter === filter && styles.filterButtonActive,
-              ]}
+              className={`px-4 py-2 rounded-xl bg-white mr-2 border ${selectedFilter === filter ? 'bg-[#FFC000] border-[#FFC000]' : 'border-gray-200'}`}
               onPress={() => setSelectedFilter(filter as MinerStatus | 'all')}
             >
-              <Text style={[
-                styles.filterButtonText,
-                selectedFilter === filter && styles.filterButtonTextActive,
-              ]}>
+              <Text className={`text-sm font-medium ${selectedFilter === filter ? 'text-black' : 'text-gray-500'}`}>
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </Text>
             </TouchableOpacity>
@@ -384,8 +370,8 @@ export default function MinersScreen() {
         </ScrollView>
 
         {/* Miners List */}
-        <View style={styles.minersSection}>
-          <Text style={styles.sectionTitle}>
+        <View className="mb-4">
+          <Text className="text-lg font-bold text-black mb-3">
             {filteredMiners.length} Miner{filteredMiners.length !== 1 ? 's' : ''}
           </Text>
 
@@ -394,7 +380,7 @@ export default function MinersScreen() {
             renderItem={renderMinerItem}
             keyExtractor={(item) => item.id}
             scrollEnabled={false}
-            contentContainerStyle={styles.minersList}
+            contentContainerStyle={{ gap: 12, paddingBottom: 16 }}
           />
         </View>
       </ScrollView>
@@ -403,295 +389,3 @@ export default function MinersScreen() {
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-    height: 60,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    flex: 1,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB'
-  },
-  searchBarContainer: {
-    backgroundColor: '#FFFFFF',
-    overflow: 'hidden',
-    marginRight: 12,
-    borderRadius: 12,
-  },
-  searchBarContent: {
-    flex: 1,
-  },
-  searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 40,
-  },
-  searchInput: {
-    flex: 1,
-    marginLeft: 8,
-    marginRight: 8,
-    fontSize: 16,
-    color: '#000000',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  // --- New "Running Coin" Overview Styles ---
-  overviewCoinContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 32,
-    position: 'relative',
-  },
-  overviewCoinGlow: {
-    position: 'absolute',
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: 'rgba(255, 192, 0, 0.4)', // Semi-transparent gold
-  },
-  // SIMPLIFIED: Style for the solid ring
-  overviewCoinRing: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    borderWidth: 12,
-    borderColor: '#FFC000',
-    // --- REMOVE ALL SHADOW PROPERTIES ---
-  },
-  overviewCoinInner: {
-    position: 'absolute',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  overviewCoinHashrate: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#000000',
-    lineHeight: 38,
-    textAlign: 'center',
-  },
-  overviewCoinUnit: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  overviewCoinProfit: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFC000',
-    textAlign: 'center',
-  },
-  // --- Status Indicators Styles ---
-  statusIndicatorsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 20,
-    marginBottom: 24,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    paddingVertical: 16,
-  },
-  statusIndicatorItem: {
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  statusIndicatorLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginLeft: 8,
-  },
-  statusIndicatorValue: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-    marginLeft: 4,
-  },
-  // --- Filter Styles ---
-  filterContainer: {
-    marginBottom: 16,
-  },
-  filterContent: {
-    paddingRight: 16,
-  },
-  filterButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 12,
-    backgroundColor: '#FFFFFF',
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB'
-  },
-  filterButtonActive: {
-    backgroundColor: '#FFC000',
-    borderColor: '#FFC000',
-  },
-  filterButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6B7280',
-  },
-  filterButtonTextActive: {
-    color: '#000000',
-  },
-  // --- Miners List Styles ---
-  minersSection: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 12,
-  },
-  minersList: {
-    gap: 12,
-    paddingBottom: 16,
-  },
-  minerCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-  },
-  minerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  minerInfo: {
-    flexDirection: 'row',
-    flex: 1,
-  },
-  minerImageContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: '#F3F4F6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  minerImage: {
-    fontSize: 18,
-  },
-  minerDetails: {
-    flex: 1,
-  },
-  minerName: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 2,
-  },
-  minerModel: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-  },
-  statusRunning: {
-    backgroundColor: '#34C759',
-  },
-  statusStopped: {
-    backgroundColor: '#FF9500',
-  },
-  statusRestarting: {
-    backgroundColor: '#007AFF',
-  },
-  statusBroken: {
-    backgroundColor: '#FF3B30',
-  },
-  statusText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  minerStats: {
-    marginBottom: 12,
-  },
-  statRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  statValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  zeroProfit: {
-    color: '#6B7280',
-  },
-  minerFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  locationText: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  energyFee: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  energyFeeText: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-});

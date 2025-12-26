@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, FlatList, Switch } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Dimensions, FlatList, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path, Rect, Circle, G, Text as SvgText } from 'react-native-svg';
@@ -153,26 +153,26 @@ const BarChart: React.FC<BarChartProps> = ({ data, color = '#FFC000', height = 1
 
 // News Carousel Item
 const NewsItem = ({ item, index }: { item: any; index: number }) => (
-  <TouchableOpacity style={[styles.newsCard, index === 0 && { marginLeft: 16 }]}>
-    <View style={styles.newsImageContainer}>
-      <Text style={styles.newsImage}>{item.image}</Text>
+  <TouchableOpacity className="bg-white rounded-2xl p-4 mr-3 flex-col" style={{ width: width * 0.8, ...(index === 0 && { marginLeft: 16 }) }}>
+    <View className="w-full h-[180px] rounded-xl bg-gray-100 items-center justify-center mb-3">
+      <Text className="text-5xl">{item.image}</Text>
     </View>
-    <View style={styles.newsContent}>
-      <View style={styles.newsCategory}>
-        <Text style={styles.newsCategoryText}>{item.category}</Text>
+    <View className="flex-1 mt-3">
+      <View className="bg-[#FFC000]/20 px-2 py-1 rounded-md self-start mb-2">
+        <Text className="text-[10px] text-[#FFC000] font-semibold uppercase">{item.category}</Text>
       </View>
-      <Text style={styles.newsTitle} numberOfLines={2}>{item.title}</Text>
-      <Text style={styles.newsSummary} numberOfLines={2}>{item.summary}</Text>
-      <Text style={styles.newsDate}>{item.date}</Text>
+      <Text className="text-base font-bold text-black mb-1 leading-5" numberOfLines={2}>{item.title}</Text>
+      <Text className="text-xs text-gray-400 mb-2 leading-4" numberOfLines={2}>{item.summary}</Text>
+      <Text className="text-[10px] text-gray-400 font-medium">{item.date}</Text>
     </View>
   </TouchableOpacity>
 );
 
 // Oneminers Logo SVG Component
 const OneminersLogo = () => (
-  <View style={styles.logoContainer}>
-    <Text style={styles.oneText}>one</Text>
-    <Text style={styles.minersText}>miners</Text>
+  <View className="flex-row items-center">
+    <Text className="text-xl font-bold text-[#FFC000]">one</Text>
+    <Text className="text-xl font-bold text-black">miners</Text>
   </View>
 );
 
@@ -181,118 +181,118 @@ export default function DashboardScreen() {
   const [showAiBoostHint, setShowAiBoostHint] = React.useState(false);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
+      <View className="py-3 px-5 border-b border-gray-200 flex-row justify-between items-center h-[60px]">
         <OneminersLogo />
-        <TouchableOpacity style={styles.profileButton}>
-          <View style={styles.profileAvatar}>
+        <TouchableOpacity className="p-1">
+          <View className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center border-2 border-gray-200">
             <Ionicons name="person-outline" size={16} color="#000" />
           </View>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Quick Stats with Gradient Cards */}
-        <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={styles.statIconContainer}>
+        <View className="flex-row flex-wrap justify-between mb-4">
+          <View className="w-[48%] p-4 rounded-2xl mb-3 bg-white border border-gray-100" style={{ width: (width - 48) / 2 }}>
+            <View className="flex-row items-center mb-2">
+              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
                 <Ionicons name="speedometer-outline" size={20} color="#000" />
               </View>
-              <Text style={styles.statCardLabel}>Hash Rate</Text>
+              <Text className="text-xs text-gray-600 font-medium">Hash Rate</Text>
             </View>
-            <Text style={styles.statCardValue}>{MOCK_DATA.hashrate}</Text>
-            <Text style={styles.statCardUnit}>{MOCK_DATA.hashrateUnit}</Text>
+            <Text className="text-xl font-bold text-gray-900 mb-0.5">{MOCK_DATA.hashrate}</Text>
+            <Text className="text-[11px] text-gray-500">{MOCK_DATA.hashrateUnit}</Text>
           </View>
 
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={styles.statIconContainer}>
+          <View className="w-[48%] p-4 rounded-2xl mb-3 bg-white border border-gray-100" style={{ width: (width - 48) / 2 }}>
+            <View className="flex-row items-center mb-2">
+              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
                 <Ionicons name="trending-up-outline" size={20} color="#000" />
               </View>
-              <Text style={styles.statCardLabel}>Revenue</Text>
+              <Text className="text-xs text-gray-600 font-medium">Revenue</Text>
             </View>
-            <Text style={styles.statCardValue}>{MOCK_DATA.totalRevenue}</Text>
-            <Text style={styles.statCardGrowth}>{MOCK_DATA.monthlyGrowth}</Text>
+            <Text className="text-xl font-bold text-gray-900 mb-0.5">{MOCK_DATA.totalRevenue}</Text>
+            <Text className="text-[11px] text-[#16A34A] font-semibold">{MOCK_DATA.monthlyGrowth}</Text>
           </View>
 
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={styles.statIconContainer}>
+          <View className="w-[48%] p-4 rounded-2xl mb-3 bg-white border border-gray-100" style={{ width: (width - 48) / 2 }}>
+            <View className="flex-row items-center mb-2">
+              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
                 <Ionicons name="hardware-chip-outline" size={20} color="#000" />
               </View>
-              <Text style={styles.statCardLabel}>Active Miners</Text>
+              <Text className="text-xs text-gray-600 font-medium">Active Miners</Text>
             </View>
-            <Text style={styles.statCardValue}>
+            <Text className="text-xl font-bold text-gray-900 mb-0.5">
               {MOCK_DATA.activeMiners}/{MOCK_DATA.totalMiners}
             </Text>
-            <Text style={styles.statCardUnit}>Online</Text>
+            <Text className="text-[11px] text-gray-500">Online</Text>
           </View>
 
-          <View style={styles.statCard}>
-            <View style={styles.statHeader}>
-              <View style={styles.statIconContainer}>
+          <View className="w-[48%] p-4 rounded-2xl mb-3 bg-white border border-gray-100" style={{ width: (width - 48) / 2 }}>
+            <View className="flex-row items-center mb-2">
+              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
                 <Ionicons name="flash-outline" size={20} color="#000" />
               </View>
-              <Text style={styles.statCardLabel}>Uptime</Text>
+              <Text className="text-xs text-gray-600 font-medium">Uptime</Text>
             </View>
-            <Text style={styles.statCardValue}>{MOCK_DATA.uptime}%</Text>
-            <Text style={styles.statCardUnit}>Stable</Text>
+            <Text className="text-xl font-bold text-gray-900 mb-0.5">{MOCK_DATA.uptime}%</Text>
+            <Text className="text-[11px] text-gray-500">Stable</Text>
           </View>
         </View>
 
         {/* Earnings Chart */}
-        <View style={styles.chartCard}>
-          <View style={styles.chartHeader}>
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <View className="flex-row justify-between items-center mb-4">
             <View>
-              <Text style={styles.chartTitle}>Daily Earnings</Text>
-              <Text style={styles.chartSubtitle}>Last 7 days</Text>
+              <Text className="text-lg font-bold text-black">Daily Earnings</Text>
+              <Text className="text-sm text-gray-400 mt-0.5">Last 7 days</Text>
             </View>
-            <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
+            <TouchableOpacity className="flex-row items-center">
+              <Text className="text-[#FFC000] text-sm font-medium mr-0.5">View All</Text>
               <Ionicons name="chevron-forward" size={16} color="#FFC000" />
             </TouchableOpacity>
           </View>
-          <View style={styles.chartContainer}>
+          <View className="items-center">
             <LineChart data={REVENUE_DATA} color="#FFC000" />
-            <View style={styles.chartLabels}>
+            <View className="flex-row justify-between w-full mt-2">
               {DAYS.map((day, index) => (
-                <Text key={day} style={styles.chartLabel}>{day}</Text>
+                <Text key={day} className="text-xs text-gray-400 text-center flex-1">{day}</Text>
               ))}
             </View>
           </View>
         </View>
 
         {/* Hash Rate Performance */}
-        <View style={styles.chartCard}>
-          <View style={styles.chartHeader}>
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <View className="flex-row justify-between items-center mb-4">
             <View>
-              <Text style={styles.chartTitle}>Hash Rate Overview</Text>
-              <Text style={styles.chartSubtitle}>24-hour overview</Text>
+              <Text className="text-lg font-bold text-black">Hash Rate Overview</Text>
+              <Text className="text-sm text-gray-400 mt-0.5">24-hour overview</Text>
             </View>
           </View>
-          <View style={styles.chartContainer}>
+          <View className="items-center">
             <BarChart data={HASH_RATE_DATA} color="#FFC000" />
           </View>
         </View>
 
         {/* Quick Actions Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActionsList}>
+        <View className="mb-6">
+          <Text className="text-xl font-bold text-black mb-4">Quick Actions</Text>
+          <View>
             {/* Daily Check-in */}
-            <TouchableOpacity style={styles.quickActionItem}>
-              <View style={styles.quickActionIcon}>
+            <TouchableOpacity className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
+              <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
                 <Ionicons name="calendar-outline" size={20} color="#FFC000" />
               </View>
-              <View style={styles.quickActionContent}>
-                <Text style={styles.quickActionText}>Daily Check-in</Text>
-                <Text style={styles.quickActionSubtext}>Claim your reward</Text>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-black mb-0.5">Daily Check-in</Text>
+                <Text className="text-xs text-gray-400">Claim your reward</Text>
               </View>
               {!MOCK_DATA.dailyCheckin && (
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>1</Text>
+                <View className="bg-[#FF3B30] w-5 h-5 rounded-full items-center justify-center mr-3">
+                  <Text className="text-white text-xs font-bold">1</Text>
                 </View>
               )}
               <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
@@ -300,35 +300,36 @@ export default function DashboardScreen() {
 
             {/* Refer & Earn */}
             <Link href="/referral" asChild>
-              <TouchableOpacity style={styles.quickActionItem}>
-                <View style={styles.quickActionIcon}>
+              <TouchableOpacity className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
+                <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
                   <Ionicons name="people-outline" size={20} color="#007AFF" />
                 </View>
-                <View style={styles.quickActionContent}>
-                  <Text style={styles.quickActionText}>Refer & Earn</Text>
-                  <Text style={styles.quickActionSubtext}>Invite friends</Text>
+                <View className="flex-1">
+                  <Text className="text-base font-semibold text-black mb-0.5">Refer & Earn</Text>
+                  <Text className="text-xs text-gray-400">Invite friends</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
               </TouchableOpacity>
             </Link>
+            
             {/* AI Boost */}
-            <View style={styles.quickActionItem}>
-              <View style={styles.quickActionIcon}>
+            <View className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
+              <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
                 <Ionicons name="rocket-outline" size={20} color="#34C759" />
               </View>
-              <View style={styles.quickActionContent}>
-                <Text style={styles.quickActionText}>AI Boost</Text>
-                <Text style={styles.quickActionSubtext}>Auto optimization</Text>
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-black mb-0.5">AI Boost</Text>
+                <Text className="text-xs text-gray-400">Auto optimization</Text>
               </View>
               <Switch
                 value={aiBoostEnabled}
                 onValueChange={setAiBoostEnabled}
                 trackColor={{ false: '#767577', true: '#34C759' }}
                 thumbColor={aiBoostEnabled ? '#FFFFFF' : '#f4f3f4'}
-                style={styles.switch}
+                style={{ transform: [{ scaleX: 1.4 }, { scaleY: 1.4 }], marginRight: 8 }}
               />
               <TouchableOpacity 
-                style={styles.hintButton}
+                className="p-1"
                 onPress={() => setShowAiBoostHint(!showAiBoostHint)}
               >
                 <Ionicons name="help-circle-outline" size={20} color="#8E8E93" />
@@ -337,13 +338,13 @@ export default function DashboardScreen() {
 
             {/* View Orders */}
             <Link href="/orders" asChild>
-              <TouchableOpacity style={styles.quickActionItem}>
-                <View style={styles.quickActionIcon}>
+              <TouchableOpacity className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
+                <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
                   <Ionicons name="document-text-outline" size={20} color="#FF9500" />
                 </View>
-                <View style={styles.quickActionContent}>
-                  <Text style={styles.quickActionText}>View Orders</Text>
-                  <Text style={styles.quickActionSubtext}>Manage purchases</Text>
+                <View className="flex-1">
+                  <Text className="text-base font-semibold text-black mb-0.5">View Orders</Text>
+                  <Text className="text-xs text-gray-400">Manage purchases</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
               </TouchableOpacity>
@@ -352,8 +353,8 @@ export default function DashboardScreen() {
 
           {/* AI Boost Hint */}
           {showAiBoostHint && (
-            <View style={styles.hintContainer}>
-              <Text style={styles.hintText}>
+            <View className="bg-gray-50 p-3 rounded-lg mt-2 border-l-4 border-l-[#FFC000]">
+              <Text className="text-xs text-gray-600 leading-4">
                 Disabling AI Crypto-Mining stops automatic pool switching. Mining will continue with current settings, without AI-driven optimizations.
               </Text>
             </View>
@@ -361,11 +362,11 @@ export default function DashboardScreen() {
         </View>
 
         {/* News Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Latest News</Text>
-            <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
+        <View className="mb-6">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-bold text-black">Latest News</Text>
+            <TouchableOpacity className="flex-row items-center">
+              <Text className="text-[#FFC000] text-sm font-medium mr-0.5">View All</Text>
               <Ionicons name="chevron-forward" size={16} color="#FFC000" />
             </TouchableOpacity>
           </View>
@@ -376,7 +377,7 @@ export default function DashboardScreen() {
             keyExtractor={item => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.newsCarousel}
+            contentContainerStyle={{ paddingRight: 16, paddingBottom: 8 }}
             snapToAlignment="start"
             decelerationRate="fast"
             snapToInterval={width * 0.8 + 12}
@@ -386,303 +387,3 @@ export default function DashboardScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-   
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5EA',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 60,
-  },
-  greeting: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginBottom: 4,
-  },
-  logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  oneText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#FFC000',
-  },
-  minersText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  profileButton: {
-    padding: 4,
-  },
-  profileAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#E5E5EA',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  statCard: {
-    width: (width - 48) / 2,
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#F2F2F7',
-  },
-  statHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  statIconContainer: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#FFC00020',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 8,
-  },
-  statCardLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  statCardValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 2,
-  },
-  statCardUnit: {
-    fontSize: 11,
-    color: '#6B7280',
-  },
-  statCardGrowth: {
-    fontSize: 11,
-    color: '#16A34A',
-    fontWeight: '600',
-  },
-  chartCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-  },
-  chartHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  chartSubtitle: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  viewAllButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  viewAllText: {
-    color: '#FFC000',
-    fontSize: 14,
-    fontWeight: '500',
-    marginRight: 2,
-  },
-  chartContainer: {
-    alignItems: 'center',
-  },
-  chartLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 8,
-  },
-  chartLabel: {
-    fontSize: 12,
-    color: '#8E8E93',
-    textAlign: 'center',
-    flex: 1,
-  },
-  // Section Styles
-  section: {
-    marginBottom: 24,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 16,
-  },
-  // Quick Actions - Single Column
-  quickActionsList: {
-    // Single column layout
-  },
-  quickActionItem: {
-    width: '100%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#F2F2F7',
-  },
-  quickActionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#F8F9FA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  quickActionContent: {
-    flex: 1,
-  },
-  quickActionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 2,
-  },
-  quickActionSubtext: {
-    fontSize: 12,
-    color: '#8E8E93',
-  },
-  badge: {
-    backgroundColor: '#FF3B30',
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  switch: {
-    transform: [{ scaleX: 1.4 }, { scaleY: 1.4}],
-    marginRight: 8,
-  },
-  hintButton: {
-    padding: 4,
-  },
-  hintContainer: {
-    backgroundColor: '#F8F9FA',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 8,
-    borderLeftWidth: 3,
-    borderLeftColor: '#FFC000',
-  },
-  hintText: {
-    fontSize: 12,
-    color: '#6B7280',
-    lineHeight: 16,
-  },
-  // News Section Styles
-  newsCarousel: {
-    paddingRight: 16,
-    paddingBottom: 8,
-  },
-  newsCard: {
-    width: width * 0.8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginRight: 12,
-    flexDirection: 'column',
-  },
-  newsImageContainer: {
-    // Image now spans the full width of the card
-    width: '100%',
-    // Increased height for a banner image
-    height: 180,
-    borderRadius: 12,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    // Removed marginRight as it's no longer needed
-  },
-  newsImage: {
-    fontSize: 48,
-  },
-  newsContent: {
-    flex: 1,
-    marginTop: 12,
-  },
-  newsCategory: {
-    backgroundColor: '#FFC00020',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    alignSelf: 'flex-start',
-    marginBottom: 8,
-  },
-  newsCategoryText: {
-    fontSize: 10,
-    color: '#FFC000',
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  newsTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-    lineHeight: 20,
-  },
-  newsSummary: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginBottom: 8,
-    lineHeight: 16,
-  },
-  newsDate: {
-    fontSize: 10,
-    color: '#8E8E93',
-    fontWeight: '500',
-  },
-});

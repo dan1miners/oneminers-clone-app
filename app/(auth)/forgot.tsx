@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -12,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-// FIX 1: Import the StatusBar component
 import { StatusBar } from 'expo-status-bar';
 
 export default function ForgotPasswordScreen() {
@@ -26,50 +24,52 @@ export default function ForgotPasswordScreen() {
 
   return (
     <>
-      {/* FIX 2: Add the StatusBar component to control its appearance */}
       <StatusBar style="dark" />
       
-      {/* FIX 3: Update SafeAreaView to handle the top edge */}
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.container}
+          className="flex-1"
         >
           <ScrollView 
-            // FIX 4: Removed justifyContent to prevent layout shifts. Use paddingTop for spacing.
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: 32, paddingBottom: 24 }}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
             {/* Clean Header */}
-            <View style={styles.header}>
-              <View style={styles.brandContainer}>
-                <Text style={styles.brandOne}>one</Text>
-                <Text style={styles.brandMiners}>miners</Text>
+            <View className="items-center mb-8">
+              <View className="flex-row items-center mb-1.5">
+                <Text className="text-[28px] font-bold text-[#FFC000]" style={{ textTransform: 'lowercase' }}>one</Text>
+                <Text className="text-[28px] font-bold text-black" style={{ textTransform: 'lowercase' }}>miners</Text>
               </View>
-              <Text style={styles.tagline}>Password Recovery</Text>
+              <Text className="text-sm text-gray-500 font-medium tracking-wider" style={{ textTransform: 'uppercase', letterSpacing: 1 }}>Password Recovery</Text>
             </View>
 
             {/* Reset Form Card */}
-            <View style={styles.card}>
+            <View className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
               {!submitted ? (
                 <>
-                  <View style={styles.titleContainer}>
-                    <Ionicons name="lock-closed-outline" size={32} color="#FFC000" style={styles.titleIcon} />
-                    <Text style={styles.title}>Forgot Password</Text>
+                  <View className="flex-row items-center justify-center mb-3">
+                    <View className="mr-2.5">
+                      <Ionicons name="lock-closed-outline" size={32} color="#FFC000" />
+                    </View>
+                    <Text className="text-[22px] font-bold text-black text-center">Forgot Password</Text>
                   </View>
                   
-                  <Text style={styles.subtitle}>
+                  <Text className="text-sm text-gray-500 mb-7 text-center leading-5">
                     Enter the email associated with your account and we'll send a reset link.
                   </Text>
 
                   {/* Email Input */}
-                  <View style={styles.inputContainer}>
-                    <Text style={styles.inputLabel}>Email Address</Text>
-                    <View style={styles.inputWrapper}>
-                      <Ionicons name="mail-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                  <View className="mb-6">
+                    <Text className="text-sm font-semibold text-gray-700 mb-2">Email Address</Text>
+                    <View className="flex-row items-center bg-gray-50 rounded-xl border border-gray-200 px-4">
+                      <View className="mr-3">
+                        <Ionicons name="mail-outline" size={20} color="#9CA3AF" />
+                      </View>
                       <TextInput
-                        style={styles.input}
+                        className="flex-1 py-3.5 text-base text-gray-900"
+                        style={{ minHeight: 48 }}
                         placeholder="Enter your email"
                         placeholderTextColor="#9CA3AF"
                         value={email}
@@ -85,43 +85,45 @@ export default function ForgotPasswordScreen() {
 
                   {/* Reset Button */}
                   <TouchableOpacity
-                    style={[styles.resetButton, !email && styles.resetButtonDisabled]}
+                    className={`rounded-xl py-4 items-center mb-5 ${!email ? 'bg-gray-100' : 'bg-[#FFC000]'}`}
                     disabled={!email}
                     onPress={handleSubmit}
                   >
-                    <Text style={styles.resetButtonText}>Send Reset Link</Text>
+                    <Text className="text-black text-base font-semibold">Send Reset Link</Text>
                   </TouchableOpacity>
                 </>
               ) : (
-                <View style={styles.successContainer}>
-                  <View style={styles.successIcon}>
+                <View className="items-center py-2">
+                  <View className="mb-4">
                     <Ionicons name="checkmark-circle" size={60} color="#10B981" />
                   </View>
-                  <Text style={styles.successTitle}>Check Your Email</Text>
-                  <Text style={styles.successText}>
+                  <Text className="text-xl font-bold text-black mb-3 text-center">Check Your Email</Text>
+                  <Text className="text-sm text-gray-500 text-center leading-5 mb-2">
                     We've sent a password reset link to:
                   </Text>
-                  <Text style={styles.emailHighlight}>{email}</Text>
-                  <Text style={styles.successNote}>
+                  <Text className="text-[15px] font-semibold text-gray-700 text-center mb-4">{email}</Text>
+                  <Text className="text-[13px] text-gray-500 text-center leading-[18px] italic">
                     Follow the instructions in the email to reset your password.
                   </Text>
                 </View>
               )}
 
               {/* Back to Login */}
-              <View style={styles.backContainer}>
+              <View className="items-center border-t border-gray-100 pt-5">
                 <Link href="/(auth)/login" asChild>
-                  <TouchableOpacity style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={16} color="#6B7280" style={styles.backIcon} />
-                    <Text style={styles.backText}>Back to Sign In</Text>
+                  <TouchableOpacity className="flex-row items-center py-2 px-3">
+                    <View className="mr-2">
+                      <Ionicons name="arrow-back" size={16} color="#6B7280" />
+                    </View>
+                    <Text className="text-sm text-gray-500 font-medium">Back to Sign In</Text>
                   </TouchableOpacity>
                 </Link>
               </View>
             </View>
 
             {/* Minimal Footer */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Need help? Contact support@oneminers.com</Text>
+            <View className="mt-4 items-center pt-4 border-t border-gray-100">
+              <Text className="text-xs text-gray-400 text-center">Need help? Contact support@oneminers.com</Text>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -129,194 +131,3 @@ export default function ForgotPasswordScreen() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    // FIX 5: Adjusted padding for better initial positioning without centering
-    paddingTop: 32, 
-    paddingBottom: 24,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 32,
-    paddingTop: 0,
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 6,
-  },
-  brandOne: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFC000',
-    textTransform: 'lowercase',
-  },
-  brandMiners: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#000000',
-    textTransform: 'lowercase',
-  },
-  tagline: {
-    fontSize: 14,
-    color: '#6B7280',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    fontWeight: '500',
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: '#F3F4F6',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    marginBottom: 24,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 12,
-  },
-  titleIcon: {
-    marginRight: 10,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#000000',
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 28,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-  inputContainer: {
-    marginBottom: 24,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingHorizontal: 16,
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#111827',
-    minHeight: 48,
-  },
-  resetButton: {
-    backgroundColor: '#FFC000',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  resetButtonDisabled: {
-    backgroundColor: '#F3F4F6',
-  },
-  resetButtonText: {
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  successContainer: {
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  successIcon: {
-    marginBottom: 16,
-  },
-  successTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  successText: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 20,
-    marginBottom: 8,
-  },
-  emailHighlight: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#374151',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  successNote: {
-    fontSize: 13,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 18,
-    fontStyle: 'italic',
-  },
-  backContainer: {
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-    paddingTop: 20,
-  },
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  backIcon: {
-    marginRight: 8,
-  },
-  backText: {
-    fontSize: 14,
-    color: '#6B7280',
-    fontWeight: '500',
-  },
-  footer: {
-    marginTop: 16,
-    alignItems: 'center',
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
-  },
-});

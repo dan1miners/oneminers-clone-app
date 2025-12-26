@@ -4,8 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,7 +11,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Link, router } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-// FIX 1: Import the StatusBar component
 import { StatusBar } from 'expo-status-bar';
 
 export default function LoginScreen() {
@@ -29,40 +26,41 @@ export default function LoginScreen() {
 
   return (
     <>
-      {/* FIX 2: Add the StatusBar component to control its appearance */}
       <StatusBar style="dark" />
       
-      {/* FIX 3: Update SafeAreaView to handle the top edge explicitly */}
-      <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.container}
+          className="flex-1"
         >
           <ScrollView 
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 40, justifyContent: 'center' }}
             showsVerticalScrollIndicator={false}
           >
             {/* Header */}
-            <View style={styles.header}>
-              <View style={styles.brandContainer}>
-                <Text style={styles.brandOne}>one</Text>
-                <Text style={styles.brandMiners}>miners</Text>
+            <View className="items-center mb-12 pt-5">
+              <View className="flex-row items-center mb-2">
+                <Text className="text-[32px] font-bold text-[#FFC000]" style={{ textTransform: 'lowercase' }}>one</Text>
+                <Text className="text-[32px] font-bold text-black" style={{ textTransform: 'lowercase' }}>miners</Text>
               </View>
-              <Text style={styles.tagline}>Professional Mining Management</Text>
+              <Text className="text-base text-gray-500" style={{ textTransform: 'lowercase' }}>Professional Mining Management</Text>
             </View>
 
             {/* Login Card */}
-            <View style={styles.card}>
-              <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>Sign in to manage your mining operations</Text>
+            <View className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm mb-6">
+              <Text className="text-2xl font-bold text-black mb-2 text-center">Welcome Back</Text>
+              <Text className="text-sm text-gray-500 mb-8 text-center">Sign in to manage your mining operations</Text>
 
               {/* Email Input */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>Email Address</Text>
-                <View style={styles.inputWrapper}>
-                  <Ionicons name="mail-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+              <View className="mb-5">
+                <Text className="text-sm font-medium text-gray-700 mb-2">Email Address</Text>
+                <View className="flex-row items-center bg-gray-50 rounded-xl border border-gray-200 px-4">
+                  <View className="mr-3">
+                    <Ionicons name="mail-outline" size={20} color="#9CA3AF" />
+                  </View>
                   <TextInput
-                    style={styles.input}
+                    className="flex-1 py-3.5 text-base text-gray-900"
+                    style={{ minHeight: 48 }}
                     placeholder="Enter your email"
                     placeholderTextColor="#9CA3AF"
                     value={email}
@@ -75,12 +73,15 @@ export default function LoginScreen() {
               </View>
 
               {/* Password Input */}
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>Password</Text>
-                <View style={styles.inputWrapper}>
-                  <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+              <View className="mb-5">
+                <Text className="text-sm font-medium text-gray-700 mb-2">Password</Text>
+                <View className="flex-row items-center bg-gray-50 rounded-xl border border-gray-200 px-4">
+                  <View className="mr-3">
+                    <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" />
+                  </View>
                   <TextInput
-                    style={styles.input}
+                    className="flex-1 py-3.5 text-base text-gray-900"
+                    style={{ minHeight: 48 }}
                     placeholder="Enter your password"
                     placeholderTextColor="#9CA3AF"
                     value={password}
@@ -89,7 +90,7 @@ export default function LoginScreen() {
                   />
                   <TouchableOpacity
                     onPress={() => setShowPassword(!showPassword)}
-                    style={styles.eyeButton}
+                    className="p-1"
                   >
                     <Ionicons 
                       name={showPassword ? "eye-off-outline" : "eye-outline"} 
@@ -102,40 +103,41 @@ export default function LoginScreen() {
 
               {/* Forgot Password */}
               <Link href="/(auth)/forgot" asChild>
-              <TouchableOpacity style={styles.forgotButton}>
-                <Text style={styles.forgotText}>Forgot Password?</Text>
-              </TouchableOpacity>
+                <TouchableOpacity className="self-end mb-6">
+                  <Text className="text-sm text-[#FFC000] font-medium">Forgot Password?</Text>
+                </TouchableOpacity>
               </Link>
+              
               {/* Login Button */}
               <TouchableOpacity
-                style={[styles.loginButton, (!email || !password) && styles.loginButtonDisabled]}
+                className={`rounded-xl py-4 items-center mb-6 ${(!email || !password) ? 'bg-gray-100' : 'bg-[#FFC000]'}`}
                 onPress={handleLogin}
                 disabled={!email || !password}
               >
-                <Text style={styles.loginButtonText}>Sign In</Text>
+                <Text className="text-black text-base font-semibold">Sign In</Text>
               </TouchableOpacity>
 
               {/* Divider */}
-              <View style={styles.dividerContainer}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or</Text>
-                <View style={styles.dividerLine} />
+              <View className="flex-row items-center mb-6">
+                <View className="flex-1 h-px bg-gray-200" />
+                <Text className="mx-4 text-sm text-gray-500">or</Text>
+                <View className="flex-1 h-px bg-gray-200" />
               </View>
 
               {/* Sign Up Link */}
-              <View style={styles.signupContainer}>
-                <Text style={styles.signupText}>Don't have an account? </Text>
+              <View className="flex-row justify-center items-center">
+                <Text className="text-sm text-gray-500">Don't have an account? </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
-                    <Text style={styles.signupLink}>Sign Up</Text>
+                    <Text className="text-sm text-[#FFC000] font-semibold">Sign Up</Text>
                   </TouchableOpacity>
                 </Link>
               </View>
             </View>
 
             {/* Footer */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>© 2024 OneMiners. All rights reserved.</Text>
+            <View className="mt-10 items-center">
+              <Text className="text-xs text-gray-400">© 2024 OneMiners. All rights reserved.</Text>
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -143,164 +145,3 @@ export default function LoginScreen() {
     </>
   );
 }
-
-// No changes needed in your styles object
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 48,
-    paddingTop: 20,
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  brandOne: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#FFC000',
-    textTransform: 'lowercase',
-  },
-  brandMiners: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    textTransform: 'lowercase',
-  },
-  tagline: {
-    fontSize: 16,
-    color: '#6B7280',
-    textTransform: 'lowercase',
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: '#F3F4F6',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingHorizontal: 16,
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#111827',
-    minHeight: 48,
-  },
-  eyeButton: {
-    padding: 4,
-  },
-  forgotButton: {
-    alignSelf: 'flex-end',
-    marginBottom: 24,
-  },
-  forgotText: {
-    fontSize: 14,
-    color: '#FFC000',
-    fontWeight: '500',
-  },
-  loginButton: {
-    backgroundColor: '#FFC000',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  loginButtonDisabled: {
-    backgroundColor: '#F3F4F6',
-  },
-  loginButtonText: {
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E5E7EB',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  signupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  signupText: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  signupLink: {
-    fontSize: 14,
-    color: '#FFC000',
-    fontWeight: '600',
-  },
-  footer: {
-    marginTop: 40,
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#9CA3AF',
-  },
-});

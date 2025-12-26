@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
@@ -65,13 +65,12 @@ export default function WalletScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Gold Balance Card */}
-        <View style={styles.goldCard}>
-          <View style={styles.balanceHeader}>
-            <Text style={styles.totalBalanceLabel}>Total Balance</Text>
-            {/* 4. Add the onPress handler and dynamic icon to the eye button */}
+        <View className="bg-[#FFD700] rounded-[20px] p-6 mb-8 shadow-lg">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-base text-black opacity-70 font-semibold">Total Balance</Text>
             <TouchableOpacity onPress={handleToggleBalance}>
               <Ionicons 
                 name={isBalanceHidden ? 'eye-off-outline' : 'eye-outline'} 
@@ -80,106 +79,100 @@ export default function WalletScreen() {
               />
             </TouchableOpacity>
           </View>
-          {/* 5. Conditionally render the total balance */}
-          <Text style={styles.totalBalance}>
+          <Text className="text-[36px] font-bold text-black mb-5">
             {isBalanceHidden ? '*****' : '$50,770.46'}
           </Text>
           
-          <View style={styles.unpaidSection}>
-            <View style={styles.unpaidRow}>
-              <Text style={styles.unpaidLabel}>Unpaid Balance</Text>
-              {/* 6. Conditionally render the unpaid amount */}
-              <Text style={styles.unpaidAmount}>
+          <View className="bg-white/30 rounded-xl p-4">
+            <View className="flex-row justify-between items-center mb-2">
+              <Text className="text-sm text-black opacity-80">Unpaid Balance</Text>
+              <Text className="text-lg font-bold text-black">
                 {isBalanceHidden ? '*****' : '$13.66'}
               </Text>
             </View>
-            <View style={styles.progressBar}>
-              <View style={styles.progressFill} />
+            <View className="h-1.5 bg-white/50 rounded-sm overflow-hidden">
+              <View className="h-full w-[30%] bg-black rounded-sm" />
             </View>
           </View>
         </View>
 
         {/* Circular Action Buttons */}
-        <View style={styles.actionGrid}>
-          <View style={styles.actionColumn}>
+        <View className="flex-row justify-between mb-8 px-2">
+          <View className="items-center flex-1">
             <Link href="deposit" asChild>
-              <TouchableOpacity style={styles.circleButton}>
-                <View style={styles.circleButtonIcon}>
+              <TouchableOpacity className="items-center w-[72px]">
+                <View className="w-14 h-14 rounded-full bg-white items-center justify-center mb-2 shadow-sm">
                   <Ionicons name="arrow-down" size={20} color="#000" />
                 </View>
-                <Text style={styles.circleButtonText}>Deposit</Text>
+                <Text className="text-[10px] font-semibold text-black text-center mt-1">Deposit</Text>
               </TouchableOpacity>
             </Link>
           </View>
           
-          <View style={styles.actionColumn}>
+          <View className="items-center flex-1">
             <Link href="withdraw" asChild>
-              <TouchableOpacity style={styles.circleButton}>
-                <View style={styles.circleButtonIcon}>
+              <TouchableOpacity className="items-center w-[72px]">
+                <View className="w-14 h-14 rounded-full bg-white items-center justify-center mb-2 shadow-sm">
                   <Ionicons name="arrow-up" size={20} color="#000" />
                 </View>
-                <Text style={styles.circleButtonText}>Withdraw</Text>
+                <Text className="text-[10px] font-semibold text-black text-center mt-1">Withdraw</Text>
               </TouchableOpacity>
             </Link>
           </View>
           
-          <View style={styles.actionColumn}>
+          <View className="items-center flex-1">
             <Link href="exchange" asChild>
-              <TouchableOpacity style={styles.circleButton}>
-                <View style={styles.circleButtonIcon}>
+              <TouchableOpacity className="items-center w-[72px]">
+                <View className="w-14 h-14 rounded-full bg-white items-center justify-center mb-2 shadow-sm">
                   <Ionicons name="swap-horizontal" size={20} color="#000" />
                 </View>
-                <Text style={styles.circleButtonText}>Exchange</Text>
+                <Text className="text-[10px] font-semibold text-black text-center mt-1">Exchange</Text>
               </TouchableOpacity>
             </Link>
           </View>
           
-          <View style={styles.actionColumn}>
+          <View className="items-center flex-1">
             <Link href="transactions" asChild>
-              <TouchableOpacity style={styles.circleButton}>
-                <View style={styles.circleButtonIcon}>
+              <TouchableOpacity className="items-center w-[72px]">
+                <View className="w-14 h-14 rounded-full bg-white items-center justify-center mb-2 shadow-sm">
                   <Ionicons name="list" size={20} color="#000" />
                 </View>
-                <Text style={styles.circleButtonText}>Transactions</Text>
+                <Text className="text-[10px] font-semibold text-black text-center mt-1">Transactions</Text>
               </TouchableOpacity>
             </Link>
           </View>
         </View>
 
         {/* Assets Section */}
-        <View style={styles.assetsSection}>
-          <Text style={styles.sectionTitle}>Assets</Text>
+        <View className="mb-6">
+          <Text className="text-xl font-bold text-black mb-4">Assets</Text>
           
-          <View style={styles.assetsListContainer}>
+          <View className="bg-white rounded-2xl">
             {assets.map((asset, index) => (
-              // --- CHANGE IS HERE ---
-              // Replaced TouchableOpacity with View and removed onPress
               <View 
                 key={asset.ticker} 
-                style={styles.assetItem}
+                className={`flex-row justify-between items-center py-4 px-4 ${index < assets.length - 1 ? 'border-b border-gray-100' : ''}`}
               >
-                <View style={styles.assetLeft}>
-                  <View style={styles.assetIconContainer}>
-                    <Text style={styles.assetIcon}>{asset.icon}</Text>
+                <View className="flex-row items-center flex-1">
+                  <View className="w-11 h-11 rounded-full bg-gray-100 items-center justify-center mr-3">
+                    <Text className="text-xl">{asset.icon}</Text>
                   </View>
-                  <View style={styles.assetInfo}>
-                    <Text style={styles.assetName}>{asset.name}</Text>
-                    {/* 8. Conditionally render holdings */}
-                    <Text style={styles.assetHoldings}>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-black">{asset.name}</Text>
+                    <Text className="text-sm text-gray-400 mt-0.5">
                       {isBalanceHidden ? '*****' : asset.holdings}
                     </Text>
                   </View>
                 </View>
                 
-                <View style={styles.assetRight}>
-                  {/* 9. Conditionally render estimated value */}
-                  <Text style={styles.assetEstimated}>
+                <View className="items-end">
+                  <Text className="text-base font-bold text-black">
                     {isBalanceHidden ? '*****' : asset.estimated}
                   </Text>
-                  <Text style={[
-                    styles.assetChange,
-                    { color: asset.change.startsWith('+') ? '#34C759' : asset.change.startsWith('-') ? '#FF3B30' : '#8E8E93' }
-                  ]}>
+                  <Text 
+                    className="text-xs font-semibold mt-0.5"
+                    style={{ color: asset.change.startsWith('+') ? '#34C759' : asset.change.startsWith('-') ? '#FF3B30' : '#8E8E93' }}
+                  >
                     {asset.change}
                   </Text>
                 </View>
@@ -191,180 +184,3 @@ export default function WalletScreen() {
     </SafeAreaView>
   );
 }
-
-// No changes needed in the StyleSheet
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  // Gold Card Styles
-  goldCard: {
-    backgroundColor: '#FFD700',
-    borderRadius: 20,
-    padding: 24,
-    marginBottom: 32,
-    shadowColor: '#FFD700',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  balanceHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  totalBalanceLabel: {
-    fontSize: 16,
-    color: '#000000',
-    opacity: 0.7,
-    fontWeight: '600',
-  },
-  totalBalance: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 20,
-  },
-  unpaidSection: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 12,
-    padding: 16,
-  },
-  unpaidRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  unpaidLabel: {
-    fontSize: 14,
-    color: '#000000',
-    opacity: 0.8,
-  },
-  unpaidAmount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  progressBar: {
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    width: '30%',
-    backgroundColor: '#000000',
-    borderRadius: 3,
-  },
-  // Circular Action Buttons
-  actionGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-    paddingHorizontal: 8,
-  },
-  actionColumn: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  circleButton: {
-    alignItems: 'center',
-    width: 72,
-  },
-  circleButtonIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  circleButtonText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#000000',
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  // Assets Section
-  assetsSection: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 16,
-  },
-  assetsListContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-  },
-  assetItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  assetLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  assetIconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  assetIcon: {
-    fontSize: 20,
-  },
-  assetInfo: {
-    flex: 1,
-  },
-  assetName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  assetHoldings: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  assetRight: {
-    alignItems: 'flex-end',
-  },
-  assetEstimated: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  assetChange: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-});

@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Dimensions,
   FlatList,
@@ -90,35 +89,37 @@ export default function OnboardingScreen() {
 
   const renderItem = ({ item }: { item: typeof features[0] }) => {
     return (
-      <View style={styles.slide}>
-        <View style={styles.iconContainer}>
+      <View className="items-center pt-5 pb-10" style={{ width: width - 40, marginHorizontal: 20 }}>
+        <View className="w-[100px] h-[100px] rounded-full justify-center items-center bg-[#FFF9E6] mb-8">
           <Ionicons name={item.icon as any} size={70} color="#FFC000" />
         </View>
         
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+        <Text className="text-2xl font-bold text-black text-center mb-4 px-4">{item.title}</Text>
+        <Text className="text-base text-gray-600 text-center leading-6 mb-8 px-5">{item.description}</Text>
         
-        <View style={styles.detailsContainer}>
+        <View className="w-full mb-8 px-4">
           {item.details.map((detail, index) => (
-            <View key={index} style={styles.detailRow}>
-              <Ionicons name="checkmark-circle" size={20} color="#FFC000" style={styles.checkIcon} />
-              <Text style={styles.detailText}>{detail}</Text>
+            <View key={index} className="flex-row items-start mb-3">
+              <View className="mr-3 mt-0.5">
+                <Ionicons name="checkmark-circle" size={20} color="#FFC000" />
+              </View>
+              <Text className="text-sm text-gray-700 flex-1 leading-5">{detail}</Text>
             </View>
           ))}
         </View>
         
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
+        <View className="flex-row justify-around w-full px-4 mt-2">
+          <View className="items-center flex-1">
             <Ionicons name="analytics" size={20} color="#FFC000" />
-            <Text style={styles.statText}>Real-time</Text>
+            <Text className="text-xs font-semibold text-gray-500 mt-1.5">Real-time</Text>
           </View>
-          <View style={styles.statItem}>
+          <View className="items-center flex-1">
             <Ionicons name="flash" size={20} color="#FFC000" />
-            <Text style={styles.statText}>Optimized</Text>
+            <Text className="text-xs font-semibold text-gray-500 mt-1.5">Optimized</Text>
           </View>
-          <View style={styles.statItem}>
+          <View className="items-center flex-1">
             <Ionicons name="hardware-chip" size={20} color="#FFC000" />
-            <Text style={styles.statText}>Efficient</Text>
+            <Text className="text-xs font-semibold text-gray-500 mt-1.5">Efficient</Text>
           </View>
         </View>
       </View>
@@ -127,7 +128,7 @@ export default function OnboardingScreen() {
 
   const Pagination = () => {
     return (
-      <View style={styles.pagination}>
+      <View className="flex-row justify-center items-center h-10 mb-5">
         {features.map((_, i) => {
           const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
           
@@ -146,13 +147,11 @@ export default function OnboardingScreen() {
           return (
             <Animated.View
               key={i}
-              style={[
-                styles.dot,
-                {
-                  width: dotWidth,
-                  backgroundColor: dotColor,
-                }
-              ]}
+              className="h-2 rounded mx-1"
+              style={{
+                width: dotWidth,
+                backgroundColor: dotColor,
+              }}
             />
           );
         })}
@@ -186,18 +185,18 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-white">
       <StatusBar style="dark" />
       
-      <View style={styles.header}>
-        <View style={styles.brandContainer}>
-          <Text style={styles.brandOne}>one</Text>
-          <Text style={styles.brandMiners}>miners</Text>
+      <View className="px-6 pt-3 pb-3 items-center">
+        <View className="flex-row items-center justify-center">
+          <Text className="text-[32px] font-bold text-[#FFC000]" style={{ textTransform: 'lowercase' }}>one</Text>
+          <Text className="text-[32px] font-bold text-black" style={{ textTransform: 'lowercase' }}>miners</Text>
         </View>
-        <Text style={styles.headerSubtitle}>professional mining management</Text>
+        <Text className="text-sm text-gray-500 text-center mt-1" style={{ textTransform: 'lowercase' }}>professional mining management</Text>
       </View>
 
-      <View style={styles.contentWrapper}>
+      <View className="flex-1 justify-between">
         <FlatList
           ref={flatListRef}
           data={features}
@@ -214,26 +213,28 @@ export default function OnboardingScreen() {
             setCurrentIndex(newIndex);
           }}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={{ paddingBottom: 20 }}
         />
 
         <Pagination />
       </View>
 
-      <View style={styles.footer}>
+      <View className="flex-row justify-between items-center px-6 pb-[30px] pt-2.5 border-t border-gray-200">
         {currentIndex > 0 && (
-          <TouchableOpacity style={styles.prevButton} onPress={handlePrev}>
+          <TouchableOpacity className="w-[50px] h-[50px] rounded-full bg-gray-100 justify-center items-center opacity-80" onPress={handlePrev}>
             <Ionicons name="chevron-back" size={24} color="#000000" />
           </TouchableOpacity>
         )}
         
-        <View style={styles.pageIndicator}>
-          <Text style={styles.pageIndicatorText}>
-            {currentIndex + 1}<Text style={styles.pageIndicatorTotal}>/{features.length}</Text>
+        {!currentIndex && <View className="w-[50px]" />}
+        
+        <View className="items-center">
+          <Text className="text-lg font-bold text-black">
+            {currentIndex + 1}<Text className="text-sm font-normal text-gray-500">/{features.length}</Text>
           </Text>
         </View>
         
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+        <TouchableOpacity className="w-[50px] h-[50px] rounded-full bg-[#FFC000] justify-center items-center" onPress={handleNext}>
           <Ionicons 
             name={currentIndex === features.length - 1 ? "checkmark" : "chevron-forward"} 
             size={24} 
@@ -244,168 +245,3 @@ export default function OnboardingScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 12,
-    alignItems: 'center',
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  brandOne: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#FFC000',
-    textTransform: 'lowercase',
-  },
-  brandMiners: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    textTransform: 'lowercase',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    textTransform: 'lowercase',
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  contentWrapper: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  slide: {
-    width: width - 40,
-    marginHorizontal: 20,
-    alignItems: 'center',
-    paddingTop: 20,
-    paddingBottom: 40,
-  },
-  iconContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF9E6',
-    marginBottom: 32,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000000',
-    textAlign: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 16,
-  },
-  description: {
-    fontSize: 16,
-    color: '#4B5563',
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-    paddingHorizontal: 20,
-  },
-  detailsContainer: {
-    width: '100%',
-    marginBottom: 32,
-    paddingHorizontal: 16,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  checkIcon: {
-    marginRight: 12,
-    marginTop: 2,
-  },
-  detailText: {
-    fontSize: 14,
-    color: '#374151',
-    flex: 1,
-    lineHeight: 20,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    paddingHorizontal: 16,
-    marginTop: 8,
-  },
-  statItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#6B7280',
-    marginTop: 6,
-  },
-  pagination: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 40,
-    marginBottom: 20,
-  },
-  dot: {
-    height: 8,
-    borderRadius: 4,
-    marginHorizontal: 4,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingBottom: 30,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#F3F4F6',
-  },
-  prevButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#F3F4F6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    opacity: 0.8,
-  },
-  nextButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#FFC000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  pageIndicator: {
-    alignItems: 'center',
-  },
-  pageIndicatorText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  pageIndicatorTotal: {
-    fontSize: 14,
-    fontWeight: '400',
-    color: '#6B7280',
-  },
-});

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, TextInput, Dimensions, FlatList } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Animated, TextInput, Dimensions, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -114,17 +114,17 @@ const BannerCarousel = () => {
   }).current;
 
   const renderBannerItem = useCallback(({ item, index }: { item: BannerItem; index: number }) => (
-    <View style={[styles.bannerItem, { backgroundColor: item.backgroundColor }]}>
-      <View style={styles.bannerContent}>
-        <View style={styles.bannerTextContainer}>
-          <Text style={styles.bannerTitle}>{item.title}</Text>
-          <Text style={styles.bannerSubtitle}>{item.subtitle}</Text>
-          <TouchableOpacity style={styles.bannerButton}>
-            <Text style={styles.bannerButtonText}>Shop Now</Text>
+    <View className="rounded-2xl overflow-hidden mr-0" style={{ width: screenWidth - 32, height: 180, backgroundColor: item.backgroundColor }}>
+      <View className="flex-1 flex-row p-5">
+        <View className="flex-1 justify-center">
+          <Text className="text-[22px] font-bold text-white mb-2">{item.title}</Text>
+          <Text className="text-base text-white opacity-90 mb-4">{item.subtitle}</Text>
+          <TouchableOpacity className="bg-white rounded-[20px] px-4 py-2 self-start">
+            <Text className="text-sm font-semibold text-black">Shop Now</Text>
           </TouchableOpacity>
         </View>
-        <View style={styles.bannerImagePlaceholder}>
-          <Text style={styles.bannerImageText}>📸 Banner Image</Text>
+        <View className="w-[120px] h-[120px] bg-white/20 rounded-xl justify-center items-center self-center">
+          <Text className="text-white text-xs font-semibold text-center">📸 Banner Image</Text>
         </View>
       </View>
     </View>
@@ -152,19 +152,17 @@ const BannerCarousel = () => {
     return (
       <Animated.View
         key={index}
-        style={[
-          styles.dot,
-          {
-            width: dotWidth,
-            opacity: opacity,
-          },
-        ]}
+        className="h-2 rounded bg-[#FFC000] mx-1"
+        style={{
+          width: dotWidth,
+          opacity: opacity,
+        }}
       />
     );
   }, [scrollX]);
 
   return (
-    <View style={styles.carouselContainer}>
+    <View className="mb-6">
       <FlatList
         ref={flatListRef}
         data={featuredBanners}
@@ -186,7 +184,7 @@ const BannerCarousel = () => {
           index,
         })}
       />
-      <View style={styles.dotsContainer}>
+      <View className="flex-row justify-center items-center mt-3">
         {featuredBanners.map((_, index) => renderDot(_, index))}
       </View>
     </View>
@@ -196,36 +194,36 @@ const BannerCarousel = () => {
 // Memoized ProductCard component
 const ProductCard = React.memo<{ item: ProductItem }>(({ item }) => (
   <Link href={`/(shop)/product/${item.id}`} asChild>
-  <TouchableOpacity style={styles.productCard}>
-    <View style={styles.productImage}>
-      <Text style={styles.productEmoji}>{item.image}</Text>
-    </View>
-    <View style={styles.productInfo}>
-      <Text style={styles.productName} numberOfLines={1}>{item.name}</Text>
-      
-      {/* Compact row for price and profit */}
-      <View style={styles.priceProfitRow}>
-        <Text style={styles.productPrice}>{item.price}</Text>
-        <Text style={styles.productProfit}>{item.profit}</Text>
+    <TouchableOpacity className="w-[48%] rounded-xl p-3 mb-3">
+      <View className="w-full h-[120px] bg-gray-100 rounded-lg justify-center items-center mb-2">
+        <Text className="text-4xl">{item.image}</Text>
       </View>
-      
-      {/* Coin and hashrate info */}
-      <View style={styles.productDetails}>
-        <Text style={styles.productCoin}>{item.coin}</Text>
-          <Text style={styles.productHashrate} numberOfLines={1}>{item.hashrate}</Text>
+      <View className="flex-1">
+        <Text className="text-sm font-semibold text-gray-900 mb-1.5" numberOfLines={1}>{item.name}</Text>
+        
+        {/* Compact row for price and profit */}
+        <View className="flex-row justify-between items-center mb-1">
+          <Text className="text-base font-bold text-[#FFC000]">{item.price}</Text>
+          <Text className="text-xs text-[#34C759] font-semibold">{item.profit}</Text>
+        </View>
+        
+        {/* Coin and hashrate info */}
+        <View className="flex-row justify-between items-center">
+          <Text className="text-xs text-gray-600 font-medium">{item.coin}</Text>
+          <Text className="text-[11px] text-gray-400 flex-1 text-right ml-1" numberOfLines={1}>{item.hashrate}</Text>
+        </View>
       </View>
-    </View>
-  </TouchableOpacity>
+    </TouchableOpacity>
   </Link>
 ));
 
 // New CategoryItem Component
 const CategoryItem = React.memo<{ item: { id: string; name: string; icon: string }; onPress: () => void }>(({ item, onPress }) => (
-  <TouchableOpacity style={styles.categoryItem} onPress={onPress} activeOpacity={0.7}>
-    <View style={styles.categoryAvatar}>
-      <Text style={styles.categoryIcon}>{item.icon}</Text>
+  <TouchableOpacity className="items-center mr-5" onPress={onPress} activeOpacity={0.7}>
+    <View className="w-[60px] h-[60px] rounded-full bg-gray-100 items-center justify-center mb-2">
+      <Text className="text-[28px]">{item.icon}</Text>
     </View>
-    <Text style={styles.categoryName}>{item.name}</Text>
+    <Text className="text-xs text-gray-900 font-medium text-center">{item.name}</Text>
   </TouchableOpacity>
 ));
 
@@ -297,22 +295,20 @@ export default function ShopScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       {/* Header with Search and Cart */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
+      <View className="px-4 py-3 border-b border-gray-200">
+        <View className="flex-row items-center justify-between">
           <Animated.View
-            style={[
-              styles.searchBarContainer,
-              { width: searchBarInterpolatedWidth }
-            ]}
+            className="flex-grow mr-3"
+            style={{ width: searchBarInterpolatedWidth }}
           >
             {showSearchBar && (
-              <View style={styles.searchBarContent}>
-                <View style={styles.searchInputContainer}>
+              <View className="flex-1">
+                <View className="flex-row items-center bg-gray-100 rounded-xl px-3 h-10">
                   <Ionicons name="search-outline" size={20} color="#8E8E93" />
                   <TextInput
-                    style={styles.searchInput}
+                    className="flex-1 text-base ml-2 mr-2 text-black py-1"
                     placeholder="Search miners..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -335,9 +331,9 @@ export default function ShopScreen() {
             )}
           </Animated.View>
 
-          <View style={styles.headerActions}>
+          <View className="flex-row items-center">
             <TouchableOpacity
-              style={styles.headerButton}
+              className="w-9 h-9 rounded-xl bg-gray-100 items-center justify-center ml-2"
               onPress={handleSearchPress}
             >
               <Ionicons 
@@ -347,7 +343,7 @@ export default function ShopScreen() {
               />
             </TouchableOpacity>
             <Link href="/cart" asChild>
-              <TouchableOpacity style={styles.headerButton}>
+              <TouchableOpacity className="w-9 h-9 rounded-xl bg-gray-100 items-center justify-center ml-2">
                 <Ionicons name="cart-outline" size={20} color="#000" />
               </TouchableOpacity>
             </Link>
@@ -355,21 +351,21 @@ export default function ShopScreen() {
         </View>
       </View>
         <ScrollView 
-          style={styles.content} 
+          className="flex-1 p-4" 
           showsVerticalScrollIndicator={false}
           removeClippedSubviews={true}
         >
           {/* Featured Banner Carousel */}
           <BannerCarousel />
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Coins</Text>
+          <View className="mb-3">
+            <Text className="text-lg font-bold text-gray-900">Coins</Text>
           </View>
           {/* Categories Section */}
           <ScrollView 
             horizontal 
             showsHorizontalScrollIndicator={false} 
-            style={styles.categoriesContainer}
-            contentContainerStyle={styles.categoriesContentContainer}
+            className="mb-5"
+            contentContainerStyle={{ paddingRight: 16 }}
           >
             {categories.map(category => (
               <CategoryItem
@@ -381,11 +377,11 @@ export default function ShopScreen() {
           </ScrollView>
 
           {/* Products Grid */}
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>For You</Text>
+          <View className="mb-3">
+            <Text className="text-lg font-bold text-gray-900">For You</Text>
           </View>
           
-          <View style={styles.productsGrid}>
+          <View className="flex-row flex-wrap justify-between pb-4">
             {allProducts.map(product => (
               <ProductCard key={product.id} item={product} />
             ))}
@@ -394,236 +390,3 @@ export default function ShopScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  searchBarContainer: {
-    flexGrow: 1,
-    marginRight: 12,
-  },
-  searchBarContent: {
-    flex: 1,
-  },
-  searchInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F2F2F7',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 40,
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    marginLeft: 8,
-    marginRight: 8,
-    color: '#000000',
-    paddingVertical: 4,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 8,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  sectionHeader: {
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#212529',
-  },
-  // Carousel Styles
-  carouselContainer: {
-    marginBottom: 24,
-  },
-  bannerItem: {
-    width: screenWidth - 32,
-    height: 180,
-    borderRadius: 16,
-    marginRight: 0,
-    overflow: 'hidden',
-  },
-  bannerContent: {
-    flex: 1,
-    flexDirection: 'row',
-    padding: 20,
-  },
-  bannerTextContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  bannerTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 8,
-  },
-  bannerSubtitle: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    opacity: 0.9,
-    marginBottom: 16,
-  },
-  bannerButton: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    alignSelf: 'flex-start',
-  },
-  bannerButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  bannerImagePlaceholder: {
-    width: 120,
-    height: 120,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    alignSelf: 'center',
-  },
-  bannerImageText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  dotsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  dot: {
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#FFC000',
-    marginHorizontal: 4,
-  },
-  // Categories Styles
-  categoriesContainer: {
-    marginBottom: 20,
-  },
-  categoriesContentContainer: {
-    paddingRight: 16,
-  },
-  categoryItem: {
-    alignItems: 'center',
-    marginRight: 20,
-  },
-  categoryAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  categoryIcon: {
-    fontSize: 28,
-  },
-  categoryName: {
-    fontSize: 12,
-    color: '#212529',
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  // Products Grid Styles
-  productsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingBottom: 16,
-  },
-  productCard: {
-    width: '48%',
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 12,
-  },
-  productImage: {
-    width: '100%',
-    height: 120,
-    backgroundColor: '#F2F2F7',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  productEmoji: {
-    fontSize: 40,
-  },
-  productInfo: {
-    flex: 1,
-  },
-  productName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#212529',
-    marginBottom: 6,
-  },
-  priceProfitRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  productPrice: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#FFC000',
-  },
-  productProfit: {
-    fontSize: 12,
-    color: '#34C759',
-    fontWeight: '600',
-  },
-  productDetails: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  productCoin: {
-    fontSize: 12,
-    color: '#6C757D',
-    fontWeight: '500',
-  },
-  productHashrate: {
-    fontSize: 11,
-    color: '#8E8E93',
-    flex: 1,
-    textAlign: 'right',
-    marginLeft: 4,
-  },
-});

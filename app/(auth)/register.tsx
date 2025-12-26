@@ -4,7 +4,6 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -30,36 +29,39 @@ export default function SignupScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView className="flex-1 bg-white">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
+        className="flex-1"
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingVertical: 40, justifyContent: 'center' }}
           showsVerticalScrollIndicator={false}
         >
           {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.brandContainer}>
-              <Text style={styles.brandOne}>one</Text>
-              <Text style={styles.brandMiners}>miners</Text>
+          <View className="items-center mb-10 pt-5">
+            <View className="flex-row items-center mb-2">
+              <Text className="text-[32px] font-bold text-[#FFC000]" style={{ textTransform: 'lowercase' }}>one</Text>
+              <Text className="text-[32px] font-bold text-black" style={{ textTransform: 'lowercase' }}>miners</Text>
             </View>
-            <Text style={styles.tagline}>Create Your Account</Text>
+            <Text className="text-base text-gray-500" style={{ textTransform: 'lowercase' }}>Create Your Account</Text>
           </View>
 
           {/* Signup Form */}
-          <View style={styles.card}>
-            <Text style={styles.title}>Join OneMiners</Text>
-            <Text style={styles.subtitle}>Start managing your mining operations today</Text>
+          <View className="bg-white rounded-[20px] p-6 border border-gray-100 shadow-sm mb-6">
+            <Text className="text-2xl font-bold text-black mb-2 text-center">Join OneMiners</Text>
+            <Text className="text-sm text-gray-500 mb-8 text-center">Start managing your mining operations today</Text>
 
             {/* Full Name Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Full Name</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="person-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+            <View className="mb-5">
+              <Text className="text-sm font-medium text-gray-700 mb-2">Full Name</Text>
+              <View className="flex-row items-center bg-gray-50 rounded-xl border border-gray-200 px-4">
+                <View className="mr-3">
+                  <Ionicons name="person-outline" size={20} color="#9CA3AF" />
+                </View>
                 <TextInput
-                  style={styles.input}
+                  className="flex-1 py-3.5 text-base text-gray-900"
+                  style={{ minHeight: 48 }}
                   placeholder="Enter your full name"
                   placeholderTextColor="#9CA3AF"
                   value={fullName}
@@ -70,12 +72,15 @@ export default function SignupScreen() {
             </View>
 
             {/* Email Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Email Address</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="mail-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+            <View className="mb-5">
+              <Text className="text-sm font-medium text-gray-700 mb-2">Email Address</Text>
+              <View className="flex-row items-center bg-gray-50 rounded-xl border border-gray-200 px-4">
+                <View className="mr-3">
+                  <Ionicons name="mail-outline" size={20} color="#9CA3AF" />
+                </View>
                 <TextInput
-                  style={styles.input}
+                  className="flex-1 py-3.5 text-base text-gray-900"
+                  style={{ minHeight: 48 }}
                   placeholder="Enter your email"
                   placeholderTextColor="#9CA3AF"
                   value={email}
@@ -88,12 +93,15 @@ export default function SignupScreen() {
             </View>
 
             {/* Password Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Password</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+            <View className="mb-5">
+              <Text className="text-sm font-medium text-gray-700 mb-2">Password</Text>
+              <View className="flex-row items-center bg-gray-50 rounded-xl border border-gray-200 px-4">
+                <View className="mr-3">
+                  <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" />
+                </View>
                 <TextInput
-                  style={styles.input}
+                  className="flex-1 py-3.5 text-base text-gray-900"
+                  style={{ minHeight: 48 }}
                   placeholder="Create a password"
                   placeholderTextColor="#9CA3AF"
                   value={password}
@@ -102,7 +110,7 @@ export default function SignupScreen() {
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeButton}
+                  className="p-1"
                 >
                   <Ionicons 
                     name={showPassword ? "eye-off-outline" : "eye-outline"} 
@@ -114,12 +122,15 @@ export default function SignupScreen() {
             </View>
 
             {/* Confirm Password Input */}
-            <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Confirm Password</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+            <View className="mb-5">
+              <Text className="text-sm font-medium text-gray-700 mb-2">Confirm Password</Text>
+              <View className={`flex-row items-center bg-gray-50 rounded-xl border px-4 ${confirmPassword && !passwordsMatch ? 'border-red-600' : 'border-gray-200'}`}>
+                <View className="mr-3">
+                  <Ionicons name="lock-closed-outline" size={20} color="#9CA3AF" />
+                </View>
                 <TextInput
-                  style={[styles.input, confirmPassword && !passwordsMatch && styles.inputError]}
+                  className="flex-1 py-3.5 text-base text-gray-900"
+                  style={{ minHeight: 48 }}
                   placeholder="Confirm your password"
                   placeholderTextColor="#9CA3AF"
                   value={confirmPassword}
@@ -128,7 +139,7 @@ export default function SignupScreen() {
                 />
                 <TouchableOpacity
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  style={styles.eyeButton}
+                  className="p-1"
                 >
                   <Ionicons 
                     name={showConfirmPassword ? "eye-off-outline" : "eye-outline"} 
@@ -138,220 +149,47 @@ export default function SignupScreen() {
                 </TouchableOpacity>
               </View>
               {confirmPassword && !passwordsMatch && (
-                <Text style={styles.errorText}>Passwords do not match</Text>
+                <Text className="text-xs text-red-600 mt-1 ml-1">Passwords do not match</Text>
               )}
             </View>
 
             {/* Sign Up Button */}
             <TouchableOpacity
-              style={[styles.signupButton, !canSubmit && styles.signupButtonDisabled]}
+              className={`rounded-xl py-4 items-center mt-2 mb-4 ${!canSubmit ? 'bg-gray-100' : 'bg-[#FFC000]'}`}
               onPress={handleSignup}
               disabled={!canSubmit}
             >
-              <Text style={styles.signupButtonText}>Create Account</Text>
+              <Text className="text-black text-base font-semibold">Create Account</Text>
             </TouchableOpacity>
 
             {/* Terms Notice */}
-            <Text style={styles.termsText}>
+            <Text className="text-xs text-gray-500 text-center leading-4 mb-6">
               By creating an account, you agree to our Terms of Service and Privacy Policy.
             </Text>
 
             {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>Already have an account?</Text>
-              <View style={styles.dividerLine} />
+            <View className="flex-row items-center mb-6">
+              <View className="flex-1 h-px bg-gray-200" />
+              <Text className="mx-4 text-sm text-gray-500">Already have an account?</Text>
+              <View className="flex-1 h-px bg-gray-200" />
             </View>
 
             {/* Login Link */}
-            <View style={styles.loginContainer}>
+            <View className="items-center">
               <Link href="/(auth)/login" asChild>
-                <TouchableOpacity style={styles.loginButton}>
-                  <Text style={styles.loginButtonText}>Sign In</Text>
+                <TouchableOpacity className="w-full bg-gray-50 rounded-xl py-4 items-center border border-gray-200">
+                  <Text className="text-gray-700 text-base font-semibold">Sign In</Text>
                 </TouchableOpacity>
               </Link>
             </View>
           </View>
 
           {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>© 2024 OneMiners. Professional Mining Platform</Text>
+          <View className="mt-5 items-center">
+            <Text className="text-xs text-gray-400 text-center">© 2024 OneMiners. Professional Mining Platform</Text>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-    justifyContent: 'center',
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 40,
-    paddingTop: 20,
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  brandOne: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#FFC000',
-    textTransform: 'lowercase',
-  },
-  brandMiners: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    textTransform: 'lowercase',
-  },
-  tagline: {
-    fontSize: 16,
-    color: '#6B7280',
-    textTransform: 'lowercase',
-  },
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: '#F3F4F6',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 3,
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    paddingHorizontal: 16,
-  },
-  inputIcon: {
-    marginRight: 12,
-  },
-  input: {
-    flex: 1,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#111827',
-    minHeight: 48,
-  },
-  inputError: {
-    borderColor: '#DC2626',
-  },
-  errorText: {
-    fontSize: 12,
-    color: '#DC2626',
-    marginTop: 4,
-    marginLeft: 4,
-  },
-  eyeButton: {
-    padding: 4,
-  },
-  signupButton: {
-    backgroundColor: '#FFC000',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 16,
-  },
-  signupButtonDisabled: {
-    backgroundColor: '#F3F4F6',
-  },
-  signupButtonText: {
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  termsText: {
-    fontSize: 12,
-    color: '#6B7280',
-    textAlign: 'center',
-    lineHeight: 16,
-    marginBottom: 24,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#E5E7EB',
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  loginContainer: {
-    alignItems: 'center',
-  },
-  loginButton: {
-    width: '100%',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  loginButtonText: {
-    color: '#374151',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  footer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  footerText: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
-  },
-});

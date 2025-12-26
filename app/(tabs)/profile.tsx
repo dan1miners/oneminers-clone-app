@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, Alert, Modal } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Switch, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,13 +8,12 @@ export default function ProfileScreen() {
   const router = useRouter();
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
   const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // Fixed: Added state for modal
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = () => {
     setShowLogoutModal(false);
-    // In a real app, you would clear user session and navigate to login
     Alert.alert('Logged Out', 'You have been successfully logged out.');
-    router.replace('/login'); // Navigate to login screen
+    router.replace('/login');
   };
 
   const userInfo = {
@@ -27,26 +26,26 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
+      <View className="py-4 px-5 border-b border-gray-200">
+        <Text className="text-xl font-bold text-black">Profile</Text>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* User Information Card - Clean */}
-        <View style={styles.profileCard}>
-          <View style={styles.profileCompact}>
-            <View style={styles.avatarContainer}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarText}>JD</Text>
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+        {/* User Information Card */}
+        <View className="bg-white rounded-2xl p-5 mb-5">
+          <View className="flex-row items-start">
+            <View className="mr-4">
+              <View className="w-[70px] h-[70px] rounded-full bg-[#FFC000] justify-center items-center">
+                <Text className="text-2xl font-bold text-black">JD</Text>
               </View>
             </View>
             
-            <View style={styles.profileInfoCompact}>
-              <Text style={styles.profileName}>{userInfo.name}</Text>
-              <Text style={styles.profileEmail}>{userInfo.email}</Text>
-              <TouchableOpacity style={styles.editProfileButton}>
+            <View className="flex-1 justify-center">
+              <Text className="text-xl font-bold text-black mb-1">{userInfo.name}</Text>
+              <Text className="text-[15px] text-gray-400 mb-3">{userInfo.email}</Text>
+              <TouchableOpacity className="flex-row items-center bg-[#FFF8E6] px-4 py-2 rounded-lg self-start">
                 <Ionicons name="pencil" size={16} color="#8E8E93" />
               </TouchableOpacity>
             </View>
@@ -54,55 +53,55 @@ export default function ProfileScreen() {
         </View>
 
         {/* Account Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          <View style={styles.menuList}>
+        <View className="bg-white rounded-2xl p-4 mb-4">
+          <Text className="text-base font-bold text-black mb-3">Account</Text>
+          <View className="rounded-xl overflow-hidden">
             <Link href="/(essentials)/eprofile" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#FFC00020' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#FFC000]/20">
                     <Ionicons name="person-outline" size={20} color="#FFC000" />
                   </View>
-                  <Text style={styles.menuItemText}>Edit Profile</Text>
+                  <Text className="text-[15px] text-black font-medium">Edit Profile</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
               </TouchableOpacity>
             </Link>
 
             <Link href="/(essentials)/eshipping" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#34C75920' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#34C759]/20">
                     <Ionicons name="location-outline" size={20} color="#34C759" />
                   </View>
-                  <Text style={styles.menuItemText}>Shipping Addresses</Text>
+                  <Text className="text-[15px] text-black font-medium">Shipping Addresses</Text>
                 </View>
-                <View style={styles.menuItemRight}>
-                  <Text style={styles.menuBadge}>2</Text>
+                <View className="flex-row items-center">
+                  <Text className="bg-[#FFC000] text-black text-xs font-semibold px-2 py-0.5 rounded-[10px] mr-2 min-w-[24px] text-center">2</Text>
                   <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
                 </View>
               </TouchableOpacity>
             </Link>
             
             <Link href="/(essentials)/security" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#007AFF20' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#007AFF]/20">
                     <Ionicons name="shield-checkmark-outline" size={20} color="#007AFF" />
                   </View>
-                  <Text style={styles.menuItemText}>Security</Text>
+                  <Text className="text-[15px] text-black font-medium">Security</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
               </TouchableOpacity>
             </Link>
             
             <Link href="/(essentials)/wallet-manager" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#5856D620' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#5856D6]/20">
                     <Ionicons name="wallet-outline" size={20} color="#5856D6" />
                   </View>
-                  <Text style={styles.menuItemText}>Wallet Manager</Text>
+                  <Text className="text-[15px] text-black font-medium">Wallet Manager</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
               </TouchableOpacity>
@@ -111,48 +110,49 @@ export default function ProfileScreen() {
         </View>
 
         {/* Mining Operations */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Mining Operations</Text>
-          <View style={styles.menuList}>
+        <View className="bg-white rounded-2xl p-4 mb-4">
+          <Text className="text-base font-bold text-black mb-3">Mining Operations</Text>
+          <View className="rounded-xl overflow-hidden">
             <Link href="/(shop)/orders" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#FF950020' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#FF9500]/20">
                     <Ionicons name="cart-outline" size={20} color="#FF9500" />
                   </View>
-                  <Text style={styles.menuItemText}>Orders</Text>
+                  <Text className="text-[15px] text-black font-medium">Orders</Text>
                 </View>
-                <View style={styles.menuItemRight}>
-                  <Text style={styles.menuBadge}>12</Text>
+                <View className="flex-row items-center">
+                  <Text className="bg-[#FFC000] text-black text-xs font-semibold px-2 py-0.5 rounded-[10px] mr-2 min-w-[24px] text-center">12</Text>
                   <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
                 </View>
               </TouchableOpacity>
             </Link>
             
             <Link href="/(essentials)/repairs" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#FF2D5520' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#FF2D55]/20">
                     <Ionicons name="build-outline" size={20} color="#FF2D55" />
                   </View>
-                  <Text style={styles.menuItemText}>Repairs</Text>
+                  <Text className="text-[15px] text-black font-medium">Repairs</Text>
                 </View>
-                <View style={styles.menuItemRight}>
-                  <Text style={styles.menuBadge}>3</Text>
+                <View className="flex-row items-center">
+                  <Text className="bg-[#FFC000] text-black text-xs font-semibold px-2 py-0.5 rounded-[10px] mr-2 min-w-[24px] text-center">3</Text>
                   <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
                 </View>
               </TouchableOpacity>
             </Link>
+            
             <Link href="/(essentials)/referral" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#32D74B20' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#32D74B]/20">
                     <Ionicons name="people-outline" size={20} color="#32D74B" />
                   </View>
-                  <Text style={styles.menuItemText}>Referrals</Text>
+                  <Text className="text-[15px] text-black font-medium">Referrals</Text>
                 </View>
-                <View style={styles.menuItemRight}>
-                  <Text style={styles.menuBadge}>8</Text>
+                <View className="flex-row items-center">
+                  <Text className="bg-[#FFC000] text-black text-xs font-semibold px-2 py-0.5 rounded-[10px] mr-2 min-w-[24px] text-center">8</Text>
                   <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
                 </View>
               </TouchableOpacity>
@@ -161,15 +161,15 @@ export default function ProfileScreen() {
         </View>
 
         {/* Preferences */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
-          <View style={styles.menuList}>
-            <View style={styles.menuItem}>
-              <View style={styles.menuItemLeft}>
-                <View style={[styles.menuIcon, { backgroundColor: '#007AFF20' }]}>
+        <View className="bg-white rounded-2xl p-4 mb-4">
+          <Text className="text-base font-bold text-black mb-3">Preferences</Text>
+          <View className="rounded-xl overflow-hidden">
+            <View className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+              <View className="flex-row items-center flex-1">
+                <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#007AFF]/20">
                   <Ionicons name="notifications-outline" size={20} color="#007AFF" />
                 </View>
-                <Text style={styles.menuItemText}>Notifications</Text>
+                <Text className="text-[15px] text-black font-medium">Notifications</Text>
               </View>
               <Switch
                 value={isNotificationsEnabled}
@@ -179,12 +179,12 @@ export default function ProfileScreen() {
               />
             </View>
 
-            <View style={styles.menuItem}>
-              <View style={styles.menuItemLeft}>
-                <View style={[styles.menuIcon, { backgroundColor: '#4A4A4A20' }]}>
+            <View className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+              <View className="flex-row items-center flex-1">
+                <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#4A4A4A]/20">
                   <Ionicons name="moon-outline" size={20} color="#4A4A4A" />
                 </View>
-                <Text style={styles.menuItemText}>Dark Mode</Text>
+                <Text className="text-[15px] text-black font-medium">Dark Mode</Text>
               </View>
               <Switch
                 value={isDarkModeEnabled}
@@ -195,12 +195,12 @@ export default function ProfileScreen() {
             </View>
 
             <Link href="/(essentials)/settings" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#5856D620' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#5856D6]/20">
                     <Ionicons name="settings-outline" size={20} color="#5856D6" />
                   </View>
-                  <Text style={styles.menuItemText}>Settings</Text>
+                  <Text className="text-[15px] text-black font-medium">Settings</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
               </TouchableOpacity>
@@ -209,28 +209,28 @@ export default function ProfileScreen() {
         </View>
 
         {/* Support */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
-          <View style={styles.menuList}>
+        <View className="bg-white rounded-2xl p-4 mb-4">
+          <Text className="text-base font-bold text-black mb-3">Support</Text>
+          <View className="rounded-xl overflow-hidden">
             <Link href="/(essentials)/support" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#32D74B20' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#32D74B]/20">
                     <Ionicons name="headset-outline" size={20} color="#32D74B" />
                   </View>
-                  <Text style={styles.menuItemText}>Customer Support</Text>
+                  <Text className="text-[15px] text-black font-medium">Customer Support</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
               </TouchableOpacity>
             </Link>
 
             <Link href="/(essentials)/terms" asChild>
-              <TouchableOpacity style={styles.menuItem}>
-                <View style={styles.menuItemLeft}>
-                  <View style={[styles.menuIcon, { backgroundColor: '#BF5AF220' }]}>
+              <TouchableOpacity className="flex-row justify-between items-center py-3.5 px-3 bg-white">
+                <View className="flex-row items-center flex-1">
+                  <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#BF5AF2]/20">
                     <Ionicons name="document-text-outline" size={20} color="#BF5AF2" />
                   </View>
-                  <Text style={styles.menuItemText}>Terms & Privacy</Text>
+                  <Text className="text-[15px] text-black font-medium">Terms & Privacy</Text>
                 </View>
                 <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
               </TouchableOpacity>
@@ -240,54 +240,54 @@ export default function ProfileScreen() {
 
         {/* Logout */}
         <TouchableOpacity 
-          style={styles.logoutSection}
+          className="bg-white rounded-2xl p-4 mb-5"
           onPress={() => setShowLogoutModal(true)}
         >
-          <View style={styles.menuItemLeft}>
-            <View style={[styles.menuIcon, { backgroundColor: '#FF453A20' }]}>
+          <View className="flex-row items-center flex-1">
+            <View className="w-8 h-8 rounded-lg justify-center items-center mr-3 bg-[#FF453A]/20">
               <Ionicons name="log-out-outline" size={20} color="#FF453A" />
             </View>
-            <Text style={styles.logoutText}>Logout</Text>
+            <Text className="text-[15px] text-[#FF3B30] font-medium">Logout</Text>
           </View>
         </TouchableOpacity>
 
         {/* App Version */}
-        <View style={styles.versionContainer}>
-          <Text style={styles.versionText}>Oneminers v1.2.4</Text>
+        <View className="items-center pb-[30px]">
+          <Text className="text-[13px] text-gray-400">Oneminers v1.2.4</Text>
         </View>
       </ScrollView>
 
       {/* Logout Confirmation Modal */}
       <Modal
-        visible={showLogoutModal} // Fixed: Using state variable instead of setter function
+        visible={showLogoutModal}
         transparent={true}
         animationType="fade"
         onRequestClose={() => setShowLogoutModal(false)}
       >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalIcon}>
+        <View className="flex-1 bg-black/50 justify-center items-center p-5">
+          <View className="bg-white rounded-[20px] p-6 w-full max-w-[340px] items-center">
+            <View className="w-20 h-20 rounded-full bg-[#FFF8E6] justify-center items-center mb-4">
               <Ionicons name="log-out" size={48} color="#FFC000" />
             </View>
             
-            <Text style={styles.modalTitle}>Logout</Text>
-            <Text style={styles.modalText}>
+            <Text className="text-2xl font-bold text-black mb-3">Logout</Text>
+            <Text className="text-base text-gray-600 text-center mb-6 leading-[22px]">
               Are you sure you want to logout from your account?
             </Text>
             
-            <View style={styles.modalButtons}>
+            <View className="flex-row gap-3 w-full">
               <TouchableOpacity 
-                style={[styles.modalButton, styles.cancelButton]}
+                className="flex-1 py-4 rounded-xl items-center bg-gray-50 border border-gray-200"
                 onPress={() => setShowLogoutModal(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text className="text-base font-semibold text-gray-600">Cancel</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={[styles.modalButton, styles.confirmButton]}
+                className="flex-1 py-4 rounded-xl items-center bg-[#FFC000]"
                 onPress={handleLogout}
               >
-                <Text style={styles.confirmButtonText}>Logout</Text>
+                <Text className="text-base font-bold text-black">Logout</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -297,225 +297,3 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E5EA',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  profileCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-  },
-  profileCompact: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  avatarContainer: {
-    marginRight: 16,
-  },
-  avatar: {
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: '#FFC000',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  profileInfoCompact: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  profileName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  profileEmail: {
-    fontSize: 15,
-    color: '#8E8E93',
-    marginBottom: 12,
-  },
-  editProfileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-  },
-  editProfileButtonText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '500',
-    marginLeft: 6,
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000000',
-    marginBottom: 12,
-  },
-  menuList: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  menuIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  menuItemText: {
-    fontSize: 15,
-    color: '#000000',
-    fontWeight: '500',
-  },
-  menuItemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  menuBadge: {
-    backgroundColor: '#FFC000',
-    color: '#000000',
-    fontSize: 12,
-    fontWeight: '600',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 10,
-    marginRight: 8,
-    minWidth: 24,
-    textAlign: 'center',
-  },
-  logoutSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-  },
-  logoutText: {
-    fontSize: 15,
-    color: '#FF3B30',
-    fontWeight: '500',
-  },
-  versionContainer: {
-    alignItems: 'center',
-    paddingBottom: 30,
-  },
-  versionText: {
-    fontSize: 13,
-    color: '#8E8E93',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 24,
-    width: '100%',
-    maxWidth: 340,
-    alignItems: 'center',
-  },
-  modalIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#FFF8E6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 12,
-  },
-  modalText: {
-    fontSize: 16,
-    color: '#6C757D',
-    textAlign: 'center',
-    marginBottom: 24,
-    lineHeight: 22,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 12,
-    width: '100%',
-  },
-  modalButton: {
-    flex: 1,
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  cancelButton: {
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-  },
-  confirmButton: {
-    backgroundColor: '#FFC000',
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#6C757D',
-  },
-  confirmButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-  },
-});
