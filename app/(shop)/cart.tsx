@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   FlatList,
   TouchableOpacity,
   ScrollView,
@@ -46,7 +45,7 @@ const mockCartItems: CartItem[] = [
     quantity: 1,
     fee: 35,
     total: 3535,
-    coin: 'BTC'
+    coin: 'BTC',
   },
   {
     id: 'cart2',
@@ -56,7 +55,7 @@ const mockCartItems: CartItem[] = [
     quantity: 2,
     fee: 76,
     total: 7676,
-    coin: 'KAS'
+    coin: 'KAS',
   },
   {
     id: 'cart3',
@@ -66,8 +65,8 @@ const mockCartItems: CartItem[] = [
     quantity: 1,
     fee: 29,
     total: 2929,
-    coin: 'ALEO'
-  }
+    coin: 'ALEO',
+  },
 ];
 
 const paymentMethods: PaymentMethod[] = [
@@ -76,29 +75,29 @@ const paymentMethods: PaymentMethod[] = [
     name: 'Bank Transfer',
     icon: '🏦',
     type: 'bank',
-    details: 'Chase •••• 1234'
+    details: 'Chase •••• 1234',
   },
   {
     id: 'card1',
     name: 'Credit Card',
     icon: '💳',
     type: 'card',
-    details: 'Visa •••• 5678'
+    details: 'Visa •••• 5678',
   },
   {
     id: 'wallet1',
     name: 'Wallet Balance',
     icon: '💰',
     type: 'wallet',
-    details: 'USDT Balance'
+    details: 'USDT Balance',
   },
   {
     id: 'crypto1',
     name: 'Crypto Transfer',
     icon: '🪙',
     type: 'crypto',
-    details: 'BTC Address'
-  }
+    details: 'BTC Address',
+  },
 ];
 
 // --- Main Component ---
@@ -113,12 +112,20 @@ export default function CartPage() {
   const [promoCode, setPromoCode] = useState('');
 
   // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const fees = cartItems.reduce((sum, item) => sum + (item.fee * item.quantity), 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const fees = cartItems.reduce(
+    (sum, item) => sum + item.fee * item.quantity,
+    0
+  );
   const discount = promoCode === 'CRYPTO10' ? subtotal * 0.1 : 0;
   const total = subtotal + fees - discount;
 
-  const selectedPaymentMethod = paymentMethods.find(method => method.id === selectedPayment);
+  const selectedPaymentMethod = paymentMethods.find(
+    (method) => method.id === selectedPayment
+  );
 
   const handleBackPress = () => {
     router.back();
@@ -130,13 +137,13 @@ export default function CartPage() {
       'Are you sure you want to remove this item from your cart?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Remove', 
+        {
+          text: 'Remove',
           style: 'destructive',
           onPress: () => {
-            setCartItems(prev => prev.filter(item => item.id !== itemId));
-          }
-        }
+            setCartItems((prev) => prev.filter((item) => item.id !== itemId));
+          },
+        },
       ]
     );
   };
@@ -147,13 +154,15 @@ export default function CartPage() {
       return;
     }
 
-    setCartItems(prev => prev.map(item => {
-      if (item.id === itemId) {
-        const total = newQuantity * item.price + (item.fee * newQuantity);
-        return { ...item, quantity: newQuantity, total };
-      }
-      return item;
-    }));
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.id === itemId) {
+          const newTotal = newQuantity * item.price + item.fee * newQuantity;
+          return { ...item, quantity: newQuantity, total: newTotal };
+        }
+        return item;
+      })
+    );
   };
 
   const handleApplyPromo = () => {
@@ -174,60 +183,71 @@ export default function CartPage() {
 
   const confirmCheckout = () => {
     setIsProcessing(true);
-    
+
     // Simulate API call
     setTimeout(() => {
       setIsProcessing(false);
       setShowConfirmModal(false);
       Alert.alert(
-        'Order Placed!', 
+        'Order Placed!',
         'Your order has been successfully placed and is being processed.',
         [
-          { 
-            text: 'OK', 
+          {
+            text: 'OK',
             onPress: () => {
               setCartItems([]);
               router.back();
-            }
-          }
+            },
+          },
         ]
       );
     }, 3000);
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => (
-    <View style={styles.cartItem}>
+    <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
       {/* Product Image and Basic Info */}
-      <View style={styles.itemHeader}>
-        <View style={styles.productImage}>
-          <Text style={styles.productEmoji}>{item.image}</Text>
+      <View className="flex-row items-center mb-4">
+        <View className="w-12 h-12 rounded-xl bg-[#FFC000] items-center justify-center mr-3">
+          <Text className="text-2xl">{item.image}</Text>
         </View>
-        <View style={styles.productInfo}>
-          <Text style={styles.productName}>{item.name}</Text>
-          <Text style={styles.productCoin}>Mines {item.coin}</Text>
+
+        <View className="flex-1">
+          <Text className="text-base font-semibold text-black mb-1">
+            {item.name}
+          </Text>
+          <Text className="text-sm text-[#8E8E93]">Mines {item.coin}</Text>
         </View>
-        <TouchableOpacity 
+
+        <TouchableOpacity
           onPress={() => handleRemoveItem(item.id)}
-          style={styles.removeButton}
+          className="p-2 rounded-lg bg-[#F8F9FA]"
         >
           <Ionicons name="close" size={20} color="#8E8E93" />
         </TouchableOpacity>
       </View>
 
       {/* Quantity and Price Row */}
-      <View style={styles.controlRow}>
-        <View style={styles.quantitySection}>
-          <Text style={styles.quantityLabel}>Quantity</Text>
-          <View style={styles.quantityControls}>
-            <TouchableOpacity 
-              style={styles.quantityButton}
+      <View className="flex-row justify-between items-center mb-3">
+        <View>
+          <Text className="text-xs text-[#8E8E93] font-medium mb-2">
+            Quantity
+          </Text>
+
+          <View className="flex-row items-center bg-[#F8F9FA] rounded-xl p-1">
+            <TouchableOpacity
+              className="w-8 h-8 rounded-lg bg-white items-center justify-center shadow"
               onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
             >
               <Ionicons name="remove" size={16} color="#007AFF" />
             </TouchableOpacity>
-            <Text style={styles.quantityText}>{item.quantity}</Text>
-            <TouchableOpacity 
-              style={styles.quantityButton}
+
+            <Text className="mx-4 min-w-[20px] text-center text-base font-semibold text-black">
+              {item.quantity}
+            </Text>
+
+            <TouchableOpacity
+              className="w-8 h-8 rounded-lg bg-white items-center justify-center shadow"
               onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
             >
               <Ionicons name="add" size={16} color="#007AFF" />
@@ -235,65 +255,89 @@ export default function CartPage() {
           </View>
         </View>
 
-        <View style={styles.priceSection}>
-          <Text style={styles.unitPrice}>${item.price.toLocaleString()} each</Text>
-          <Text style={styles.feeText}>+ ${item.fee} fee per item</Text>
+        <View className="items-end">
+          <Text className="text-base font-semibold text-black mb-1">
+            ${item.price.toLocaleString()} each
+          </Text>
+          <Text className="text-xs text-[#8E8E93]">
+            + ${item.fee} fee per item
+          </Text>
         </View>
       </View>
 
       {/* Total for this item */}
-      <View style={styles.itemTotalSection}>
-        <Text style={styles.itemTotal}>Item Total: ${item.total.toFixed(2)}</Text>
+      <View className="border-t border-[#F2F2F7] pt-3 items-end">
+        <Text className="text-base font-bold text-[#FFC000]">
+          Item Total: ${item.total.toFixed(2)}
+        </Text>
       </View>
     </View>
   );
 
-  const renderPaymentMethod = ({ item }: { item: PaymentMethod }) => (
-    <TouchableOpacity
-      style={[
-        styles.paymentMethod,
-        selectedPayment === item.id && styles.paymentMethodSelected
-      ]}
-      onPress={() => setSelectedPayment(item.id)}
-    >
-      <View style={styles.paymentLeft}>
-        <Text style={styles.paymentIcon}>{item.icon}</Text>
-        <View style={styles.paymentInfo}>
-          <Text style={styles.paymentName}>{item.name}</Text>
-          <Text style={styles.paymentDetails}>{item.details}</Text>
+  const renderPaymentMethod = ({ item }: { item: PaymentMethod }) => {
+    const isSelected = selectedPayment === item.id;
+
+    return (
+      <TouchableOpacity
+        className={[
+          'flex-row items-center justify-between p-4 border rounded-xl mb-2',
+          isSelected
+            ? 'border-[#E6B800] bg-[#FFF6D6]'
+            : 'border-[#E9ECEF] bg-white',
+        ].join(' ')}
+        onPress={() => setSelectedPayment(item.id)}
+      >
+        <View className="flex-row items-center flex-1">
+          <Text className="text-xl mr-3">{item.icon}</Text>
+          <View className="flex-1">
+            <Text className="text-base font-semibold text-black">
+              {item.name}
+            </Text>
+            <Text className="text-sm text-[#8E8E93] mt-0.5">
+              {item.details}
+            </Text>
+          </View>
         </View>
-      </View>
-      <View style={[
-        styles.radioButton,
-        selectedPayment === item.id && styles.radioButtonSelected
-      ]}>
-        {selectedPayment === item.id && (
-          <View style={styles.radioButtonInner} />
-        )}
-      </View>
-    </TouchableOpacity>
-  );
+
+        <View
+          className={[
+            'w-5 h-5 rounded-full border-2 items-center justify-center',
+            isSelected ? 'border-[#E6B800]' : 'border-[#E9ECEF]'
+          ].join(' ')}
+        >
+          {isSelected && (
+            <View className="w-2.5 h-2.5 rounded-full bg-[#E6B800]" />
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row items-center px-4 py-3 border-b border-[#E9ECEF]">
+        <TouchableOpacity onPress={handleBackPress} className="p-1 mr-3">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Cart</Text>
-        <View style={styles.headerPlaceholder} />
+
+        <Text className="flex-1 text-center text-lg font-semibold text-black">
+          Cart
+        </Text>
+
+        <View className="w-9" />
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Cart Items */}
         {cartItems.length > 0 ? (
           <>
-            <View style={styles.cartSection}>
-              <Text style={styles.sectionTitle}>
+            <View className="mb-6">
+              <Text className="text-lg font-bold text-black mb-4">
                 Your Items ({cartItems.length})
               </Text>
+
               <FlatList
                 data={cartItems}
                 keyExtractor={(item) => item.id}
@@ -304,50 +348,67 @@ export default function CartPage() {
             </View>
 
             {/* Promo Code */}
-            <View style={styles.promoSection}>
-              <Text style={styles.sectionTitle}>Promo Code</Text>
-              <View style={styles.promoInputContainer}>
+            <View className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
+              <Text className="text-lg font-bold text-black mb-4">
+                Promo Code
+              </Text>
+
+              <View className="flex-row items-center">
                 <TextInput
-                  style={styles.promoInput}
+                  className="flex-1 border border-[#E9ECEF] rounded-xl p-4 mr-3 text-base bg-[#F8F9FA]"
                   placeholder="Enter promo code"
                   value={promoCode}
                   onChangeText={setPromoCode}
                   placeholderTextColor="#8E8E93"
                 />
-                <TouchableOpacity 
-                  style={styles.applyButton}
+
+                <TouchableOpacity
+                  className="bg-[#FFC000] px-5 py-4 rounded-xl"
                   onPress={handleApplyPromo}
                 >
-                  <Text style={styles.applyButtonText}>Apply</Text>
+                  <Text className="text-sm font-semibold text-white">
+                    Apply
+                  </Text>
                 </TouchableOpacity>
               </View>
+
               {discount > 0 && (
-                <View style={styles.discountApplied}>
-                  <Ionicons name="checkmark-circle" size={16} color="#34C759" />
-                  <Text style={styles.discountText}>10% discount applied</Text>
+                <View className="flex-row items-center mt-3 p-3 bg-green-50 rounded-lg">
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={16}
+                    color="#34C759"
+                  />
+                  <Text className="ml-2 text-sm font-medium text-green-700">
+                    10% discount applied
+                  </Text>
                 </View>
               )}
             </View>
 
             {/* Payment Method */}
-            <View style={styles.paymentSection}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>Payment Method</Text>
+            <View className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
+              <View className="flex-row justify-between items-center mb-4">
+                <Text className="text-lg font-bold text-black">
+                  Payment Method
+                </Text>
                 <TouchableOpacity onPress={() => setShowPaymentModal(true)}>
-                  <Text style={styles.changeText}>Change</Text>
+                  <Text className="text-sm font-semibold text-[#FFC000]">
+                    Change
+                  </Text>
                 </TouchableOpacity>
               </View>
-              
+
               {selectedPaymentMethod && (
-                <View style={styles.selectedPayment}>
-                  <Text style={styles.selectedPaymentIcon}>
+                <View className="flex-row items-center p-4 bg-[#F8F9FA] rounded-xl">
+                  <Text className="text-2xl mr-3">
                     {selectedPaymentMethod.icon}
                   </Text>
-                  <View style={styles.selectedPaymentInfo}>
-                    <Text style={styles.selectedPaymentName}>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold text-black">
                       {selectedPaymentMethod.name}
                     </Text>
-                    <Text style={styles.selectedPaymentDetails}>
+                    <Text className="text-sm text-[#8E8E93] mt-0.5">
                       {selectedPaymentMethod.details}
                     </Text>
                   </View>
@@ -356,78 +417,96 @@ export default function CartPage() {
             </View>
 
             {/* Order Total */}
-            <View style={styles.totalSection}>
-              <Text style={styles.sectionTitle}>Order Summary</Text>
-              <View style={styles.summaryRows}>
-                <View style={styles.summaryRow}>
-                  <Text style={styles.summaryLabel}>Subtotal</Text>
-                  <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
+            <View className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
+              <Text className="text-lg font-bold text-black mb-4">
+                Order Summary
+              </Text>
+
+              <View>
+                <View className="flex-row justify-between items-center mb-3">
+                  <Text className="text-base text-[#8E8E93]">Subtotal</Text>
+                  <Text className="text-base font-semibold text-black">
+                    ${subtotal.toFixed(2)}
+                  </Text>
                 </View>
-                <View style={styles.summaryRow}>
-                  <Text style={styles.summaryLabel}>Fees</Text>
-                  <Text style={styles.summaryValue}>${fees.toFixed(2)}</Text>
+
+                <View className="flex-row justify-between items-center mb-3">
+                  <Text className="text-base text-[#8E8E93]">Fees</Text>
+                  <Text className="text-base font-semibold text-black">
+                    ${fees.toFixed(2)}
+                  </Text>
                 </View>
+
                 {discount > 0 && (
-                  <View style={styles.summaryRow}>
-                    <Text style={[styles.summaryLabel, styles.discountLabel]}>Discount</Text>
-                    <Text style={[styles.summaryValue, styles.discountValue]}>
+                  <View className="flex-row justify-between items-center mb-3">
+                    <Text className="text-base text-[#34C759]">Discount</Text>
+                    <Text className="text-base font-semibold text-[#34C759]">
                       -${discount.toFixed(2)}
                     </Text>
                   </View>
                 )}
-                <View style={styles.divider} />
-                <View style={styles.summaryRow}>
-                  <Text style={styles.finalTotalLabel}>Total</Text>
-                  <Text style={styles.finalTotalValue}>${total.toFixed(2)}</Text>
+
+                <View className="h-px bg-[#E9ECEF] my-3" />
+
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-lg font-bold text-black">Total</Text>
+                  <Text className="text-xl font-bold text-[#FFC000]">
+                    ${total.toFixed(2)}
+                  </Text>
                 </View>
               </View>
             </View>
 
             {/* Checkout Button */}
-            <TouchableOpacity 
-              style={styles.checkoutButton}
+            <TouchableOpacity
+              className="bg-[#FFC000] rounded-2xl p-5 items-center mb-8 shadow-lg"
               onPress={handleCheckout}
             >
-              <Text style={styles.checkoutButtonText}>
+              <Text className="text-[17px] font-semibold text-white">
                 Proceed to Checkout
               </Text>
             </TouchableOpacity>
           </>
         ) : (
           // Empty Cart State
-          <View style={styles.emptyState}>
-            <View style={styles.emptyIcon}>
+          <View className="items-center justify-center py-20">
+            <View className="mb-6">
               <Ionicons name="cart-outline" size={64} color="#E9ECEF" />
             </View>
-            <Text style={styles.emptyTitle}>Your cart is empty</Text>
-            <Text style={styles.emptySubtitle}>
+
+            <Text className="text-xl font-bold text-black mb-2">
+              Your cart is empty
+            </Text>
+
+            <Text className="text-base text-[#8E8E93] text-center mb-8">
               Add some mining equipment to get started
             </Text>
-            <TouchableOpacity 
-              style={styles.shopButton}
+
+            <TouchableOpacity
+              className="bg-[#007AFF] px-8 py-4 rounded-xl"
               onPress={() => router.back()}
             >
-              <Text style={styles.shopButtonText}>Start Shopping</Text>
+              <Text className="text-base font-semibold text-white">
+                Start Shopping
+              </Text>
             </TouchableOpacity>
           </View>
         )}
       </ScrollView>
 
       {/* Payment Methods Modal */}
-      <Modal
-        visible={showPaymentModal}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Payment Method</Text>
+      <Modal visible={showPaymentModal} transparent animationType="slide">
+        <View className="flex-1 bg-black/50 justify-center items-center p-5">
+          <View className="bg-white rounded-2xl p-5 w-full max-w-md max-h-[80%]">
+            <View className="flex-row justify-between items-center mb-5">
+              <Text className="text-xl font-bold text-black">
+                Select Payment Method
+              </Text>
               <TouchableOpacity onPress={() => setShowPaymentModal(false)}>
                 <Ionicons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
-            
+
             <FlatList
               data={paymentMethods}
               keyExtractor={(item) => item.id}
@@ -435,92 +514,102 @@ export default function CartPage() {
               showsVerticalScrollIndicator={false}
             />
 
-            <TouchableOpacity 
-              style={styles.confirmPaymentButton}
+            <TouchableOpacity
+              className="bg-[#FFC000] rounded-xl p-4 items-center mt-4"
               onPress={() => setShowPaymentModal(false)}
             >
-              <Text style={styles.confirmPaymentButtonText}>Confirm Payment Method</Text>
+              <Text className="text-base font-semibold text-white">
+                Confirm Payment Method
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
 
       {/* Confirmation Modal */}
-      <Modal
-        visible={showConfirmModal}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Order</Text>
-            
-            <View style={styles.confirmationDetails}>
-              <Text style={styles.confirmationSubtitle}>
+      <Modal visible={showConfirmModal} transparent animationType="slide">
+        <View className="flex-1 bg-black/50 justify-center items-center p-5">
+          <View className="bg-white rounded-2xl p-5 w-full max-w-md max-h-[80%]">
+            <Text className="text-xl font-bold text-black mb-4">
+              Confirm Order
+            </Text>
+
+            <View className="mb-6">
+              <Text className="text-base text-[#8E8E93] mb-4">
                 Please review your order details:
               </Text>
 
-              <View style={styles.orderSummary}>
-                {cartItems.map(item => (
-                  <View key={item.id} style={styles.orderItem}>
-                    <View style={styles.orderItemLeft}>
-                      <Text style={styles.orderItemIcon}>{item.image}</Text>
+              <View className="bg-[#F8F9FA] rounded-xl p-4 mb-4">
+                {cartItems.map((item) => (
+                  <View
+                    key={item.id}
+                    className="flex-row justify-between items-center mb-3"
+                  >
+                    <View className="flex-row items-center flex-1">
+                      <Text className="text-xl mr-3">{item.image}</Text>
                       <View>
-                        <Text style={styles.orderItemName}>{item.name}</Text>
-                        <Text style={styles.orderItemQuantity}>
+                        <Text className="text-sm font-semibold text-black">
+                          {item.name}
+                        </Text>
+                        <Text className="text-xs text-[#8E8E93] mt-0.5">
                           Qty: {item.quantity} × ${item.price}
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.orderItemTotal}>
+
+                    <Text className="text-sm font-semibold text-black">
                       ${item.total.toFixed(2)}
                     </Text>
                   </View>
                 ))}
               </View>
 
-              <View style={styles.finalSummary}>
-                <View style={styles.finalRow}>
-                  <Text style={styles.finalLabel}>Payment Method:</Text>
-                  <Text style={styles.finalValue}>
+              <View className="bg-[#F8F9FA] rounded-xl p-4 mb-4">
+                <View className="flex-row justify-between items-center mb-2">
+                  <Text className="text-sm text-[#8E8E93]">Payment Method:</Text>
+                  <Text className="text-sm font-semibold text-black">
                     {selectedPaymentMethod?.name}
                   </Text>
                 </View>
-                <View style={styles.finalRow}>
-                  <Text style={styles.finalLabel}>Total Amount:</Text>
-                  <Text style={styles.finalTotal}>${total.toFixed(2)}</Text>
+
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-sm text-[#8E8E93]">Total Amount:</Text>
+                  <Text className="text-base font-bold text-[#007AFF]">
+                    ${total.toFixed(2)}
+                  </Text>
                 </View>
               </View>
 
-              <View style={styles.warningBox}>
+              <View className="flex-row bg-[#FFF8E1] p-3 rounded-lg">
                 <Ionicons name="warning-outline" size={16} color="#FF9500" />
-                <Text style={styles.warningText}>
+                <Text className="text-xs text-[#8B6914] ml-2 flex-1">
                   Orders cannot be cancelled once confirmed. Please double-check all details.
                 </Text>
               </View>
             </View>
 
-            <View style={styles.modalButtons}>
-              <TouchableOpacity 
-                style={styles.cancelOrderButton}
+            <View className="flex-row">
+              <TouchableOpacity
+                className="flex-1 bg-[#F8F9FA] rounded-xl p-4 items-center mr-3"
                 onPress={() => setShowConfirmModal(false)}
                 disabled={isProcessing}
               >
-                <Text style={styles.cancelOrderButtonText}>Cancel</Text>
+                <Text className="text-base font-semibold text-[#8E8E93]">
+                  Cancel
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                style={[
-                  styles.confirmOrderButton,
-                  isProcessing && styles.confirmOrderButtonDisabled
-                ]}
+
+              <TouchableOpacity
+                className={[
+                  'flex-1 rounded-xl p-4 items-center',
+                  isProcessing ? 'bg-[#E9ECEF]' : 'bg-[#007AFF]',
+                ].join(' ')}
                 onPress={confirmCheckout}
                 disabled={isProcessing}
               >
-                {isProcessing ? (
-                  <Text style={styles.confirmOrderButtonText}>Processing...</Text>
-                ) : (
-                  <Text style={styles.confirmOrderButtonText}>Confirm Order</Text>
-                )}
+                <Text className="text-base font-semibold text-white">
+                  {isProcessing ? 'Processing...' : 'Confirm Order'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -529,562 +618,3 @@ export default function CartPage() {
     </SafeAreaView>
   );
 }
-
-// --- Styles ---
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  backButton: {
-    padding: 4,
-    marginEnd: 12,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000000',
-    flex: 1,
-    textAlign: 'center',
-  },
-  headerPlaceholder: {
-    width: 36,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  cartSection: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 16,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  changeText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#007AFF',
-  },
-  
-  // Modern Cart Item Styles
-  cartItem: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  itemHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  productImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 12,
-    backgroundColor: '#F8F9FA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  productEmoji: {
-    fontSize: 24,
-  },
-  productInfo: {
-    flex: 1,
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  productCoin: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  removeButton: {
-    padding: 8,
-    borderRadius: 8,
-    backgroundColor: '#F8F9FA',
-  },
-  controlRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  quantitySection: {
-    alignItems: 'flex-start',
-  },
-  quantityLabel: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  quantityControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 4,
-  },
-  quantityButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  quantityText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginHorizontal: 16,
-    minWidth: 20,
-    textAlign: 'center',
-  },
-  priceSection: {
-    alignItems: 'flex-end',
-  },
-  unitPrice: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  feeText: {
-    fontSize: 12,
-    color: '#8E8E93',
-  },
-  itemTotalSection: {
-    borderTopWidth: 1,
-    borderTopColor: '#F2F2F7',
-    paddingTop: 12,
-    alignItems: 'flex-end',
-  },
-  itemTotal: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#007AFF',
-  },
-
-  // Rest of the styles remain similar but updated for consistency
-  promoSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  promoInputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  promoInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    borderRadius: 12,
-    padding: 16,
-    marginRight: 12,
-    fontSize: 16,
-    backgroundColor: '#F8F9FA',
-  },
-  applyButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderRadius: 12,
-  },
-  applyButtonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  discountApplied: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    padding: 12,
-    backgroundColor: '#E8F5E9',
-    borderRadius: 8,
-  },
-  discountText: {
-    fontSize: 14,
-    color: '#2E7D32',
-    marginLeft: 8,
-    fontWeight: '500',
-  },
-  paymentSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  selectedPayment: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-  },
-  selectedPaymentIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  selectedPaymentInfo: {
-    flex: 1,
-  },
-  selectedPaymentName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  selectedPaymentDetails: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  totalSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  summaryRows: {},
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  summaryLabel: {
-    fontSize: 16,
-    color: '#8E8E93',
-  },
-  summaryValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  discountLabel: {
-    color: '#34C759',
-  },
-  discountValue: {
-    color: '#34C759',
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#E9ECEF',
-    marginVertical: 12,
-  },
-  finalTotalLabel: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  finalTotalValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#007AFF',
-  },
-  checkoutButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 30,
-    shadowColor: '#007AFF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  checkoutButtonText: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 80,
-  },
-  emptyIcon: {
-    marginBottom: 24,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: '#8E8E93',
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  shopButton: {
-    backgroundColor: '#007AFF',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 12,
-  },
-  shopButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    width: '100%',
-    maxWidth: 400,
-    maxHeight: '80%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  paymentMethod: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  paymentMethodSelected: {
-    borderColor: '#007AFF',
-    backgroundColor: '#F0F8FF',
-  },
-  paymentLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  paymentIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  paymentInfo: {
-    flex: 1,
-  },
-  paymentName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  paymentDetails: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  radioButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: '#E9ECEF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  radioButtonSelected: {
-    borderColor: '#007AFF',
-  },
-  radioButtonInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#007AFF',
-  },
-  confirmPaymentButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  confirmPaymentButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  confirmationDetails: {
-    marginBottom: 24,
-  },
-  confirmationSubtitle: {
-    fontSize: 16,
-    color: '#8E8E93',
-    marginBottom: 16,
-  },
-  orderSummary: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  orderItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  orderItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  orderItemIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  orderItemName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  orderItemQuantity: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  orderItemTotal: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  finalSummary: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-  },
-  finalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  finalLabel: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  finalValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  finalTotal: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#007AFF',
-  },
-  warningBox: {
-    flexDirection: 'row',
-    backgroundColor: '#FFF8E1',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'flex-start',
-  },
-  warningText: {
-    fontSize: 12,
-    color: '#8B6914',
-    marginLeft: 8,
-    flex: 1,
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  cancelOrderButton: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  cancelOrderButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#8E8E93',
-  },
-  confirmOrderButton: {
-    flex: 1,
-    backgroundColor: '#007AFF',
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-  },
-  confirmOrderButtonDisabled: {
-    backgroundColor: '#E9ECEF',
-  },
-  confirmOrderButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-});

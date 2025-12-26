@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   FlatList,
@@ -79,101 +78,137 @@ export default function MinerInfoScreen() {
     router.back();
   };
 
-  const getStatusStyle = (status: MinerStatus) => {
+  const statusBadgeClass = (status: MinerStatus) => {
     switch (status) {
-      case 'running': return styles.statusRunning;
-      case 'stopped': return styles.statusStopped;
-      case 'restarting': return styles.statusRestarting;
-      case 'broken': return styles.statusBroken;
-      default: return styles.statusRunning;
+      case 'running':
+        return 'bg-[#34C759]';
+      case 'stopped':
+        return 'bg-[#FF9500]';
+      case 'restarting':
+        return 'bg-[#FFC000]'; // changed from blue to yellow
+      case 'broken':
+        return 'bg-[#FF3B30]';
+      default:
+        return 'bg-[#34C759]';
     }
   };
 
   const renderIncomeItem = ({ item }: { item: IncomeEntry }) => (
-    <View style={styles.incomeItem}>
-      <View style={styles.incomeDot} />
-      <View style={styles.incomeContent}>
-        <Text style={styles.incomePeriod}>{item.period}</Text>
-        <Text style={styles.incomeDetails}>{item.hashrate} • {item.income}</Text>
+    <View className="flex-row items-start mb-4 relative pl-5">
+      <View className="absolute left-0 top-[6px] w-[10px] h-[10px] rounded-full bg-[#FFC000]" />
+      <View className="flex-1">
+        <Text className="text-base font-semibold text-black mb-1">
+          {item.period}
+        </Text>
+        <Text className="text-sm text-[#6B7280]">
+          {item.hashrate} • {item.income}
+        </Text>
       </View>
     </View>
   );
 
   if (!miner) {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+        <View className="flex-row items-center justify-start px-4 py-3 border-b border-[#E5E7EB]">
+          <TouchableOpacity onPress={handleBackPress} className="p-1">
             <Ionicons name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
         </View>
-        <View style={styles.notFoundContainer}>
-          <Text style={styles.notFoundText}>Miner not found.</Text>
+
+        <View className="flex-1 items-center justify-center">
+          <Text className="text-lg text-[#6B7280]">Miner not found.</Text>
         </View>
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row items-center justify-start px-4 py-3 border-b border-[#E5E7EB]">
+        <TouchableOpacity onPress={handleBackPress} className="p-1">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* 1. Product Image Section */}
-        <View style={styles.productImageSection}>
-          <View style={styles.productImageContainer}>
-            <Text style={styles.productImage}>{miner.image}</Text>
+        <View className="bg-white py-6 items-center border-b-4 border-[#FFC000]">
+          <View className="w-[120px] h-[120px] rounded-full bg-[#F2F2F7] items-center justify-center">
+            <Text className="text-[60px]">{miner.image}</Text>
           </View>
         </View>
 
         {/* 2. Miner Details Section */}
-        <View style={styles.detailsSection}>
-          <View style={styles.detailsHeader}>
-            <Text style={styles.minerNameLarge}>{miner.name}</Text>
-            <View style={[styles.statusBadge, getStatusStyle(miner.status)]}>
-              <Text style={styles.statusText}>{miner.status.toUpperCase()}</Text>
+        <View className="bg-white p-5 mt-[2px]">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-2xl font-bold text-black">
+              {miner.name}
+            </Text>
+
+            <View className={`px-3 py-1.5 rounded-full ${statusBadgeClass(miner.status)}`}>
+              <Text className="text-white text-xs font-semibold">
+                {miner.status.toUpperCase()}
+              </Text>
             </View>
           </View>
-          <Text style={styles.minerModelLarge}>{miner.model}</Text>
 
-          <View style={styles.detailsGrid}>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Hashrate</Text>
-              <Text style={styles.detailValue}>{miner.hashrate} {miner.hashrateUnit}</Text>
+          <Text className="text-base text-[#6B7280] mb-5">
+            {miner.model}
+          </Text>
+
+          <View className="flex-row flex-wrap justify-between">
+            <View className="w-[48%] mb-4">
+              <Text className="text-sm text-[#6B7280] mb-1">Hashrate</Text>
+              <Text className="text-base font-bold text-black">
+                {miner.hashrate} {miner.hashrateUnit}
+              </Text>
             </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Daily Profit</Text>
-              <Text style={[styles.detailValue, miner.dailyProfit === '0.00' && styles.zeroProfit]}>
+
+            <View className="w-[48%] mb-4">
+              <Text className="text-sm text-[#6B7280] mb-1">Daily Profit</Text>
+              <Text className={`text-base font-bold ${miner.dailyProfit === '0.00' ? 'text-[#6B7280]' : 'text-black'}`}>
                 ${miner.dailyProfit}
               </Text>
             </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Uptime</Text>
-              <Text style={styles.detailValue}>{miner.uptime}</Text>
+
+            <View className="w-[48%] mb-4">
+              <Text className="text-sm text-[#6B7280] mb-1">Uptime</Text>
+              <Text className="text-base font-bold text-black">
+                {miner.uptime}
+              </Text>
             </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Temperature</Text>
-              <Text style={styles.detailValue}>{miner.temperature}</Text>
+
+            <View className="w-[48%] mb-4">
+              <Text className="text-sm text-[#6B7280] mb-1">Temperature</Text>
+              <Text className="text-base font-bold text-black">
+                {miner.temperature}
+              </Text>
             </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Location</Text>
-              <Text style={styles.detailValue}>{miner.location}</Text>
+
+            <View className="w-[48%] mb-4">
+              <Text className="text-sm text-[#6B7280] mb-1">Location</Text>
+              <Text className="text-base font-bold text-black">
+                {miner.location}
+              </Text>
             </View>
-            <View style={styles.detailItem}>
-              <Text style={styles.detailLabel}>Energy Fee</Text>
-              <Text style={styles.detailValue}>{miner.energyFee} USD/kWh</Text>
+
+            <View className="w-[48%] mb-4">
+              <Text className="text-sm text-[#6B7280] mb-1">Energy Fee</Text>
+              <Text className="text-base font-bold text-black">
+                {miner.energyFee} USD/kWh
+              </Text>
             </View>
           </View>
         </View>
 
         {/* 3. Income History Section */}
-        <View style={styles.historySection}>
-          <Text style={styles.historyTitle}>Mining Income History</Text>
+        <View className="bg-white p-5 mt-4 rounded-2xl mx-4 mb-6">
+          <Text className="text-xl font-bold text-black mb-4">
+            Mining Income History
+          </Text>
+
           <FlatList
             data={mockIncomeHistory}
             keyExtractor={(item) => item.id}
@@ -185,158 +220,3 @@ export default function MinerInfoScreen() {
     </SafeAreaView>
   );
 }
-
-// --- Styles ---
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start', // Align to the left
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
-  },
-  backButton: {
-    padding: 4,
-  },
-  content: {
-    flex: 1,
-  },
-  // --- Product Image Section ---
-  productImageSection: {
-    backgroundColor: '#FFFFFF',
-    paddingVertical: 24,
-    alignItems: 'center',
-    borderBottomWidth: 4,
-    borderBottomColor: '#FFC000', // Yellow accent border
-  },
-  productImageContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  productImage: {
-    fontSize: 60,
-  },
-  // --- Details Section ---
-  detailsSection: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    marginTop: 2, // Small gap to connect with image section
-  },
-  detailsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  minerNameLarge: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-  },
-  statusRunning: { backgroundColor: '#34C759' },
-  statusStopped: { backgroundColor: '#FF9500' },
-  statusRestarting: { backgroundColor: '#007AFF' },
-  statusBroken: { backgroundColor: '#FF3B30' },
-  statusText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  minerModelLarge: {
-    fontSize: 16,
-    color: '#6B7280',
-    marginBottom: 20,
-  },
-  detailsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  detailItem: {
-    width: '48%', // Two items per row
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  detailLabel: {
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  zeroProfit: {
-    color: '#6B7280',
-  },
-  // --- History Section ---
-  historySection: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    marginTop: 16,
-    borderRadius: 16,
-  },
-  historyTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 16,
-  },
-  incomeItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-    position: 'relative',
-    paddingLeft: 20,
-  },
-  incomeDot: {
-    position: 'absolute',
-    left: 0,
-    top: 6,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#FFC000',
-  },
-  incomeContent: {
-    flex: 1,
-  },
-  incomePeriod: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  incomeDetails: {
-    fontSize: 14,
-    color: '#6B7280',
-  },
-  // --- Fallback Styles ---
-  notFoundContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  notFoundText: {
-    fontSize: 18,
-    color: '#6B7280',
-  },
-  
-});

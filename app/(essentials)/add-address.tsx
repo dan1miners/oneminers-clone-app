@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   TextInput,
@@ -17,7 +16,7 @@ export default function AddAddressScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const isEditMode = params.id ? true : false;
-  const addressId = params.id as string;
+  const addressId = params.id as string; // (not used yet, but kept)
 
   const [formData, setFormData] = useState({
     title: isEditMode ? 'Office' : '',
@@ -39,7 +38,6 @@ export default function AddAddressScreen() {
   };
 
   const handleSaveAddress = () => {
-    // Validate required fields
     if (!formData.title || !formData.address || !formData.city || !formData.zipCode || !formData.phone) {
       Alert.alert('Missing Information', 'Please fill in all required fields.');
       return;
@@ -48,110 +46,139 @@ export default function AddAddressScreen() {
     Alert.alert(
       'Success',
       isEditMode ? 'Address updated successfully!' : 'New address added successfully!',
-      [
-        { text: 'OK', onPress: () => router.back() }
-      ]
+      [{ text: 'OK', onPress: () => router.back() }]
     );
   };
 
   const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
+  const addressTypes = ['Home', 'Office', 'Warehouse', 'Other'];
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-[#E9ECEF]">
+        <TouchableOpacity onPress={handleBackPress} className="p-1">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        
-        <Text style={styles.headerTitle}>
+
+        <Text className="text-lg font-semibold text-black">
           {isEditMode ? 'Edit Address' : 'Add New Address'}
         </Text>
-        
-        <TouchableOpacity onPress={handleSaveAddress} style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Save</Text>
+
+        <TouchableOpacity onPress={handleSaveAddress} className="px-4 py-2">
+          <Text className="text-base font-semibold text-[#FFC000]">Save</Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
-        style={styles.content}
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ padding: 16 }}
       >
         {/* Address Type */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Address Type</Text>
-          <View style={styles.addressTypeOptions}>
-            {['Home', 'Office', 'Warehouse', 'Other'].map((type) => (
-              <TouchableOpacity
-                key={type}
-                style={[
-                  styles.addressTypeOption,
-                  formData.title === type && styles.addressTypeOptionActive
-                ]}
-                onPress={() => handleInputChange('title', type)}
-              >
-                <Text style={[
-                  styles.addressTypeText,
-                  formData.title === type && styles.addressTypeTextActive
-                ]}>
-                  {type}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        <View className="bg-white rounded-2xl p-5 mb-4" style={{ elevation: 2 }}>
+          <Text className="text-lg font-bold text-black mb-5">Address Type</Text>
+
+          <View className="flex-row flex-wrap">
+            {addressTypes.map((type) => {
+              const active = formData.title === type;
+              return (
+                <TouchableOpacity
+                  key={type}
+                  onPress={() => handleInputChange('title', type)}
+                  className={[
+                    'px-4 py-3 rounded-lg border min-w-[80px] items-center mr-3 mb-3',
+                    active
+                      ? 'bg-[#FFF8E6] border-[#FFC000]'
+                      : 'bg-[#F8F9FA] border-[#E9ECEF]',
+                  ].join(' ')}
+                >
+                  <Text
+                    className={[
+                      'text-sm font-medium',
+                      active ? 'text-black font-semibold' : 'text-[#6C757D]',
+                    ].join(' ')}
+                  >
+                    {type}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
         {/* Contact Information */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
-          
-          <View style={styles.row}>
-            <View style={[styles.formGroup, styles.halfWidth]}>
-              <Text style={styles.label}>First Name *</Text>
+        <View className="bg-white rounded-2xl p-5 mb-4" style={{ elevation: 2 }}>
+          <Text className="text-lg font-bold text-black mb-5">
+            Contact Information
+          </Text>
+
+          {/* First + Last */}
+          <View className="flex-row justify-between">
+            <View className="w-[48%] mb-5">
+              <Text className="text-sm font-medium text-[#6C757D] mb-2">
+                First Name *
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
                 value={formData.firstName}
                 onChangeText={(value) => handleInputChange('firstName', value)}
                 placeholder="Enter first name"
+                placeholderTextColor="#8E8E93"
               />
             </View>
-            
-            <View style={[styles.formGroup, styles.halfWidth]}>
-              <Text style={styles.label}>Last Name *</Text>
+
+            <View className="w-[48%] mb-5">
+              <Text className="text-sm font-medium text-[#6C757D] mb-2">
+                Last Name *
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
                 value={formData.lastName}
                 onChangeText={(value) => handleInputChange('lastName', value)}
                 placeholder="Enter last name"
+                placeholderTextColor="#8E8E93"
               />
             </View>
           </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Company (Optional)</Text>
+
+          {/* Company */}
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              Company (Optional)
+            </Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
               value={formData.company}
               onChangeText={(value) => handleInputChange('company', value)}
               placeholder="Enter company name"
+              placeholderTextColor="#8E8E93"
             />
           </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Phone Number *</Text>
-            <View style={styles.inputWithIcon}>
-              <Ionicons name="call-outline" size={20} color="#8E8E93" style={styles.inputIcon} />
+
+          {/* Phone */}
+          <View className="mb-1">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              Phone Number *
+            </Text>
+
+            <View className="relative">
+              <View className="absolute left-4 top-3.5 z-10">
+                <Ionicons name="call-outline" size={20} color="#8E8E93" />
+              </View>
+
               <TextInput
-                style={[styles.input, styles.inputWithPadding]}
+                className="bg-[#F8F9FA] rounded-xl pl-12 pr-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
                 value={formData.phone}
                 onChangeText={(value) => handleInputChange('phone', value)}
                 placeholder="Enter phone number"
+                placeholderTextColor="#8E8E93"
                 keyboardType="phone-pad"
               />
             </View>
@@ -159,67 +186,90 @@ export default function AddAddressScreen() {
         </View>
 
         {/* Address Details */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Address Details</Text>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Street Address *</Text>
+        <View className="bg-white rounded-2xl p-5 mb-4" style={{ elevation: 2 }}>
+          <Text className="text-lg font-bold text-black mb-5">
+            Address Details
+          </Text>
+
+          {/* Street */}
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              Street Address *
+            </Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
               value={formData.address}
               onChangeText={(value) => handleInputChange('address', value)}
               placeholder="Enter street address"
+              placeholderTextColor="#8E8E93"
             />
           </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Apartment, Suite, etc. (Optional)</Text>
+
+          {/* Apartment */}
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              Apartment, Suite, etc. (Optional)
+            </Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
               value={formData.apartment}
               onChangeText={(value) => handleInputChange('apartment', value)}
               placeholder="Enter apartment or suite number"
+              placeholderTextColor="#8E8E93"
             />
           </View>
-          
-          <View style={styles.row}>
-            <View style={[styles.formGroup, styles.halfWidth]}>
-              <Text style={styles.label}>City *</Text>
+
+          {/* City + State */}
+          <View className="flex-row justify-between">
+            <View className="w-[48%] mb-5">
+              <Text className="text-sm font-medium text-[#6C757D] mb-2">
+                City *
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
                 value={formData.city}
                 onChangeText={(value) => handleInputChange('city', value)}
                 placeholder="Enter city"
+                placeholderTextColor="#8E8E93"
               />
             </View>
-            
-            <View style={[styles.formGroup, styles.halfWidth]}>
-              <Text style={styles.label}>State/Province</Text>
+
+            <View className="w-[48%] mb-5">
+              <Text className="text-sm font-medium text-[#6C757D] mb-2">
+                State/Province
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
                 value={formData.state}
                 onChangeText={(value) => handleInputChange('state', value)}
                 placeholder="Enter state"
+                placeholderTextColor="#8E8E93"
               />
             </View>
           </View>
-          
-          <View style={styles.row}>
-            <View style={[styles.formGroup, styles.halfWidth]}>
-              <Text style={styles.label}>ZIP/Postal Code *</Text>
+
+          {/* Zip + Country */}
+          <View className="flex-row justify-between">
+            <View className="w-[48%] mb-1">
+              <Text className="text-sm font-medium text-[#6C757D] mb-2">
+                ZIP/Postal Code *
+              </Text>
               <TextInput
-                style={styles.input}
+                className="bg-[#F8F9FA] rounded-xl px-4 py-3.5 text-base text-[#212529] border border-[#E9ECEF]"
                 value={formData.zipCode}
                 onChangeText={(value) => handleInputChange('zipCode', value)}
                 placeholder="Enter ZIP code"
+                placeholderTextColor="#8E8E93"
                 keyboardType="numeric"
               />
             </View>
-            
-            <View style={[styles.formGroup, styles.halfWidth]}>
-              <Text style={styles.label}>Country *</Text>
-              <TouchableOpacity style={styles.countryPicker}>
-                <Text style={styles.countryText}>
+
+            <View className="w-[48%] mb-1">
+              <Text className="text-sm font-medium text-[#6C757D] mb-2">
+                Country *
+              </Text>
+              <TouchableOpacity className="flex-row items-center justify-between bg-[#F8F9FA] rounded-xl px-4 py-3.5 border border-[#E9ECEF]">
+                <Text className="text-base text-[#212529]">
                   {formData.country || 'Select country'}
                 </Text>
                 <Ionicons name="chevron-down" size={18} color="#C7C7CC" />
@@ -229,19 +279,25 @@ export default function AddAddressScreen() {
         </View>
 
         {/* Address Preferences */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Address Preferences</Text>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
+        <View className="bg-white rounded-2xl p-5 mb-4" style={{ elevation: 2 }}>
+          <Text className="text-lg font-bold text-black mb-2">
+            Address Preferences
+          </Text>
+
+          {/* Default switch */}
+          <View className="flex-row items-center justify-between py-4 border-b border-[#F2F2F7]">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="star" size={22} color="#FFC000" />
-              <View style={styles.settingTexts}>
-                <Text style={styles.settingTitle}>Set as Default Address</Text>
-                <Text style={styles.settingDescription}>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-medium text-black mb-0.5">
+                  Set as Default Address
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
                   Use this address for all future orders
                 </Text>
               </View>
             </View>
+
             <Switch
               value={formData.isDefault}
               onValueChange={(value) => handleInputChange('isDefault', value)}
@@ -249,13 +305,16 @@ export default function AddAddressScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
-          
-          <TouchableOpacity style={styles.deliveryInstructions}>
-            <View style={styles.deliveryInfo}>
+
+          {/* Delivery instructions */}
+          <TouchableOpacity className="flex-row items-center justify-between py-4">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="cube-outline" size={22} color="#FFC000" />
-              <View style={styles.settingTexts}>
-                <Text style={styles.settingTitle}>Delivery Instructions</Text>
-                <Text style={styles.settingDescription}>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-medium text-black mb-0.5">
+                  Delivery Instructions
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
                   Add special instructions for delivery
                 </Text>
               </View>
@@ -265,230 +324,29 @@ export default function AddAddressScreen() {
         </View>
 
         {/* Action Buttons */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={handleBackPress}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+        <View className="flex-row justify-between mt-2">
+          <TouchableOpacity
+            onPress={handleBackPress}
+            className="flex-1 bg-[#F8F9FA] py-4 rounded-xl items-center mr-3"
+          >
+            <Text className="text-base font-semibold text-[#6C757D]">
+              Cancel
+            </Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.saveAddressButton} onPress={handleSaveAddress}>
-            <Text style={styles.saveAddressButtonText}>
+
+          <TouchableOpacity
+            onPress={handleSaveAddress}
+            className="flex-[2] bg-[#FFC000] py-4 rounded-xl items-center"
+          >
+            <Text className="text-base font-bold text-black">
               {isEditMode ? 'Update Address' : 'Save Address'}
             </Text>
           </TouchableOpacity>
         </View>
-        
+
         {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
+        <View className="h-[30px]" />
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  saveButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  saveButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFC000',
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 20,
-  },
-  addressTypeOptions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  addressTypeOption: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#F8F9FA',
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  addressTypeOptionActive: {
-    backgroundColor: '#FFF8E6',
-    borderColor: '#FFC000',
-  },
-  addressTypeText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6C757D',
-  },
-  addressTypeTextActive: {
-    color: '#000000',
-    fontWeight: '600',
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6C757D',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#212529',
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-  },
-  inputWithIcon: {
-    position: 'relative',
-  },
-  inputIcon: {
-    position: 'absolute',
-    left: 16,
-    top: 14,
-    zIndex: 1,
-  },
-  inputWithPadding: {
-    paddingLeft: 48,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  halfWidth: {
-    width: '48%',
-  },
-  countryPicker: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-  },
-  countryText: {
-    fontSize: 16,
-    color: '#212529',
-  },
-  settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  deliveryInstructions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  settingInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  deliveryInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  settingTexts: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000000',
-    marginBottom: 2,
-  },
-  settingDescription: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-    marginTop: 8,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  cancelButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#6C757D',
-  },
-  saveAddressButton: {
-    flex: 2,
-    backgroundColor: '#FFC000',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  saveAddressButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  bottomSpacer: {
-    height: 30,
-  },
-});

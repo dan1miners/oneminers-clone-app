@@ -1,19 +1,11 @@
 import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 // --- Mock Data & Types ---
 
-// Define the structure for a single history entry
 type HistoryEntry = {
   id: string;
   timestamp: string;
@@ -21,16 +13,14 @@ type HistoryEntry = {
   message: string;
 };
 
-// Define the structure for a single order item
 type OrderItem = {
   id: string;
   name: string;
   price: string;
   quantity: number;
-  image: string; // Added image property
+  image: string;
 };
 
-// Define the structure for an order
 type Order = {
   id: string;
   status: 'Unpaid' | 'To Ship' | 'To Receive' | 'Completed';
@@ -40,7 +30,6 @@ type Order = {
   history: HistoryEntry[];
 };
 
-// Mock data for orders with images
 const mockOrders: Order[] = [
   {
     id: 'ORD-2023-001',
@@ -76,9 +65,7 @@ const mockOrders: Order[] = [
     date: '2023-10-26',
     totalAmount: '$3,500',
     items: [{ id: '4', name: 'Whatsminer M50', price: '$3,500', quantity: 1, image: '🔩' }],
-    history: [
-      { id: 'h8', timestamp: '2023-10-26 09:00', status: 'Unpaid', message: 'Order placed successfully. Awaiting payment.' },
-    ],
+    history: [{ id: 'h8', timestamp: '2023-10-26 09:00', status: 'Unpaid', message: 'Order placed successfully. Awaiting payment.' }],
   },
   {
     id: 'ORD-2023-004',
@@ -87,94 +74,115 @@ const mockOrders: Order[] = [
     totalAmount: '$7,000',
     items: [{ id: '5', name: 'Antminer S19 Pro', price: '$3,500', quantity: 2, image: '⚙️' }],
     history: [
-        { id: 'h9', timestamp: '2023-10-26 17:00', status: 'To Ship', message: 'Payment confirmed. Preparing for shipment.' },
-        { id: 'h10', timestamp: '2023-10-26 15:00', status: 'Unpaid', message: 'Order placed successfully.' },
+      { id: 'h9', timestamp: '2023-10-26 17:00', status: 'To Ship', message: 'Payment confirmed. Preparing for shipment.' },
+      { id: 'h10', timestamp: '2023-10-26 15:00', status: 'Unpaid', message: 'Order placed successfully.' },
     ],
   },
 ];
 
-// --- Main Component ---
-
-const filters = ['All', 'Unpaid', 'To Ship', 'To Receive', 'Completed'];
+const filters = ['All', 'Unpaid', 'To Ship', 'To Receive', 'Completed'] as const;
 
 export default function OrderPage() {
   const router = useRouter();
-  const [selectedFilter, setSelectedFilter] = useState('All');
+  const [selectedFilter, setSelectedFilter] = useState<(typeof filters)[number]>('All');
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
 
   const filteredOrders = useMemo(() => {
-    if (selectedFilter === 'All') {
-      return mockOrders;
-    }
-    return mockOrders.filter(order => order.status === selectedFilter);
+    if (selectedFilter === 'All') return mockOrders;
+    return mockOrders.filter((order) => order.status === selectedFilter);
   }, [selectedFilter]);
 
-  const handleBackPress = () => {
-    router.back();
-  };
+  const handleBackPress = () => router.back();
 
   const toggleOrderHistory = (orderId: string) => {
-    setExpandedOrderId(expandedOrderId === orderId ? null : orderId);
+    setExpandedOrderId((prev) => (prev === orderId ? null : orderId));
   };
 
-  const renderFilterTab = (filter: string) => (
-    <TouchableOpacity
-      key={filter}
-      style={[styles.filterTab, selectedFilter === filter && styles.filterTabSelected]}
-      onPress={() => setSelectedFilter(filter)}
-    >
-      <Text style={[styles.filterTabText, selectedFilter === filter && styles.filterTabTextSelected]}>
-        {filter}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderFilterTab = (filter: (typeof filters)[number]) => {
+    const isSelected = selectedFilter === filter;
+
+    return (
+      <TouchableOpacity
+        key={filter}
+        onPress={() => setSelectedFilter(filter)}
+        className={[
+          'py-2 px-4 mr-2 rounded-2xl',
+          isSelected ? 'bg-[#FFC000]' : 'bg-[#E9ECEF]',
+        ].join(' ')}
+      >
+        <Text
+          className={[
+            'text-sm font-medium',
+            isSelected ? 'text-white' : 'text-[#6C757D]',
+          ].join(' ')}
+        >
+          {filter}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   const renderOrderItem = ({ item }: { item: Order }) => {
-    const firstItemImage = item.items[0]?.image || '📦'; // Fallback emoji
+    const firstItemImage = item.items[0]?.image || '📦';
     const isExpanded = expandedOrderId === item.id;
 
     return (
-      <View style={styles.orderCard}>
+      <View className="bg-white rounded-lg p-4 mb-3">
         <TouchableOpacity onPress={() => toggleOrderHistory(item.id)}>
-          <View style={styles.orderCardRow}>
+          <View className="flex-row items-center">
             {/* Product Image */}
-            <View style={styles.productImageContainer}>
-              <Text style={styles.productImage}>{firstItemImage}</Text>
+            <View className="w-[50px] h-[50px] rounded-lg bg-[#F2F2F7] items-center justify-center mr-3">
+              <Text className="text-2xl">{firstItemImage}</Text>
             </View>
 
             {/* Order Details */}
-            <View style={styles.orderDetailsContainer}>
-              <View style={styles.orderIdStatusRow}>
-                <Text style={styles.orderIdCompact}>{item.id}</Text>
-                <Text style={styles.orderStatusCompact}>{item.status}</Text>
+            <View className="flex-1 mr-2">
+              <View className="flex-row justify-between items-center mb-1">
+                <Text className="text-sm font-semibold text-[#212529]">
+                  {item.id}
+                </Text>
+                <Text className="text-xs font-semibold text-[#FFC000]">
+                  {item.status}
+                </Text>
               </View>
-              <Text style={styles.orderSummaryCompact}>{item.items.length} item(s) • {item.totalAmount}</Text>
+              <Text className="text-[13px] text-[#8E8E93]">
+                {item.items.length} item(s) • {item.totalAmount}
+              </Text>
             </View>
 
             {/* Expand/Collapse Icon */}
-            <Ionicons 
-              name={isExpanded ? "chevron-up" : "chevron-down"} 
-              size={20} 
-              color="#8E8E93" 
+            <Ionicons
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
+              size={20}
+              color="#8E8E93"
             />
           </View>
         </TouchableOpacity>
 
         {/* Expandable History Section */}
         {isExpanded && (
-          <View style={styles.historyContainer}>
-            <Text style={styles.historyTitle}>Update History</Text>
+          <View className="mt-4 pt-4 border-t border-[#F2F2F7]">
+            <Text className="text-base font-semibold text-[#212529] mb-3">
+              Update History
+            </Text>
+
             <FlatList
               data={item.history}
               keyExtractor={(historyItem) => historyItem.id}
+              scrollEnabled={false}
               renderItem={({ item: historyItem }) => (
-                <View style={styles.historyItem}>
-                  <Text style={styles.historyTimestamp}>{historyItem.timestamp}</Text>
-                  <Text style={styles.historyStatus}>{historyItem.status}</Text>
-                  <Text style={styles.historyMessage}>{historyItem.message}</Text>
+                <View className="mb-3 pl-2 border-l-2 border-[#FFC000]">
+                  <Text className="text-xs text-[#8E8E93] mb-1">
+                    {historyItem.timestamp}
+                  </Text>
+                  <Text className="text-sm font-semibold text-[#212529] mb-1">
+                    {historyItem.status}
+                  </Text>
+                  <Text className="text-[13px] text-[#495057] leading-[18px]">
+                    {historyItem.message}
+                  </Text>
                 </View>
               )}
-              scrollEnabled={false}
             />
           </View>
         )}
@@ -183,19 +191,23 @@ export default function OrderPage() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row items-center px-4 py-3 border-b border-[#E9ECEF]">
+        <TouchableOpacity onPress={handleBackPress} className="p-1 mr-3">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Orders</Text>
+        <Text className="text-base font-semibold text-black">My Orders</Text>
       </View>
 
       {/* Content */}
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Filter Tabs */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersContainer}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mb-4"
+        >
           {filters.map(renderFilterTab)}
         </ScrollView>
 
@@ -204,146 +216,10 @@ export default function OrderPage() {
           data={filteredOrders}
           keyExtractor={(item) => item.id}
           renderItem={renderOrderItem}
-          contentContainerStyle={styles.ordersList}
           scrollEnabled={false}
+          contentContainerStyle={{ paddingBottom: 16 }}
         />
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-// --- Styles ---
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  backButton: {
-    padding: 4,
-    marginEnd: 12,
-  },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  content: {
-    flex: 1,
-    padding: 16,
-  },
-  filtersContainer: {
-    marginBottom: 16,
-  },
-  filterTab: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    marginRight: 8,
-    borderRadius: 16,
-    backgroundColor: '#E9ECEF',
-  },
-  filterTabSelected: {
-    backgroundColor: '#FFC000',
-  },
-  filterTabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6C757D',
-  },
-  filterTabTextSelected: {
-    color: '#FFFFFF',
-  },
-  ordersList: {
-    paddingBottom: 16,
-  },
-  // --- New Compact Card Styles ---
-  orderCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
-  },
-  orderCardRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  productImageContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    backgroundColor: '#F2F2F7',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  productImage: {
-    fontSize: 24,
-  },
-  orderDetailsContainer: {
-    flex: 1,
-    marginRight: 8,
-  },
-  orderIdStatusRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  orderIdCompact: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#212529',
-  },
-  orderStatusCompact: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFC000',
-  },
-  orderSummaryCompact: {
-    fontSize: 13,
-    color: '#8E8E93',
-  },
-  // --- History Styles (unchanged) ---
-  historyContainer: {
-    marginTop: 16,
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#F2F2F7',
-  },
-  historyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212529',
-    marginBottom: 12,
-  },
-  historyItem: {
-    marginBottom: 12,
-    paddingLeft: 8,
-    borderLeftWidth: 2,
-    borderLeftColor: '#FFC000',
-  },
-  historyTimestamp: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginBottom: 4,
-  },
-  historyStatus: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#212529',
-    marginBottom: 4,
-  },
-  historyMessage: {
-    fontSize: 13,
-    color: '#495057',
-    lineHeight: 18,
-  },
-});

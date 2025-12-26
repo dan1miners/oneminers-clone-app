@@ -1,18 +1,20 @@
 // app/components/AnimatedStatusDot.tsx
 import React, { useEffect, useRef } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
+import { Animated } from 'react-native';
 
 interface AnimatedStatusDotProps {
   color: string;
   isActive: boolean;
 }
 
-export default function AnimatedStatusDot({ color, isActive }: AnimatedStatusDotProps) {
+export default function AnimatedStatusDot({
+  color,
+  isActive,
+}: AnimatedStatusDotProps) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (isActive) {
-      // Pulsing animation for the active status
       Animated.loop(
         Animated.sequence([
           Animated.timing(scaleAnim, {
@@ -28,33 +30,21 @@ export default function AnimatedStatusDot({ color, isActive }: AnimatedStatusDot
         ])
       ).start();
     } else {
-      // Reset scale if not active
       Animated.timing(scaleAnim, {
         toValue: 1,
         duration: 200,
         useNativeDriver: true,
       }).start();
     }
-  }, [isActive]);
+  }, [isActive, scaleAnim]);
 
   return (
     <Animated.View
-      style={[
-        styles.dot,
-        {
-          backgroundColor: color,
-          transform: [{ scale: scaleAnim }],
-        },
-      ]}
+      className="w-3 h-3 rounded-full mx-1"
+      style={{
+        backgroundColor: color,
+        transform: [{ scale: scaleAnim }],
+      }}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginHorizontal: 4,
-  },
-});

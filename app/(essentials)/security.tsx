@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   TextInput,
@@ -15,7 +14,7 @@ import { useRouter } from 'expo-router';
 
 export default function SecurityScreen() {
   const router = useRouter();
-  
+
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorEnabled: true,
     biometricLogin: true,
@@ -29,51 +28,41 @@ export default function SecurityScreen() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleBackPress = () => {
-    router.back();
-  };
-
   const handleChangePassword = () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       Alert.alert('Missing Information', 'Please fill in all password fields.');
       return;
     }
-
     if (newPassword !== confirmPassword) {
       Alert.alert('Error', 'New passwords do not match.');
       return;
     }
-
     if (newPassword.length < 8) {
       Alert.alert('Error', 'Password must be at least 8 characters long.');
       return;
     }
 
-    Alert.alert(
-      'Password Changed',
-      'Your password has been successfully updated.',
-      [
-        { text: 'OK', onPress: () => {
+    Alert.alert('Password Changed', 'Your password has been successfully updated.', [
+      {
+        text: 'OK',
+        onPress: () => {
           setCurrentPassword('');
           setNewPassword('');
           setConfirmPassword('');
-        }}
-      ]
-    );
+        },
+      },
+    ]);
   };
 
-  const handleToggleSetting = (setting: string) => {
-    setSecuritySettings(prev => ({
-      ...prev,
-      [setting]: !prev[setting as keyof typeof securitySettings]
-    }));
+  const handleToggleSetting = (setting: keyof typeof securitySettings) => {
+    setSecuritySettings(prev => ({ ...prev, [setting]: !prev[setting] }));
   };
 
   const handleAutoLogoutChange = (value: string) => {
     const minutes = parseInt(value) || 15;
     setSecuritySettings(prev => ({
       ...prev,
-      autoLogoutMinutes: Math.min(Math.max(minutes, 1), 60)
+      autoLogoutMinutes: Math.min(Math.max(minutes, 1), 60),
     }));
   };
 
@@ -109,110 +98,150 @@ export default function SecurityScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row items-center px-4 py-3 bg-white border-b border-[#E9ECEF]">
+        <TouchableOpacity onPress={() => router.back()} className="p-1 mr-3">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        
-        <Text style={styles.headerTitle}>Security</Text>
+        <Text className="text-xl font-semibold text-black">Security</Text>
       </View>
 
-      <ScrollView 
-        style={styles.content}
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ padding: 16 }}
       >
         {/* Security Score */}
-        <View style={styles.scoreCard}>
-          <View style={styles.scoreHeader}>
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <View className="flex-row items-center mb-4">
             <MaterialCommunityIcons name="shield-lock" size={24} color="#FFC000" />
-            <Text style={styles.scoreTitle}>Security Score</Text>
+            <Text className="text-lg font-bold text-black ml-3">
+              Security Score
+            </Text>
           </View>
-          <View style={styles.scoreProgress}>
-            <View style={[styles.progressBar, { width: '85%' }]} />
+
+          <View className="h-2 bg-[#F2F2F7] rounded-full mb-3 overflow-hidden">
+            <View className="h-full bg-[#FFC000] rounded-full w-[85%]" />
           </View>
-          <Text style={styles.scoreText}>85% - Excellent</Text>
-          <Text style={styles.scoreSubtext}>Your account is well protected</Text>
+
+          <Text className="text-base font-bold text-black mb-1">
+            85% - Excellent
+          </Text>
+          <Text className="text-sm text-[#8E8E93]">
+            Your account is well protected
+          </Text>
         </View>
 
         {/* Change Password */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Change Password</Text>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Current Password</Text>
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <Text className="text-lg font-bold text-black mb-5">
+            Change Password
+          </Text>
+
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              Current Password
+            </Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#F8F9FA] border border-[#E9ECEF] rounded-xl px-4 py-3.5 text-base"
+              secureTextEntry
               value={currentPassword}
               onChangeText={setCurrentPassword}
               placeholder="Enter current password"
-              secureTextEntry
             />
           </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>New Password</Text>
+
+          <View className="mb-5">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              New Password
+            </Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#F8F9FA] border border-[#E9ECEF] rounded-xl px-4 py-3.5 text-base"
+              secureTextEntry
               value={newPassword}
               onChangeText={setNewPassword}
               placeholder="Enter new password"
-              secureTextEntry
             />
-            <Text style={styles.passwordHint}>
+            <Text className="text-xs text-[#8E8E93] mt-2">
               Use at least 8 characters with letters, numbers, and symbols
             </Text>
           </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Confirm New Password</Text>
+
+          <View className="mb-6">
+            <Text className="text-sm font-medium text-[#6C757D] mb-2">
+              Confirm New Password
+            </Text>
             <TextInput
-              style={styles.input}
+              className="bg-[#F8F9FA] border border-[#E9ECEF] rounded-xl px-4 py-3.5 text-base"
+              secureTextEntry
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               placeholder="Confirm new password"
-              secureTextEntry
             />
           </View>
-          
-          <TouchableOpacity 
-            style={styles.changePasswordButton}
+
+          <TouchableOpacity
             onPress={handleChangePassword}
+            className="bg-[#FFC000] rounded-xl py-4 items-center"
           >
-            <Text style={styles.changePasswordButtonText}>Change Password</Text>
+            <Text className="text-base font-bold text-black">
+              Change Password
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Security Features */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security Features</Text>
-          
-          {securityFeatures.map((feature) => (
-            <TouchableOpacity key={feature.id} style={styles.featureItem}>
-              <View style={[styles.featureIcon, { backgroundColor: `${feature.color}20` }]}>
-                <Ionicons name={feature.icon as any} size={22} color={feature.color} />
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <Text className="text-lg font-bold text-black mb-4">
+            Security Features
+          </Text>
+
+          {securityFeatures.map(feature => (
+            <TouchableOpacity
+              key={feature.id}
+              className="flex-row items-center py-4 border-b border-[#F2F2F7]"
+            >
+              <View
+                className="w-11 h-11 rounded-xl items-center justify-center mr-3"
+                style={{ backgroundColor: `${feature.color}20` }}
+              >
+                <Ionicons
+                  name={feature.icon as any}
+                  size={22}
+                  color={feature.color}
+                />
               </View>
-              <View style={styles.featureInfo}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
+
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-black mb-0.5">
+                  {feature.title}
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
+                  {feature.description}
+                </Text>
               </View>
+
               <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Security Settings */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security Settings</Text>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <Text className="text-lg font-bold text-black mb-4">
+            Security Settings
+          </Text>
+
+          {/* 2FA */}
+          <View className="flex-row justify-between items-center py-4 border-b border-[#F2F2F7]">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="shield-checkmark" size={22} color="#FFC000" />
-              <View style={styles.settingTexts}>
-                <Text style={styles.settingTitle}>Two-Factor Authentication</Text>
-                <Text style={styles.settingDescription}>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-medium text-black">
+                  Two-Factor Authentication
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
                   Requires a code from your authenticator app
                 </Text>
               </View>
@@ -224,13 +253,16 @@ export default function SecurityScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
+
+          {/* Biometric */}
+          <View className="flex-row justify-between items-center py-4 border-b border-[#F2F2F7]">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="finger-print-outline" size={22} color="#FFC000" />
-              <View style={styles.settingTexts}>
-                <Text style={styles.settingTitle}>Biometric Login</Text>
-                <Text style={styles.settingDescription}>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-medium text-black">
+                  Biometric Login
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
                   Use fingerprint or face recognition
                 </Text>
               </View>
@@ -242,35 +274,42 @@ export default function SecurityScreen() {
               thumbColor="#FFFFFF"
             />
           </View>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
+
+          {/* Auto Logout */}
+          <View className="flex-row justify-between items-center py-4 border-b border-[#F2F2F7]">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="timer-outline" size={22} color="#FFC000" />
-              <View style={styles.settingTexts}>
-                <Text style={styles.settingTitle}>Auto Logout</Text>
-                <Text style={styles.settingDescription}>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-medium text-black">
+                  Auto Logout
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
                   Log out after inactivity
                 </Text>
               </View>
             </View>
-            <View style={styles.autoLogoutContainer}>
+
+            <View className="flex-row items-center">
               <TextInput
-                style={styles.autoLogoutInput}
-                value={securitySettings.autoLogoutMinutes.toString()}
-                onChangeText={handleAutoLogoutChange}
+                className="bg-[#F8F9FA] border border-[#E9ECEF] rounded-lg px-2 py-1 text-sm w-10 text-center mr-2"
                 keyboardType="numeric"
                 maxLength={2}
+                value={securitySettings.autoLogoutMinutes.toString()}
+                onChangeText={handleAutoLogoutChange}
               />
-              <Text style={styles.autoLogoutLabel}>minutes</Text>
+              <Text className="text-sm text-[#8E8E93]">minutes</Text>
             </View>
           </View>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingInfo}>
+
+          {/* Login Alerts */}
+          <View className="flex-row justify-between items-center py-4">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="notifications-outline" size={22} color="#FFC000" />
-              <View style={styles.settingTexts}>
-                <Text style={styles.settingTitle}>Login Alerts</Text>
-                <Text style={styles.settingDescription}>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-medium text-black">
+                  Login Alerts
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
                   Get notified of new logins
                 </Text>
               </View>
@@ -285,353 +324,86 @@ export default function SecurityScreen() {
         </View>
 
         {/* Active Sessions */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Active Sessions</Text>
-          
-          <View style={styles.sessionItem}>
-            <View style={styles.sessionDevice}>
+        <View className="bg-white rounded-2xl p-5 mb-4">
+          <Text className="text-lg font-bold text-black mb-4">
+            Active Sessions
+          </Text>
+
+          <View className="flex-row justify-between items-center py-4 border-b border-[#F2F2F7]">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="phone-portrait" size={24} color="#FFC000" />
-              <View style={styles.sessionInfo}>
-                <Text style={styles.sessionDeviceName}>iPhone 14 Pro</Text>
-                <Text style={styles.sessionDetails}>San Francisco, USA • Current</Text>
-                <Text style={styles.sessionTime}>Last active: Just now</Text>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-semibold text-black">
+                  iPhone 14 Pro
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
+                  San Francisco, USA • Current
+                </Text>
+                <Text className="text-xs text-[#C7C7CC]">
+                  Last active: Just now
+                </Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.sessionAction}>
-              <Text style={styles.sessionActionText}>Logout</Text>
+            <TouchableOpacity className="bg-[#F8F9FA] px-3 py-1.5 rounded-lg">
+              <Text className="text-sm font-medium text-red-500">
+                Logout
+              </Text>
             </TouchableOpacity>
           </View>
-          
-          <View style={styles.sessionItem}>
-            <View style={styles.sessionDevice}>
+
+          <View className="flex-row justify-between items-center py-4">
+            <View className="flex-row items-center flex-1">
               <Ionicons name="laptop" size={24} color="#007AFF" />
-              <View style={styles.sessionInfo}>
-                <Text style={styles.sessionDeviceName}>MacBook Pro</Text>
-                <Text style={styles.sessionDetails}>San Jose, USA</Text>
-                <Text style={styles.sessionTime}>Last active: 2 hours ago</Text>
+              <View className="ml-3 flex-1">
+                <Text className="text-base font-semibold text-black">
+                  MacBook Pro
+                </Text>
+                <Text className="text-sm text-[#8E8E93]">
+                  San Jose, USA
+                </Text>
+                <Text className="text-xs text-[#C7C7CC]">
+                  Last active: 2 hours ago
+                </Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.sessionAction}>
-              <Text style={styles.sessionActionText}>Logout</Text>
+            <TouchableOpacity className="bg-[#F8F9FA] px-3 py-1.5 rounded-lg">
+              <Text className="text-sm font-medium text-red-500">
+                Logout
+              </Text>
             </TouchableOpacity>
           </View>
-          
-          <TouchableOpacity style={styles.viewAllSessions}>
-            <Text style={styles.viewAllText}>View All Sessions</Text>
+
+          <TouchableOpacity className="flex-row items-center justify-center py-3">
+            <Text className="text-base font-medium text-[#007AFF] mr-1">
+              View All Sessions
+            </Text>
             <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />
           </TouchableOpacity>
         </View>
 
         {/* Security Tips */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security Tips</Text>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Use a unique password for your Oneminers account
-            </Text>
-          </View>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Enable two-factor authentication for extra security
-            </Text>
-          </View>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Never share your password or 2FA codes with anyone
-            </Text>
-          </View>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Log out from shared or public computers
-            </Text>
-          </View>
+        <View className="bg-white rounded-2xl p-5 mb-6">
+          <Text className="text-lg font-bold text-black mb-4">
+            Security Tips
+          </Text>
+
+          {[
+            'Use a unique password for your Oneminers account',
+            'Enable two-factor authentication for extra security',
+            'Never share your password or 2FA codes with anyone',
+            'Log out from shared or public computers',
+          ].map((tip, idx) => (
+            <View key={idx} className="flex-row items-start mb-3">
+              <Ionicons name="checkmark-circle" size={18} color="#34C759" />
+              <Text className="ml-3 text-sm text-[#6C757D] leading-5 flex-1">
+                {tip}
+              </Text>
+            </View>
+          ))}
         </View>
-        
-        {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
+
+        <View className="h-8" />
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  backButton: {
-    padding: 4,
-    marginRight: 12,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-  },
-  scoreCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  scoreHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  scoreTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginLeft: 12,
-  },
-  scoreProgress: {
-    height: 8,
-    backgroundColor: '#F2F2F7',
-    borderRadius: 4,
-    marginBottom: 12,
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: '#FFC000',
-    borderRadius: 4,
-  },
-  scoreText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  scoreSubtext: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  section: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 20,
-  },
-  formGroup: {
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#6C757D',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    fontSize: 16,
-    color: '#212529',
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-  },
-  passwordHint: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginTop: 6,
-  },
-  changePasswordButton: {
-    backgroundColor: '#FFC000',
-    borderRadius: 12,
-    paddingVertical: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  changePasswordButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  featureIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  featureInfo: {
-    flex: 1,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 2,
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  settingInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  settingTexts: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#000000',
-    marginBottom: 2,
-  },
-  settingDescription: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  autoLogoutContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  autoLogoutInput: {
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    fontSize: 14,
-    color: '#212529',
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    width: 40,
-    textAlign: 'center',
-    marginRight: 8,
-  },
-  autoLogoutLabel: {
-    fontSize: 14,
-    color: '#8E8E93',
-  },
-  sessionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  sessionDevice: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  sessionInfo: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  sessionDeviceName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 2,
-  },
-  sessionDetails: {
-    fontSize: 14,
-    color: '#8E8E93',
-    marginBottom: 2,
-  },
-  sessionTime: {
-    fontSize: 12,
-    color: '#C7C7CC',
-  },
-  sessionAction: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    backgroundColor: '#F8F9FA',
-    borderRadius: 8,
-  },
-  sessionActionText: {
-    fontSize: 14,
-    color: '#FF3B30',
-    fontWeight: '500',
-  },
-  viewAllSessions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-  },
-  viewAllText: {
-    fontSize: 15,
-    color: '#007AFF',
-    fontWeight: '500',
-    marginRight: 4,
-  },
-  tipItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  tipText: {
-    fontSize: 14,
-    color: '#6C757D',
-    marginLeft: 12,
-    flex: 1,
-    lineHeight: 20,
-  },
-  bottomSpacer: {
-    height: 30,
-  },
-});

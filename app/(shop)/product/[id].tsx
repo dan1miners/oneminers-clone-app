@@ -1,21 +1,19 @@
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   Dimensions,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useState, useRef } from 'react';
-import { Ionicons, MaterialIcons, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Mock product data - In a real app, this would come from an API
+// Mock product data
 const PRODUCTS_DATA = {
   1: {
     id: 1,
@@ -39,7 +37,8 @@ const PRODUCTS_DATA = {
     stock: 12,
     brand: 'Bitmain',
     model: 'S19 Pro',
-    description: 'The Antminer S19 Pro is one of the most efficient and powerful Bitcoin miners on the market. With its advanced cooling system and high hashrate, it delivers exceptional performance for professional mining operations.',
+    description:
+      'The Antminer S19 Pro is one of the most efficient and powerful Bitcoin miners on the market. With its advanced cooling system and high hashrate, it delivers exceptional performance for professional mining operations.',
     features: [
       'High efficiency with 29.5 J/TH',
       'Advanced cooling system',
@@ -48,19 +47,19 @@ const PRODUCTS_DATA = {
       'Remote monitoring capability',
     ],
     specifications: {
-      'Manufacturer': 'Bitmain',
-      'Model': 'Antminer S19 Pro',
+      Manufacturer: 'Bitmain',
+      Model: 'Antminer S19 Pro',
       'Release Date': 'March 2020',
-      'Size': '400 x 195 x 290 mm',
-      'Weight': '14.2 kg',
+      Size: '400 x 195 x 290 mm',
+      Weight: '14.2 kg',
       'Noise Level': '75 dB',
       'Fan(s)': '2 x 12038 Fans',
-      'Power': '3250W',
-      'Voltage': '200-240V',
-      'Interface': 'Ethernet',
-      'Temperature': '5 - 40 °C',
-      'Humidity': '5 - 95 %',
-    }
+      Power: '3250W',
+      Voltage: '200-240V',
+      Interface: 'Ethernet',
+      Temperature: '5 - 40 °C',
+      Humidity: '5 - 95 %',
+    },
   },
   2: {
     id: 2,
@@ -84,7 +83,8 @@ const PRODUCTS_DATA = {
     stock: 8,
     brand: 'MicroBT',
     model: 'M30S+',
-    description: 'The Whatsminer M30S+ offers reliable performance with competitive efficiency. Built for durability and consistent mining output.',
+    description:
+      'The Whatsminer M30S+ offers reliable performance with competitive efficiency. Built for durability and consistent mining output.',
     features: [
       '100 TH/s hashrate',
       'Stable performance',
@@ -93,18 +93,19 @@ const PRODUCTS_DATA = {
       'Global voltage support',
     ],
     specifications: {
-      'Manufacturer': 'MicroBT',
-      'Model': 'Whatsminer M30S+',
+      Manufacturer: 'MicroBT',
+      Model: 'Whatsminer M30S+',
       'Release Date': 'April 2020',
-      'Size': '390 x 190 x 290 mm',
-      'Weight': '13.8 kg',
+      Size: '390 x 190 x 290 mm',
+      Weight: '13.8 kg',
       'Noise Level': '82 dB',
       'Fan(s)': '2 x 12038 Fans',
-      'Power': '3400W',
-      'Voltage': '200-240V',
-      'Interface': 'Ethernet',
-      'Temperature': '0 - 40 °C',
-    }
+      Power: '3400W',
+      Voltage: '200-240V',
+      Interface: 'Ethernet',
+      Temperature: '0 - 40 °C',
+      Humidity: '5 - 95 %',
+    },
   },
 };
 
@@ -114,17 +115,19 @@ export default function ProductDetailsPage() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const productId = params.id ? parseInt(params.id as string) : 1;
-  
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [selectedSpecTab, setSelectedSpecTab] = useState<'overview' | 'specs' | 'reviews'>('overview');
-  const scrollViewRef = useRef<ScrollView>(null);
-  
-  const product = PRODUCTS_DATA[productId as keyof typeof PRODUCTS_DATA] || PRODUCTS_DATA[1];
+  const [selectedSpecTab, setSelectedSpecTab] = useState<
+    'overview' | 'specs' | 'reviews'
+  >('overview');
 
-  const handleBackPress = () => {
-    router.back();
-  };
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const product: Product =
+    PRODUCTS_DATA[productId as keyof typeof PRODUCTS_DATA] || PRODUCTS_DATA[1];
+
+  const handleBackPress = () => router.back();
 
   const handleAddToCart = () => {
     Alert.alert(
@@ -132,49 +135,32 @@ export default function ProductDetailsPage() {
       `${quantity} × ${product.name} has been added to your cart.`,
       [
         { text: 'Continue Shopping', style: 'cancel' },
-        { text: 'View Cart', onPress: () => router.push('/cart') }
+        { text: 'View Cart', onPress: () => router.push('/cart') },
       ]
     );
   };
 
   const handleBuyNow = () => {
-    Alert.alert(
-      'Proceed to Checkout',
-      `You are about to purchase ${quantity} × ${product.name}.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Continue', onPress: () => router.push('/checkout') }
-      ]
-    );
+    Alert.alert('Proceed to Checkout', `You are about to purchase ${quantity} × ${product.name}.`, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Continue', onPress: () => router.push('/checkout') },
+    ]);
   };
 
   const handleSupport = () => {
     Alert.alert(
       'Get Expert Support',
       'Our mining experts are ready to help you with setup, configuration, and optimization.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Start Consultation', 
-          onPress: () => {
-            // Navigate to chat/support screen
-            console.log('Starting support consultation');
-          }
-        }
-      ]
+      [{ text: 'Cancel', style: 'cancel' }, { text: 'Start Consultation', onPress: () => {} }]
     );
   };
 
   const handleIncrementQuantity = () => {
-    if (quantity < product.stock) {
-      setQuantity(prev => prev + 1);
-    }
+    if (quantity < product.stock) setQuantity((p) => p + 1);
   };
 
   const handleDecrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity(prev => prev - 1);
-    }
+    if (quantity > 1) setQuantity((p) => p - 1);
   };
 
   const handleQuickAdd = () => {
@@ -183,33 +169,42 @@ export default function ProductDetailsPage() {
   };
 
   const renderStars = (rating: number) => {
-    const stars = [];
+    const stars: React.ReactNode[] = [];
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
-    
+
     for (let i = 0; i < fullStars; i++) {
-      stars.push(<Ionicons key={`full-${i}`} name="star" size={16} color="#FFC000" />);
+      stars.push(
+        <Ionicons key={`full-${i}`} name="star" size={16} color="#FFC000" />
+      );
     }
-    
+
     if (hasHalfStar) {
-      stars.push(<Ionicons key="half" name="star-half" size={16} color="#FFC000" />);
+      stars.push(
+        <Ionicons key="half" name="star-half" size={16} color="#FFC000" />
+      );
     }
-    
+
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
     for (let i = 0; i < emptyStars; i++) {
-      stars.push(<Ionicons key={`empty-${i}`} name="star-outline" size={16} color="#FFC000" />);
+      stars.push(
+        <Ionicons
+          key={`empty-${i}`}
+          name="star-outline"
+          size={16}
+          color="#FFC000"
+        />
+      );
     }
-    
     return stars;
   };
 
-  const formatPrice = (price: string, quantity: number) => {
+  const formatPrice = (price: string, qty: number) => {
     const numericPrice = parseFloat(price.replace('$', '').replace(',', ''));
-    const total = numericPrice * quantity;
+    const total = numericPrice * qty;
     return `$${total.toLocaleString()}`;
   };
 
-  // Calculate savings if there's a discount
   const calculateSavings = () => {
     if (!product.originalPrice) return 0;
     const currentPrice = parseFloat(product.price.replace('$', '').replace(',', ''));
@@ -217,414 +212,505 @@ export default function ProductDetailsPage() {
     return originalPrice - currentPrice;
   };
 
+  const isOverview = selectedSpecTab === 'overview';
+  const isSpecs = selectedSpecTab === 'specs';
+  const isReviews = selectedSpecTab === 'reviews';
+
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row justify-between items-center px-4 py-3 border-b border-[#F2F2F7]">
+        <TouchableOpacity onPress={handleBackPress} className="p-1">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        
-        <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerIconButton}>
+
+        <View className="flex-row items-center">
+          <TouchableOpacity className="w-10 h-10 rounded-full bg-[#F2F2F7] items-center justify-center ml-3">
             <Ionicons name="share-outline" size={22} color="#000" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerIconButton}>
+          <TouchableOpacity className="w-10 h-10 rounded-full bg-[#F2F2F7] items-center justify-center ml-3">
             <Ionicons name="heart-outline" size={22} color="#000" />
           </TouchableOpacity>
         </View>
       </View>
 
-      <ScrollView 
+      <ScrollView
         ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ paddingBottom: 140 }}
       >
-        {/* Product Images */}
-        <View style={styles.imageSection}>
-          <View style={styles.mainImageContainer}>
-            <View style={styles.mainImage}>
-              <Text style={styles.mainImageEmoji}>{product.images[selectedImageIndex]}</Text>
+        {/* Image Section */}
+        <View className="px-4 pt-4">
+          <View className="relative mb-4">
+            <View className="w-full h-[300px] bg-[#FFF8E6] rounded-2xl items-center justify-center border border-[#FFE5B4]">
+              <Text className="text-[120px]">{product.images[selectedImageIndex]}</Text>
             </View>
-            
-            {/* Discount Badge */}
+
             {product.discount && (
-              <View style={styles.discountBadge}>
-                <Text style={styles.discountText}>{product.discount}</Text>
+              <View
+                className="absolute top-4 left-4 bg-[#FFC000] px-3 py-1.5 rounded-md"
+                style={{
+                  shadowColor: '#FFC000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4,
+                  elevation: 3,
+                }}
+              >
+                <Text className="text-black text-sm font-bold">
+                  {product.discount}
+                </Text>
               </View>
             )}
-            
-            {/* Quick Action - Add to cart from image */}
-            <TouchableOpacity 
-              style={styles.quickAddButton}
+
+            <TouchableOpacity
               onPress={handleQuickAdd}
+              className="absolute bottom-4 right-4 bg-[#FFC000] w-12 h-12 rounded-full items-center justify-center"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.2,
+                shadowRadius: 4,
+                elevation: 4,
+              }}
             >
               <Ionicons name="cart-outline" size={20} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
-          
-          {/* Thumbnail Images */}
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            style={styles.thumbnailsContainer}
-          >
-            {product.images.map((image, index) => (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.thumbnail,
-                  selectedImageIndex === index && styles.thumbnailActive
-                ]}
-                onPress={() => setSelectedImageIndex(index)}
-              >
-                <Text style={styles.thumbnailEmoji}>{image}</Text>
-              </TouchableOpacity>
-            ))}
+
+          {/* Thumbnails */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row">
+            {product.images.map((image, index) => {
+              const active = selectedImageIndex === index;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setSelectedImageIndex(index)}
+                  className={[
+                    'w-[60px] h-[60px] rounded-lg items-center justify-center mr-3 border-2',
+                    active ? 'border-[#FFC000] bg-[#FFE5B4]' : 'border-transparent bg-[#FFF8E6]',
+                  ].join(' ')}
+                >
+                  <Text className="text-[28px]">{image}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
         {/* Product Info */}
-        <View style={styles.productInfo}>
-          <View style={styles.productHeader}>
-            <View style={styles.brandContainer}>
-              <View style={styles.brandTag}>
+        <View className="p-4">
+          {/* Header */}
+          <View className="mb-4">
+            <View className="flex-row justify-between items-center mb-2">
+              <View className="flex-row items-center bg-[#FFF8E6] px-2.5 py-1.5 rounded-xl">
                 <Ionicons name="business-outline" size={14} color="#FFC000" />
-                <Text style={styles.brand}>{product.brand}</Text>
+                <Text className="text-xs text-black font-semibold ml-1">
+                  {product.brand}
+                </Text>
               </View>
-              <View style={styles.stockBadge}>
+
+              <View className="flex-row items-center bg-[#FFF8E6] px-2 py-1.5 rounded-xl">
                 <Ionicons name="checkmark-circle" size={14} color="#FFC000" />
-                <Text style={styles.stockText}>{product.stock} in stock</Text>
+                <Text className="text-xs text-black font-medium ml-1">
+                  {product.stock} in stock
+                </Text>
               </View>
             </View>
-            <Text style={styles.productName}>{product.name}</Text>
-            
-            {/* Rating */}
-            <View style={styles.ratingContainer}>
-              <View style={styles.starsContainer}>
+
+            <Text className="text-2xl font-bold text-[#212529] mb-3">
+              {product.name}
+            </Text>
+
+            <View className="flex-row items-center">
+              <View className="flex-row items-center mr-2">
                 {renderStars(product.rating)}
-                <Text style={styles.ratingText}>{product.rating}</Text>
+                <Text className="text-base font-semibold text-[#212529] ml-1.5">
+                  {product.rating}
+                </Text>
               </View>
-              <Text style={styles.reviewsText}>({product.reviewCount} reviews)</Text>
+              <Text className="text-sm text-[#6C757D]">
+                ({product.reviewCount} reviews)
+              </Text>
             </View>
           </View>
 
           {/* Price Section */}
-          <View style={styles.priceSection}>
-            <View style={styles.priceRow}>
-              <Text style={styles.price}>{formatPrice(product.price, quantity)}</Text>
+          <View className="mb-5 pb-5 border-b border-[#FFF8E6]">
+            <View className="flex-row items-center mb-2">
+              <Text className="text-[28px] font-bold text-[#FFC000] mr-3">
+                {formatPrice(product.price, quantity)}
+              </Text>
+
               {product.originalPrice && (
-                <View style={styles.originalPriceContainer}>
-                  <Text style={styles.originalPrice}>{product.originalPrice}</Text>
-                  <View style={styles.savingsBadge}>
-                    <Text style={styles.savingsText}>Save ${calculateSavings()}</Text>
+                <View className="items-start">
+                  <Text className="text-base text-[#8E8E93] line-through mb-1">
+                    {product.originalPrice}
+                  </Text>
+                  <View className="bg-[#FFF8E6] px-2 py-1 rounded-md">
+                    <Text className="text-xs text-black font-semibold">
+                      Save ${calculateSavings()}
+                    </Text>
                   </View>
                 </View>
               )}
             </View>
-            
-            {/* Profit Info */}
-            <View style={styles.profitInfo}>
+
+            <View className="flex-row items-center bg-[#FFF8E6] px-3 py-2 rounded-lg self-start">
               <Ionicons name="trending-up" size={16} color="#FFC000" />
-              <Text style={styles.profitText}>Estimated profit: {product.profit}</Text>
+              <Text className="text-sm text-black font-semibold ml-1.5">
+                Estimated profit: {product.profit}
+              </Text>
             </View>
           </View>
 
           {/* Quick Stats */}
-          <View style={styles.quickStats}>
-            <View style={styles.statItem}>
-              <View style={[styles.statIcon, { backgroundColor: '#FFF8E6' }]}>
+          <View className="flex-row items-center justify-between bg-[#FFF8E6] rounded-2xl p-4 mb-5">
+            {/* Hashrate */}
+            <View className="flex-row items-center flex-1">
+              <View className="w-10 h-10 rounded-full bg-[#FFF8E6] items-center justify-center mr-3">
                 <MaterialIcons name="speed" size={20} color="#FFC000" />
               </View>
-              <View style={styles.statContent}>
-                <Text style={styles.statValue}>{product.hashrate}</Text>
-                <Text style={styles.statLabel}>Hashrate</Text>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-[#212529] mb-0.5">
+                  {product.hashrate}
+                </Text>
+                <Text className="text-xs text-[#6C757D]">Hashrate</Text>
               </View>
             </View>
-            
-            <View style={styles.divider} />
-            
-            <View style={styles.statItem}>
-              <View style={[styles.statIcon, { backgroundColor: '#FFF8E6' }]}>
+
+            <View className="w-px h-10 bg-[#FFE5B4]" />
+
+            {/* Power */}
+            <View className="flex-row items-center flex-1 ml-3">
+              <View className="w-10 h-10 rounded-full bg-[#FFF8E6] items-center justify-center mr-3">
                 <MaterialIcons name="bolt" size={20} color="#FFC000" />
               </View>
-              <View style={styles.statContent}>
-                <Text style={styles.statValue}>{product.power}</Text>
-                <Text style={styles.statLabel}>Power</Text>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-[#212529] mb-0.5">
+                  {product.power}
+                </Text>
+                <Text className="text-xs text-[#6C757D]">Power</Text>
               </View>
             </View>
-            
-            <View style={styles.divider} />
-            
-            <View style={styles.statItem}>
-              <View style={[styles.statIcon, { backgroundColor: '#FFF8E6' }]}>
+
+            <View className="w-px h-10 bg-[#FFE5B4]" />
+
+            {/* Coin */}
+            <View className="flex-row items-center flex-1 ml-3">
+              <View className="w-10 h-10 rounded-full bg-[#FFF8E6] items-center justify-center mr-3">
                 <FontAwesome5 name="coins" size={18} color="#FFC000" />
               </View>
-              <View style={styles.statContent}>
-                <Text style={styles.statValue}>{product.coin}</Text>
-                <Text style={styles.statLabel}>Coin</Text>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-[#212529] mb-0.5">
+                  {product.coin}
+                </Text>
+                <Text className="text-xs text-[#6C757D]">Coin</Text>
               </View>
             </View>
           </View>
 
-          {/* Quantity Selector */}
-          <View style={styles.quantitySection}>
-            <Text style={styles.quantityLabel}>Quantity</Text>
-            <View style={styles.quantitySelector}>
-              <TouchableOpacity 
-                style={[
-                  styles.quantityButton,
-                  quantity <= 1 && styles.quantityButtonDisabled
-                ]}
+          {/* Quantity */}
+          <View className="flex-row justify-between items-center mb-6 pb-5 border-b border-[#FFF8E6]">
+            <Text className="text-base font-semibold text-[#212529]">
+              Quantity
+            </Text>
+
+            <View className="flex-row items-center bg-[#FFF8E6] rounded-xl p-1">
+              <TouchableOpacity
                 onPress={handleDecrementQuantity}
                 disabled={quantity <= 1}
+                className={[
+                  'w-10 h-10 rounded-lg items-center justify-center',
+                  quantity <= 1 ? 'bg-[#FFE5B4]' : 'bg-[#FFC000]',
+                ].join(' ')}
               >
-                <Ionicons 
-                  name="remove" 
-                  size={20} 
-                  color={quantity <= 1 ? "#FFE5B4" : "#000"} 
+                <Ionicons
+                  name="remove"
+                  size={20}
+                  color={quantity <= 1 ? '#FFE5B4' : '#000'}
                 />
               </TouchableOpacity>
-              
-              <Text style={styles.quantityText}>{quantity}</Text>
-              
-              <TouchableOpacity 
-                style={[
-                  styles.quantityButton,
-                  quantity >= product.stock && styles.quantityButtonDisabled
-                ]}
+
+              <Text className="text-lg font-bold text-[#212529] min-w-[40px] text-center mx-3">
+                {quantity}
+              </Text>
+
+              <TouchableOpacity
                 onPress={handleIncrementQuantity}
                 disabled={quantity >= product.stock}
+                className={[
+                  'w-10 h-10 rounded-lg items-center justify-center',
+                  quantity >= product.stock ? 'bg-[#FFE5B4]' : 'bg-[#FFC000]',
+                ].join(' ')}
               >
-                <Ionicons 
-                  name="add" 
-                  size={20} 
-                  color={quantity >= product.stock ? "#FFE5B4" : "#000"} 
+                <Ionicons
+                  name="add"
+                  size={20}
+                  color={quantity >= product.stock ? '#FFE5B4' : '#000'}
                 />
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Tabs */}
-          <View style={styles.tabsContainer}>
+          <View className="flex-row mb-5 bg-[#FFF8E6] rounded-xl p-1">
             <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedSpecTab === 'overview' && styles.tabActive
-              ]}
               onPress={() => setSelectedSpecTab('overview')}
+              className={[
+                'flex-1 flex-row items-center justify-center py-3 rounded-lg',
+                isOverview ? 'bg-[#FFC000]' : 'bg-transparent',
+              ].join(' ')}
             >
-              <Ionicons 
-                name="information-circle-outline" 
-                size={18} 
-                color={selectedSpecTab === 'overview' ? '#FFC000' : '#8E8E93'} 
+              <Ionicons
+                name="information-circle-outline"
+                size={18}
+                color={isOverview ? '#000' : '#8E8E93'}
               />
-              <Text style={[
-                styles.tabText,
-                selectedSpecTab === 'overview' && styles.tabTextActive
-              ]}>
+              <Text
+                className={[
+                  'text-sm font-medium ml-1.5',
+                  isOverview ? 'text-black font-semibold' : 'text-[#8E8E93]',
+                ].join(' ')}
+              >
                 Overview
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedSpecTab === 'specs' && styles.tabActive
-              ]}
               onPress={() => setSelectedSpecTab('specs')}
+              className={[
+                'flex-1 flex-row items-center justify-center py-3 rounded-lg',
+                isSpecs ? 'bg-[#FFC000]' : 'bg-transparent',
+              ].join(' ')}
             >
-              <Ionicons 
-                name="list-outline" 
-                size={18} 
-                color={selectedSpecTab === 'specs' ? '#FFC000' : '#8E8E93'} 
+              <Ionicons
+                name="list-outline"
+                size={18}
+                color={isSpecs ? '#000' : '#8E8E93'}
               />
-              <Text style={[
-                styles.tabText,
-                selectedSpecTab === 'specs' && styles.tabTextActive
-              ]}>
+              <Text
+                className={[
+                  'text-sm font-medium ml-1.5',
+                  isSpecs ? 'text-black font-semibold' : 'text-[#8E8E93]',
+                ].join(' ')}
+              >
                 Specs
               </Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedSpecTab === 'reviews' && styles.tabActive
-              ]}
               onPress={() => setSelectedSpecTab('reviews')}
+              className={[
+                'flex-1 flex-row items-center justify-center py-3 rounded-lg',
+                isReviews ? 'bg-[#FFC000]' : 'bg-transparent',
+              ].join(' ')}
             >
-              <Ionicons 
-                name="star-outline" 
-                size={18} 
-                color={selectedSpecTab === 'reviews' ? '#FFC000' : '#8E8E93'} 
+              <Ionicons
+                name="star-outline"
+                size={18}
+                color={isReviews ? '#000' : '#8E8E93'}
               />
-              <Text style={[
-                styles.tabText,
-                selectedSpecTab === 'reviews' && styles.tabTextActive
-              ]}>
+              <Text
+                className={[
+                  'text-sm font-medium ml-1.5',
+                  isReviews ? 'text-black font-semibold' : 'text-[#8E8E93]',
+                ].join(' ')}
+              >
                 Reviews
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* Tab Content */}
-          {selectedSpecTab === 'overview' && (
-            <View style={styles.tabContent}>
-              <Text style={styles.description}>{product.description}</Text>
-              
-              <View style={styles.featuresContainer}>
-                <View style={styles.featuresHeader}>
+          {isOverview && (
+            <View className="mb-5">
+              <Text className="text-base leading-6 text-[#212529] mb-6">
+                {product.description}
+              </Text>
+
+              <View className="bg-[#FFF8E6] rounded-2xl p-5 mb-6">
+                <View className="flex-row items-center mb-4">
                   <Ionicons name="checkmark-circle" size={20} color="#FFC000" />
-                  <Text style={styles.featuresTitle}>Key Features</Text>
+                  <Text className="text-lg font-bold text-[#212529] ml-2">
+                    Key Features
+                  </Text>
                 </View>
+
                 {product.features.map((feature, index) => (
-                  <View key={index} style={styles.featureItem}>
-                    <View style={styles.featureIcon}>
-                      <Text style={styles.featureNumber}>{index + 1}</Text>
+                  <View key={index} className="flex-row items-center mb-3">
+                    <View className="w-7 h-7 rounded-full bg-[#FFC000] items-center justify-center mr-3">
+                      <Text className="text-xs font-bold text-black">
+                        {index + 1}
+                      </Text>
                     </View>
-                    <Text style={styles.featureText}>{feature}</Text>
+                    <Text className="text-base text-[#212529] leading-[22px] flex-1">
+                      {feature}
+                    </Text>
                   </View>
                 ))}
               </View>
-              
-              {/* Key Specifications Preview */}
-              <View style={styles.specsPreview}>
-                <View style={styles.specsHeader}>
+
+              <View className="bg-[#FFF8E6] rounded-2xl p-5">
+                <View className="flex-row items-center mb-4">
                   <Ionicons name="settings-outline" size={20} color="#FFC000" />
-                  <Text style={styles.specsTitle}>Key Specifications</Text>
+                  <Text className="text-lg font-bold text-[#212529] ml-2">
+                    Key Specifications
+                  </Text>
                 </View>
-                <View style={styles.specsGrid}>
-                  <View style={styles.specCard}>
-                    <Ionicons name="calculator-outline" size={20} color="#FFC000" />
-                    <Text style={styles.specCardLabel}>Algorithm</Text>
-                    <Text style={styles.specCardValue}>{product.algorithm}</Text>
-                  </View>
-                  <View style={styles.specCard}>
-                    <Ionicons name="flash-outline" size={20} color="#FFC000" />
-                    <Text style={styles.specCardLabel}>Efficiency</Text>
-                    <Text style={styles.specCardValue}>{product.efficiency}</Text>
-                  </View>
-                  <View style={styles.specCard}>
-                    <Ionicons name="volume-high-outline" size={20} color="#FFC000" />
-                    <Text style={styles.specCardLabel}>Noise</Text>
-                    <Text style={styles.specCardValue}>{product.noiseLevel}</Text>
-                  </View>
-                  <View style={styles.specCard}>
-                    <Ionicons name="cube-outline" size={20} color="#FFC000" />
-                    <Text style={styles.specCardLabel}>Dimensions</Text>
-                    <Text style={styles.specCardValue}>{product.dimensions}</Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          )}
 
-          {selectedSpecTab === 'specs' && (
-            <View style={styles.tabContent}>
-              <View style={styles.specsTable}>
-                {Object.entries(product.specifications).map(([key, value], index) => (
-                  <View 
-                    key={key} 
-                    style={[
-                      styles.specRow,
-                      index % 2 === 0 && styles.specRowAlternate
-                    ]}
-                  >
-                    <Text style={styles.specLabel}>{key}</Text>
-                    <Text style={styles.specValue}>{value}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          )}
-
-          {selectedSpecTab === 'reviews' && (
-            <View style={styles.tabContent}>
-              {/* Review Summary */}
-              <View style={styles.reviewSummary}>
-                <View style={styles.overallRating}>
-                  <Text style={styles.overallRatingNumber}>{product.rating}</Text>
-                  <Text style={styles.overallRatingText}>out of 5</Text>
-                  <View style={styles.overallStars}>
-                    {renderStars(product.rating)}
-                  </View>
-                  <Text style={styles.totalReviews}>{product.reviewCount} reviews</Text>
-                </View>
-                
-                {/* Rating Distribution */}
-                <View style={styles.ratingDistribution}>
-                  {[5, 4, 3, 2, 1].map((star) => (
-                    <View key={star} style={styles.ratingBarRow}>
-                      <Text style={styles.ratingLabel}>{star} star</Text>
-                      <View style={styles.ratingBarContainer}>
-                        <View 
-                          style={[
-                            styles.ratingBar,
-                            { width: `${(star / 5) * 100}%` }
-                          ]} 
-                        />
-                      </View>
-                      <Text style={styles.ratingPercent}>{(star / 5 * 100).toFixed(0)}%</Text>
+                <View className="flex-row flex-wrap justify-between">
+                  {[
+                    { icon: 'calculator-outline', label: 'Algorithm', value: product.algorithm },
+                    { icon: 'flash-outline', label: 'Efficiency', value: product.efficiency },
+                    { icon: 'volume-high-outline', label: 'Noise', value: product.noiseLevel },
+                    { icon: 'cube-outline', label: 'Dimensions', value: product.dimensions },
+                  ].map((s, idx) => (
+                    <View
+                      key={idx}
+                      className="w-[48%] bg-white rounded-xl p-4 mb-3 items-center"
+                    >
+                      <Ionicons name={s.icon as any} size={20} color="#FFC000" />
+                      <Text className="text-xs text-[#6C757D] mt-2 mb-1">
+                        {s.label}
+                      </Text>
+                      <Text className="text-sm font-semibold text-[#212529] text-center">
+                        {s.value}
+                      </Text>
                     </View>
                   ))}
                 </View>
               </View>
-              
-              {/* Placeholder for review list */}
-              <View style={styles.noReviewsMessage}>
+            </View>
+          )}
+
+          {isSpecs && (
+            <View className="mb-5">
+              <View className="bg-[#FFF8E6] rounded-xl overflow-hidden">
+                {Object.entries(product.specifications).map(([key, value], index) => {
+                  const alternate = index % 2 === 0;
+                  return (
+                    <View
+                      key={key}
+                      className={[
+                        'flex-row justify-between px-4 py-4',
+                        alternate ? 'bg-transparent' : 'bg-[#FFE5B4]',
+                      ].join(' ')}
+                    >
+                      <Text className="text-sm text-[#6C757D] font-medium flex-1">
+                        {key}
+                      </Text>
+                      <Text className="text-sm text-[#212529] font-semibold flex-1 text-right">
+                        {value}
+                      </Text>
+                    </View>
+                  );
+                })}
+              </View>
+            </View>
+          )}
+
+          {isReviews && (
+            <View className="mb-5">
+              <View className="flex-row bg-[#FFF8E6] rounded-xl p-4 mb-6">
+                <View className="items-center pr-6 mr-6 border-r border-[#FFE5B4]">
+                  <Text className="text-4xl font-bold text-[#212529]">
+                    {product.rating}
+                  </Text>
+                  <Text className="text-sm text-[#6C757D] mb-2">
+                    out of 5
+                  </Text>
+                  <View className="flex-row mb-2">{renderStars(product.rating)}</View>
+                  <Text className="text-xs text-[#8E8E93]">
+                    {product.reviewCount} reviews
+                  </Text>
+                </View>
+
+                <View className="flex-1">
+                  {[5, 4, 3, 2, 1].map((star) => (
+                    <View key={star} className="flex-row items-center mb-2">
+                      <Text className="text-xs text-[#6C757D] w-[50px]">
+                        {star} star
+                      </Text>
+                      <View className="flex-1 h-2 bg-[#FFE5B4] rounded-full mx-2 overflow-hidden">
+                        <View
+                          className="h-full bg-[#FFC000]"
+                          style={{ width: `${(star / 5) * 100}%` }}
+                        />
+                      </View>
+                      <Text className="text-xs text-[#6C757D] w-[30px] text-right">
+                        {((star / 5) * 100).toFixed(0)}%
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              <View className="items-center py-10">
                 <Ionicons name="chatbubble-outline" size={48} color="#FFE5B4" />
-                <Text style={styles.noReviewsText}>Be the first to review this product</Text>
-                <TouchableOpacity style={styles.writeReviewButton}>
-                  <Text style={styles.writeReviewButtonText}>Write a Review</Text>
+                <Text className="text-base text-[#8E8E93] mt-4 mb-6">
+                  Be the first to review this product
+                </Text>
+                <TouchableOpacity className="bg-[#FFC000] px-6 py-3 rounded-lg">
+                  <Text className="text-base font-semibold text-black">
+                    Write a Review
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
           )}
+
+          <View className="h-5" />
         </View>
-        
-        {/* Spacer for bottom buttons */}
-        <View style={styles.bottomSpacer} />
       </ScrollView>
 
-      {/* Fixed Action Buttons - Yellow Theme */}
-      {/* Fixed Action Buttons - Simple & Clean */}
-      <View style={styles.actionButtonsContainer}>
-        <View style={styles.buttonRow}>
-          {/* Support Button - Just Icon */}
-          <TouchableOpacity 
-            style={styles.supportButton}
+      {/* Fixed Bottom Actions */}
+      <View
+        className="absolute bottom-0 left-0 right-0 bg-white border-t border-[#F2F2F7] px-4 py-3"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          elevation: 8,
+        }}
+      >
+        <View className="flex-row items-center mb-3">
+          <TouchableOpacity
             onPress={handleSupport}
+            className="w-[50px] h-[50px] rounded-full bg-[#F9FAFB] items-center justify-center border border-[#E5E7EB]"
           >
             <Ionicons name="help-circle-outline" size={24} color="#000" />
           </TouchableOpacity>
-          
-          {/* Add to Cart Button - White with yellow outline */}
-          <TouchableOpacity 
-            style={styles.addToCartButton}
+
+          <TouchableOpacity
             onPress={handleAddToCart}
+            className="flex-1 bg-white rounded-xl py-4 items-center border-2 border-[#FFC000] mx-3"
           >
-            <Text style={styles.addToCartButtonText}>Add to Cart</Text>
+            <Text className="text-base font-semibold text-black">Add to Cart</Text>
           </TouchableOpacity>
-          
-          {/* Buy Now Button - Solid yellow */}
-          <TouchableOpacity 
-            style={styles.buyNowButton}
+
+          <TouchableOpacity
             onPress={handleBuyNow}
+            className="flex-1 bg-[#FFC000] rounded-xl py-4 items-center"
           >
-            <Text style={styles.buyNowButtonText}>Buy Now</Text>
+            <Text className="text-base font-semibold text-black">Buy Now</Text>
           </TouchableOpacity>
         </View>
-        
-        {/* Price Summary */}
-        <View style={styles.priceSummary}>
-          <View style={styles.totalSection}>
-            <Text style={styles.totalLabel}>Total:</Text>
-            <Text style={styles.totalPrice}>{formatPrice(product.price, quantity)}</Text>
+
+        <View className="flex-row justify-between items-center border-b border-[#F2F2F7] pb-3">
+          <View className="flex-row items-baseline">
+            <Text className="text-base text-[#6C757D] font-medium mr-2">
+              Total:
+            </Text>
+            <Text className="text-[22px] font-bold text-[#FFC000]">
+              {formatPrice(product.price, quantity)}
+            </Text>
           </View>
+
           {product.originalPrice && (
-            <View style={styles.savingsSection}>
-              <Text style={styles.savingsLabel}>
+            <View className="flex-row items-center bg-[#FFF8E6] px-2.5 py-1.5 rounded-xl">
+              <Text className="text-xs font-semibold text-black">
                 Save ${calculateSavings() * quantity}
               </Text>
             </View>
@@ -634,640 +720,3 @@ export default function ProductDetailsPage() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  headerIconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#F2F2F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 12,
-  },
-  scrollContent: {
-    paddingBottom: 140, // Space for fixed buttons
-  },
-  imageSection: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  mainImageContainer: {
-    position: 'relative',
-    marginBottom: 16,
-  },
-  mainImage: {
-    width: '100%',
-    height: 300,
-    backgroundColor: '#FFF8E6',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FFE5B4',
-  },
-  mainImageEmoji: {
-    fontSize: 120,
-  },
-  discountBadge: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    backgroundColor: '#FFC000',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    shadowColor: '#FFC000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  discountText: {
-    color: '#000000',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  quickAddButton: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    backgroundColor: '#FFC000',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  thumbnailsContainer: {
-    flexDirection: 'row',
-  },
-  thumbnail: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    backgroundColor: '#FFF8E6',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  thumbnailActive: {
-    borderColor: '#FFC000',
-    backgroundColor: '#FFE5B4',
-  },
-  thumbnailEmoji: {
-    fontSize: 28,
-  },
-  productInfo: {
-    padding: 16,
-  },
-  productHeader: {
-    marginBottom: 16,
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  brandTag: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  brand: {
-    fontSize: 12,
-    color: '#000',
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  stockBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 8,
-    paddingVertical: 5,
-    borderRadius: 12,
-  },
-  stockText: {
-    fontSize: 12,
-    color: '#000',
-    fontWeight: '500',
-    marginLeft: 4,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#212529',
-    marginBottom: 12,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  starsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  ratingText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212529',
-    marginLeft: 6,
-  },
-  reviewsText: {
-    fontSize: 14,
-    color: '#6C757D',
-  },
-  priceSection: {
-    marginBottom: 20,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#FFF8E6',
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  price: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFC000',
-    marginRight: 12,
-  },
-  originalPriceContainer: {
-    alignItems: 'flex-start',
-  },
-  originalPrice: {
-    fontSize: 16,
-    color: '#8E8E93',
-    textDecorationLine: 'line-through',
-    marginBottom: 4,
-  },
-  savingsBadge: {
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  savingsText: {
-    fontSize: 12,
-    color: '#000',
-    fontWeight: '600',
-  },
-  profitInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignSelf: 'flex-start',
-  },
-  profitText: {
-    fontSize: 14,
-    color: '#000',
-    fontWeight: '600',
-    marginLeft: 6,
-  },
-  quickStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  statIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  statContent: {
-    flex: 1,
-  },
-  statValue: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#212529',
-    marginBottom: 2,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#6C757D',
-  },
-  divider: {
-    width: 1,
-    height: 40,
-    backgroundColor: '#FFE5B4',
-  },
-  quantitySection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-    paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#FFF8E6',
-  },
-  quantityLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#212529',
-  },
-  quantitySelector: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    borderRadius: 12,
-    padding: 4,
-  },
-  quantityButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    backgroundColor: '#FFC000',
-  },
-  quantityButtonDisabled: {
-    backgroundColor: '#FFE5B4',
-  },
-  quantityText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#212529',
-    minWidth: 40,
-    textAlign: 'center',
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    marginBottom: 20,
-    backgroundColor: '#FFF8E6',
-    borderRadius: 12,
-    padding: 4,
-  },
-  tab: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 8,
-    gap: 6,
-  },
-  tabActive: {
-    backgroundColor: '#FFC000',
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#8E8E93',
-  },
-  tabTextActive: {
-    color: '#000000',
-    fontWeight: '600',
-  },
-  tabContent: {
-    marginBottom: 20,
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#212529',
-    marginBottom: 24,
-  },
-  featuresContainer: {
-    marginBottom: 24,
-    backgroundColor: '#FFF8E6',
-    borderRadius: 16,
-    padding: 20,
-  },
-  featuresHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  featuresTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#212529',
-    marginLeft: 8,
-  },
-  featureItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  featureIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#FFC000',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  featureNumber: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#000',
-  },
-  featureText: {
-    fontSize: 16,
-    color: '#212529',
-    lineHeight: 22,
-    flex: 1,
-  },
-  specsPreview: {
-    backgroundColor: '#FFF8E6',
-    borderRadius: 16,
-    padding: 20,
-  },
-  specsHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  specsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#212529',
-    marginLeft: 8,
-  },
-  specsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  specCard: {
-    width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
-  specCardLabel: {
-    fontSize: 12,
-    color: '#6C757D',
-    marginTop: 8,
-    marginBottom: 4,
-  },
-  specCardValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#212529',
-    textAlign: 'center',
-  },
-  specsTable: {
-    backgroundColor: '#FFF8E6',
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  specRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  specRowAlternate: {
-    backgroundColor: '#FFE5B4',
-  },
-  specLabel: {
-    fontSize: 14,
-    color: '#6C757D',
-    fontWeight: '500',
-    flex: 1,
-  },
-  specValue: {
-    fontSize: 14,
-    color: '#212529',
-    fontWeight: '600',
-    flex: 1,
-    textAlign: 'right',
-  },
-  reviewSummary: {
-    flexDirection: 'row',
-    marginBottom: 24,
-    backgroundColor: '#FFF8E6',
-    borderRadius: 12,
-    padding: 16,
-  },
-  overallRating: {
-    alignItems: 'center',
-    paddingRight: 24,
-    marginRight: 24,
-    borderRightWidth: 1,
-    borderRightColor: '#FFE5B4',
-  },
-  overallRatingNumber: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#212529',
-  },
-  overallRatingText: {
-    fontSize: 14,
-    color: '#6C757D',
-    marginBottom: 8,
-  },
-  overallStars: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  totalReviews: {
-    fontSize: 12,
-    color: '#8E8E93',
-  },
-  ratingDistribution: {
-    flex: 1,
-  },
-  ratingBarRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  ratingLabel: {
-    fontSize: 12,
-    color: '#6C757D',
-    width: 50,
-  },
-  ratingBarContainer: {
-    flex: 1,
-    height: 8,
-    backgroundColor: '#FFE5B4',
-    borderRadius: 4,
-    marginHorizontal: 8,
-    overflow: 'hidden',
-  },
-  ratingBar: {
-    height: '100%',
-    backgroundColor: '#FFC000',
-  },
-  ratingPercent: {
-    fontSize: 12,
-    color: '#6C757D',
-    width: 30,
-    textAlign: 'right',
-  },
-  noReviewsMessage: {
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  noReviewsText: {
-    fontSize: 16,
-    color: '#8E8E93',
-    marginTop: 16,
-    marginBottom: 24,
-  },
-  writeReviewButton: {
-    backgroundColor: '#FFC000',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  writeReviewButtonText: {
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  bottomSpacer: {
-    height: 20,
-  },
-  actionButtonsContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#F2F2F7',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 8,
-  },
-  priceSummary: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F2F2F7',
-  },
-  totalSection: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  totalLabel: {
-    fontSize: 16,
-    color: '#6C757D',
-    marginRight: 8,
-    fontWeight: '500',
-  },
-  totalPrice: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#FFC000',
-  },
-  savingsSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  savingsLabel: {
-    fontSize: 12,
-    color: '#000',
-    fontWeight: '600',
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  // Support Button - Just Icon
-  supportButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#F9FAFB',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-  },
-  // Add to Cart Button - White with yellow outline
-  addToCartButton: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 15,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#FFC000',
-  },
-  addToCartButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-  },
-  // Buy Now Button - Solid yellow
-  buyNowButton: {
-    flex: 1,
-    backgroundColor: '#FFC000',
-    borderRadius: 12,
-    paddingVertical: 15,
-    alignItems: 'center',
-  },
-  buyNowButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
-  },
-});

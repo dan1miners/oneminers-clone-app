@@ -1,14 +1,13 @@
 import {
   View,
   Text,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useState } from 'react';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 type Address = {
@@ -26,7 +25,7 @@ type Address = {
 
 export default function ShippingAddressesScreen() {
   const router = useRouter();
-  
+
   const [addresses, setAddresses] = useState<Address[]>([
     {
       id: '1',
@@ -66,19 +65,12 @@ export default function ShippingAddressesScreen() {
     },
   ]);
 
-  const handleBackPress = () => {
-    router.back();
-  };
+  const handleBackPress = () => router.back();
+  const handleAddNewAddress = () => router.push('/(essentials)/add-address');
+  const handleEditAddress = (id: string) =>
+    router.push(`/(essentials)/edit-address?id=${id}`);
 
-  const handleAddNewAddress = () => {
-    router.push('/(essentials)/add-address');
-  };
-
-  const handleEditAddress = (addressId: string) => {
-    router.push(`/(essentials)/edit-address?id=${addressId}`);
-  };
-
-  const handleDeleteAddress = (addressId: string) => {
+  const handleDeleteAddress = (id: string) => {
     Alert.alert(
       'Delete Address',
       'Are you sure you want to delete this shipping address?',
@@ -87,77 +79,99 @@ export default function ShippingAddressesScreen() {
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: () => {
-            setAddresses(prev => prev.filter(addr => addr.id !== addressId));
-          }
-        }
+          onPress: () =>
+            setAddresses(prev => prev.filter(a => a.id !== id)),
+        },
       ]
     );
   };
 
-  const handleSetDefault = (addressId: string) => {
+  const handleSetDefault = (id: string) => {
     setAddresses(prev =>
-      prev.map(addr => ({
-        ...addr,
-        isDefault: addr.id === addressId
-      }))
+      prev.map(a => ({ ...a, isDefault: a.id === id }))
     );
   };
 
   const renderAddressCard = (address: Address) => (
-    <View key={address.id} style={styles.addressCard}>
-      <View style={styles.addressHeader}>
-        <View style={styles.addressTitleRow}>
-          <View style={styles.addressTitleContainer}>
-            <Text style={styles.addressTitle}>{address.title}</Text>
+    <View
+      key={address.id}
+      className="bg-white rounded-2xl p-5 mb-4 shadow-sm"
+    >
+      {/* Header */}
+      <View className="mb-4">
+        <View className="flex-row justify-between items-center mb-3">
+          <View className="flex-row items-center">
+            <Text className="text-lg font-bold text-black mr-2">
+              {address.title}
+            </Text>
+
             {address.isDefault && (
-              <View style={styles.defaultBadge}>
-                <Text style={styles.defaultBadgeText}>Default</Text>
+              <View className="bg-[#FFC000] px-2 py-1 rounded-md">
+                <Text className="text-xs font-semibold text-black">
+                  Default
+                </Text>
               </View>
             )}
           </View>
-          
-          <View style={styles.addressActions}>
+
+          <View className="flex-row space-x-3">
             <TouchableOpacity
-              style={styles.actionButton}
               onPress={() => handleEditAddress(address.id)}
+              className="w-9 h-9 rounded-full bg-[#F8F9FA] items-center justify-center"
             >
-              <Ionicons name="pencil" size={18} color="#007AFF" />
+              <Ionicons name="pencil" size={18} color="#FFC000" />
             </TouchableOpacity>
-            
+
             <TouchableOpacity
-              style={styles.actionButton}
               onPress={() => handleDeleteAddress(address.id)}
+              className="w-9 h-9 rounded-full bg-[#F8F9FA] items-center justify-center"
             >
               <Ionicons name="trash-outline" size={18} color="#FF3B30" />
             </TouchableOpacity>
           </View>
         </View>
-        
-        <View style={styles.addressContent}>
-          <View style={styles.addressDetails}>
-            <Text style={styles.addressName}>{address.name}</Text>
-            <Text style={styles.addressText}>{address.address}</Text>
-            <Text style={styles.addressText}>
+
+        {/* Content */}
+        <View className="flex-row justify-between">
+          <View className="flex-1">
+            <Text className="text-base font-semibold text-black mb-2">
+              {address.name}
+            </Text>
+            <Text className="text-sm text-[#6C757D] mb-1">
+              {address.address}
+            </Text>
+            <Text className="text-sm text-[#6C757D] mb-1">
               {address.city}, {address.state} {address.zipCode}
             </Text>
-            <Text style={styles.addressText}>{address.country}</Text>
-            <Text style={styles.addressPhone}>{address.phone}</Text>
+            <Text className="text-sm text-[#6C757D] mb-1">
+              {address.country}
+            </Text>
+            <Text className="text-sm font-medium text-[#FFC000] mt-1">
+              {address.phone}
+            </Text>
           </View>
-          
-          <View style={styles.addressActionsVertical}>
+
+          <View className="items-end ml-3">
             {!address.isDefault && (
               <TouchableOpacity
-                style={styles.setDefaultButton}
                 onPress={() => handleSetDefault(address.id)}
+                className="flex-row items-center bg-[#FFF8E6] px-3 py-2 rounded-lg mb-3"
               >
-                <Ionicons name="star-outline" size={16} color="#FFC000" />
-                <Text style={styles.setDefaultText}>Set as Default</Text>
+                <Ionicons
+                  name="star-outline"
+                  size={16}
+                  color="#FFC000"
+                />
+                <Text className="ml-1.5 text-sm font-medium text-black">
+                  Set as Default
+                </Text>
               </TouchableOpacity>
             )}
-            
-            <TouchableOpacity style={styles.useAddressButton}>
-              <Text style={styles.useAddressText}>Use This Address</Text>
+
+            <TouchableOpacity className="bg-[#FFC000] px-4 py-2.5 rounded-lg">
+              <Text className="text-sm font-semibold text-black">
+                Use This Address
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -166,324 +180,99 @@ export default function ShippingAddressesScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
+      <View className="flex-row justify-between items-center px-4 py-3 bg-white border-b border-[#E9ECEF]">
+        <TouchableOpacity onPress={handleBackPress} className="p-1">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        
-        <Text style={styles.headerTitle}>Shipping Addresses</Text>
-        
-        <TouchableOpacity 
-          style={styles.addButton}
-          onPress={handleAddNewAddress}
-        >
+
+        <Text className="text-lg font-semibold text-black">
+          Shipping Addresses
+        </Text>
+
+        <TouchableOpacity onPress={handleAddNewAddress} className="p-1">
           <Ionicons name="add" size={24} color="#FFC000" />
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
-        style={styles.content}
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={{ padding: 16 }}
       >
         {/* Instruction */}
-        <View style={styles.instructionCard}>
-          <Ionicons name="information-circle" size={24} color="#FFC000" />
-          <Text style={styles.instructionText}>
+        <View className="flex-row items-center bg-[#FFF8E6] rounded-xl p-4 mb-5">
+          <Ionicons
+            name="information-circle"
+            size={24}
+            color="#FFC000"
+          />
+          <Text className="ml-3 text-sm text-black flex-1 leading-5">
             Add and manage your shipping addresses for faster checkout
           </Text>
         </View>
 
-        {/* Addresses List */}
-        <View style={styles.addressesList}>
-          {addresses.length > 0 ? (
-            addresses.map(renderAddressCard)
-          ) : (
-            <View style={styles.emptyState}>
-              <Ionicons name="location-outline" size={64} color="#E5E5EA" />
-              <Text style={styles.emptyTitle}>No Addresses Yet</Text>
-              <Text style={styles.emptySubtitle}>
-                Add a shipping address to get started
-              </Text>
-            </View>
-          )}
-        </View>
+        {/* Address List */}
+        {addresses.length > 0 ? (
+          addresses.map(renderAddressCard)
+        ) : (
+          <View className="items-center bg-white rounded-2xl p-10">
+            <Ionicons
+              name="location-outline"
+              size={64}
+              color="#E5E5EA"
+            />
+            <Text className="text-lg font-bold text-black mt-4 mb-2">
+              No Addresses Yet
+            </Text>
+            <Text className="text-base text-[#8E8E93] text-center">
+              Add a shipping address to get started
+            </Text>
+          </View>
+        )}
 
-        {/* Add New Address Button */}
+        {/* Add New Button */}
         <TouchableOpacity
-          style={styles.addNewButton}
           onPress={handleAddNewAddress}
+          className="flex-row items-center justify-center bg-white border-2 border-dashed border-[#FFC000] rounded-2xl p-5 mt-5"
         >
-          <Ionicons name="add-circle" size={24} color="#FFC000" />
-          <Text style={styles.addNewButtonText}>Add New Address</Text>
+          <Ionicons
+            name="add-circle"
+            size={24}
+            color="#FFC000"
+          />
+          <Text className="ml-3 text-lg font-semibold text-black">
+            Add New Address
+          </Text>
         </TouchableOpacity>
 
-        {/* Shipping Tips */}
-        <View style={styles.tipsSection}>
-          <Text style={styles.tipsTitle}>Shipping Tips</Text>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Ensure your address is correct to avoid delivery delays
-            </Text>
-          </View>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Add multiple addresses for home, office, or warehouse
-            </Text>
-          </View>
-          
-          <View style={styles.tipItem}>
-            <Ionicons name="checkmark-circle" size={18} color="#34C759" />
-            <Text style={styles.tipText}>
-              Set a default address for faster checkout
-            </Text>
-          </View>
+        {/* Tips */}
+        <View className="bg-white rounded-2xl p-5 mt-6 shadow-sm">
+          <Text className="text-lg font-bold text-black mb-4">
+            Shipping Tips
+          </Text>
+
+          {[
+            'Ensure your address is correct to avoid delivery delays',
+            'Add multiple addresses for home, office, or warehouse',
+            'Set a default address for faster checkout',
+          ].map((tip, i) => (
+            <View key={i} className="flex-row items-start mb-3">
+              <Ionicons
+                name="checkmark-circle"
+                size={18}
+                color="#34C759"
+              />
+              <Text className="ml-3 text-sm text-[#6C757D] leading-5 flex-1">
+                {tip}
+              </Text>
+            </View>
+          ))}
         </View>
-        
-        {/* Bottom Spacer */}
-        <View style={styles.bottomSpacer} />
+
+        <View className="h-8" />
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8F9FA',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E9ECEF',
-  },
-  backButton: {
-    padding: 4,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  addButton: {
-    padding: 4,
-  },
-  content: {
-    flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
-  },
-  instructionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-  },
-  instructionText: {
-    fontSize: 14,
-    color: '#000000',
-    marginLeft: 12,
-    flex: 1,
-    lineHeight: 20,
-  },
-  addressesList: {
-    marginBottom: 20,
-  },
-  addressCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  addressHeader: {
-    marginBottom: 16,
-  },
-  addressTitleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  addressTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  addressTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  defaultBadge: {
-    backgroundColor: '#FFC000',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-  },
-  defaultBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  addressActions: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#F8F9FA',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  addressContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  addressDetails: {
-    flex: 1,
-  },
-  addressName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 8,
-  },
-  addressText: {
-    fontSize: 14,
-    color: '#6C757D',
-    marginBottom: 4,
-    lineHeight: 20,
-  },
-  addressPhone: {
-    fontSize: 14,
-    color: '#007AFF',
-    fontWeight: '500',
-    marginTop: 4,
-  },
-  addressActionsVertical: {
-    alignItems: 'flex-end',
-    gap: 12,
-  },
-  setDefaultButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E6',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
-    gap: 6,
-  },
-  setDefaultText: {
-    fontSize: 14,
-    color: '#000000',
-    fontWeight: '500',
-  },
-  useAddressButton: {
-    backgroundColor: '#FFC000',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  useAddressText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000000',
-  },
-  emptyState: {
-    alignItems: 'center',
-    paddingVertical: 60,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 16,
-    color: '#8E8E93',
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  addNewButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 2,
-    borderColor: '#FFC000',
-    borderStyle: 'dashed',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  addNewButtonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000000',
-    marginLeft: 12,
-  },
-  tipsSection: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  tipsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-    marginBottom: 16,
-  },
-  tipItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  tipText: {
-    fontSize: 14,
-    color: '#6C757D',
-    marginLeft: 12,
-    flex: 1,
-    lineHeight: 20,
-  },
-  bottomSpacer: {
-    height: 30,
-  },
-});
