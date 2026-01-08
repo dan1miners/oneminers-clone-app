@@ -202,21 +202,35 @@ export default function WithdrawPage() {
           keyExtractor={i => i.id}
           ListEmptyComponent={<Text className="text-center text-[#8E8E93]">No withdrawal history.</Text>}
           renderItem={({ item }) => (
-            <View className="bg-white rounded-xl p-4 mb-2 flex-row justify-between">
-              <View className="flex-1 mr-3">
-                <Text className="font-semibold">
+            <View className="bg-white rounded-xl p-4 mb-2 flex-row items-start">
+              {/* Left */}
+              <View className="flex-1 pr-3">
+                <Text className="font-semibold text-black">
                   - {item.amount} {currentCrypto?.symbol}
                 </Text>
-                <Text className="text-xs text-[#8E8E93]" numberOfLines={1}>
+          
+                <Text className="text-xs text-[#8E8E93] mt-1" numberOfLines={1}>
                   To: {item.address}
                 </Text>
-                <Text className="text-xs text-[#8E8E93]">{item.timestamp}</Text>
+          
+                <Text className="text-xs text-[#8E8E93] mt-1">
+                  {item.timestamp}
+                </Text>
               </View>
-              <View className={`px-3 py-1 rounded-full ${statusStyle(item.status)}`}>
-                <Text className="text-xs font-semibold">{item.status}</Text>
+          
+              {/* Right (Status Pill) */}
+              <View
+                className={`px-3 py-1 rounded-full self-start min-w-[92px] items-center ${statusStyle(
+                  item.status
+                )}`}
+              >
+                <Text className="text-xs font-semibold">
+                  {item.status}
+                </Text>
               </View>
             </View>
           )}
+          
         />
       </ScrollView>
 

@@ -169,37 +169,42 @@ export default function ExchangePage() {
   );
 
   const renderExchangeItem = ({ item }: { item: ExchangeTransaction }) => {
-    const statusStyle =
+    const badge =
       item.status === 'Completed'
-        ? 'bg-green-100 text-green-700'
+        ? { bg: 'bg-green-100', text: 'text-green-700' }
         : item.status === 'Processing'
-        ? 'bg-blue-100 text-blue-700'
+        ? { bg: 'bg-blue-100', text: 'text-blue-700' }
         : item.status === 'Pending'
-        ? 'bg-yellow-100 text-orange-600'
-        : 'bg-red-100 text-red-700';
-
+        ? { bg: 'bg-yellow-100', text: 'text-orange-600' }
+        : { bg: 'bg-red-100', text: 'text-red-700' };
+  
     return (
-      <View className="flex-row justify-between bg-white p-4 rounded-xl mb-2">
-        <View className="flex-1">
-          <Text className="text-sm font-semibold text-[#212529]">
+      <View className="bg-white p-4 rounded-xl mb-2 flex-row items-start">
+        {/* Left column */}
+        <View className="flex-1 pr-3">
+          <Text className="text-sm font-semibold text-[#212529]" numberOfLines={1}>
             - {item.fromAmount} {item.fromAsset.toUpperCase()}
           </Text>
-          <Text className="text-sm text-green-600">
+  
+          <Text className="text-sm text-green-600 mt-0.5" numberOfLines={1}>
             + {item.toAmount} {item.toAsset.toUpperCase()}
           </Text>
-          <Text className="text-xs text-[#8E8E93] mt-1">
+  
+          <Text className="text-xs text-[#8E8E93] mt-1" numberOfLines={1}>
             {item.timestamp}
           </Text>
         </View>
-
-        <View className={`px-3 py-1.5 rounded-full ${statusStyle.split(' ')[0]}`}>
-          <Text className={`text-xs font-semibold ${statusStyle.split(' ')[1]}`}>
+  
+        {/* Right column (Status) */}
+        <View className={`px-3 py-1.5 rounded-full self-start min-w-[96px] items-center ${badge.bg}`}>
+          <Text className={`text-xs font-semibold ${badge.text}`}>
             {item.status}
           </Text>
         </View>
       </View>
     );
   };
+  
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">

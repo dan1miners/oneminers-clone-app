@@ -9,7 +9,7 @@ import {
   Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, Link } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 /* ---------- Types ---------- */
@@ -94,34 +94,42 @@ export default function SearchResultsPage() {
   }, [activeFilter, sortBy]);
 
   const renderProduct = ({ item }: { item: Product }) => (
-    <TouchableOpacity className="w-[48%] bg-white rounded-xl p-3">
-      <View className="h-28 bg-[#F2F2F7] rounded-lg items-center justify-center mb-2">
-        <Text className="text-4xl">{item.image}</Text>
-      </View>
+    <Link href={`/(shop)/product/${item.id}`} asChild>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        className="w-[48%] bg-white rounded-xl p-3 border border-[#F2F2F7]"
+      >
+        {/* stable card height */}
+        <View className="min-h-[190px]">
+          <View className="h-28 bg-[#F2F2F7] rounded-lg items-center justify-center mb-2">
+            <Text className="text-4xl">{item.image}</Text>
+          </View>
 
-      <Text className="text-sm font-semibold text-[#212529] mb-1" numberOfLines={2}>
-        {item.name}
-      </Text>
+          <Text className="text-sm font-semibold text-[#212529] mb-1" numberOfLines={2}>
+            {item.name}
+          </Text>
 
-      <View className="flex-row justify-between mb-1">
-        <Text className="text-base font-bold text-[#FFC000]">{item.price}</Text>
-        <Text className="text-xs font-semibold text-green-500">{item.profit}</Text>
-      </View>
+          <View className="flex-row justify-between mb-1">
+            <Text className="text-base font-bold text-[#FFC000]">{item.price}</Text>
+            <Text className="text-xs font-semibold text-green-600">{item.profit}</Text>
+          </View>
 
-      <View className="flex-row justify-between">
-        <Text className="text-xs text-[#6C757D]">{item.coin}</Text>
-        <Text className="text-[11px] text-[#8E8E93]" numberOfLines={1}>
-          {item.hashrate}
-        </Text>
-      </View>
-    </TouchableOpacity>
+          <View className="flex-row justify-between">
+            <Text className="text-xs text-[#6C757D]">{item.coin}</Text>
+            <Text className="text-[11px] text-[#8E8E93]" numberOfLines={1}>
+              {item.hashrate}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    </Link>
   );
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 border-b border-[#E9ECEF] bg-white">
-        <TouchableOpacity onPress={() => router.back()} className="mr-3">
+        <TouchableOpacity onPress={() => router.back()} className="mr-3 p-1">
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
 
@@ -135,7 +143,7 @@ export default function SearchResultsPage() {
             onSubmitEditing={() => router.setParams({ query: searchInput })}
           />
           {!!searchInput && (
-            <TouchableOpacity onPress={() => setSearchInput('')}>
+            <TouchableOpacity onPress={() => setSearchInput('')} className="p-1">
               <Ionicons name="close-circle" size={18} color="#8E8E93" />
             </TouchableOpacity>
           )}
@@ -143,12 +151,10 @@ export default function SearchResultsPage() {
       </View>
 
       {/* Results Header */}
-      <View className="flex-row justify-between items-center px-4 py-2 border-b border-[#E9ECEF]">
+      <View className="flex-row justify-between items-center px-4 py-2 border-b border-[#E9ECEF] bg-white">
         <View>
-          <Text className="text-base font-semibold">
-            {sorted.length} results
-          </Text>
-          <Text className="text-sm text-[#8E8E93]">
+          <Text className="text-base font-semibold">{sorted.length} results</Text>
+          <Text className="text-sm text-[#8E8E93]" numberOfLines={1}>
             for "{searchQuery}"
           </Text>
         </View>
@@ -158,35 +164,39 @@ export default function SearchResultsPage() {
           className="flex-row items-center bg-[#FFF8E1] px-3 py-2 rounded-lg"
         >
           <Ionicons name="filter" size={14} color="#FFC000" />
-          <Text className="mx-1 text-sm font-medium text-[#FFC000]">
-            Sort
-          </Text>
+          <Text className="mx-1 text-sm font-medium text-[#FFC000]">Sort</Text>
           <Ionicons name="chevron-down" size={14} color="#FFC000" />
         </TouchableOpacity>
       </View>
 
       {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="py-3 px-4 border-b border-[#E9ECEF]">
-        {filterOptions.map(f => {
-          const active = activeFilter === f.id;
-          return (
-            <TouchableOpacity
-              key={f.id}
-              onPress={() => setActiveFilter(f.id)}
-              className={`flex-row items-center px-4 py-2 rounded-full mr-2 border ${
-                active
-                  ? 'bg-[#FFF8E1] border-[#FFC000]'
-                  : 'bg-white border-[#E5E7EB]'
-              }`}
-            >
-              <Text className="mr-2">{f.icon}</Text>
-              <Text className={`text-sm font-medium ${active ? 'text-black' : 'text-[#6B7280]'}`}>
-                {f.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <View className="bg-white border-b border-[#E9ECEF]">
+        <View className="h-14 justify-center">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ paddingHorizontal: 16, alignItems: 'center' }}
+          >
+            {filterOptions.map(f => {
+              const active = activeFilter === f.id;
+              return (
+                <TouchableOpacity
+                  key={f.id}
+                  onPress={() => setActiveFilter(f.id)}
+                  className={`flex-row items-center justify-center h-10 px-4 rounded-full mr-2 border ${
+                    active ? 'bg-[#FFF8E1] border-[#FFC000]' : 'bg-white border-[#E5E7EB]'
+                  }`}
+                >
+                  <Text className="mr-2 text-base leading-[18px]">{f.icon}</Text>
+                  <Text className={`text-sm font-medium ${active ? 'text-black' : 'text-[#6B7280]'}`} numberOfLines={1}>
+                    {f.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      </View>
 
       {/* Grid */}
       {sorted.length > 0 ? (
@@ -197,16 +207,14 @@ export default function SearchResultsPage() {
           keyExtractor={i => i.id.toString()}
           numColumns={2}
           columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 28 }}
           showsVerticalScrollIndicator={false}
         />
       ) : (
         <View className="flex-1 items-center justify-center px-6">
           <Ionicons name="search-outline" size={64} color="#E5E7EB" />
           <Text className="text-xl font-bold mt-4">No results found</Text>
-          <Text className="text-[#8E8E93] text-center mt-2">
-            Try adjusting your search or filters
-          </Text>
+          <Text className="text-[#8E8E93] text-center mt-2">Try adjusting your search or filters</Text>
           <TouchableOpacity
             onPress={() => {
               setActiveFilter('all');
@@ -246,9 +254,7 @@ export default function SearchResultsPage() {
                 <Text className={`text-base ${sortBy === o.id ? 'text-[#FFC000] font-semibold' : 'text-black'}`}>
                   {o.label}
                 </Text>
-                {sortBy === o.id && (
-                  <Ionicons name="checkmark" size={18} color="#FFC000" />
-                )}
+                {sortBy === o.id && <Ionicons name="checkmark" size={18} color="#FFC000" />}
               </TouchableOpacity>
             ))}
           </View>

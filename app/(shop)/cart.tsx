@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Alert,
   TextInput,
   Modal,
+  Pressable,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -37,145 +38,103 @@ type PaymentMethod = {
 // --- Mock Data ---
 
 const mockCartItems: CartItem[] = [
-  {
-    id: 'cart1',
-    name: 'Antminer S19 Pro',
-    image: '⚙️',
-    price: 3500,
-    quantity: 1,
-    fee: 35,
-    total: 3535,
-    coin: 'BTC',
-  },
-  {
-    id: 'cart2',
-    name: 'Goldshell KD6',
-    image: '🔩',
-    price: 3800,
-    quantity: 2,
-    fee: 76,
-    total: 7676,
-    coin: 'KAS',
-  },
-  {
-    id: 'cart3',
-    name: 'Aleo Miner F1',
-    image: '💎',
-    price: 2900,
-    quantity: 1,
-    fee: 29,
-    total: 2929,
-    coin: 'ALEO',
-  },
+  { id: 'cart1', name: 'Antminer S19 Pro', image: '⚙️', price: 3500, quantity: 1, fee: 35, total: 3535, coin: 'BTC' },
+  { id: 'cart2', name: 'Goldshell KD6', image: '🔩', price: 3800, quantity: 2, fee: 76, total: 7676, coin: 'KAS' },
+  { id: 'cart3', name: 'Aleo Miner F1', image: '💎', price: 2900, quantity: 1, fee: 29, total: 2929, coin: 'ALEO' },
 ];
 
 const paymentMethods: PaymentMethod[] = [
-  {
-    id: 'bank1',
-    name: 'Bank Transfer',
-    icon: '🏦',
-    type: 'bank',
-    details: 'Chase •••• 1234',
-  },
-  {
-    id: 'card1',
-    name: 'Credit Card',
-    icon: '💳',
-    type: 'card',
-    details: 'Visa •••• 5678',
-  },
-  {
-    id: 'wallet1',
-    name: 'Wallet Balance',
-    icon: '💰',
-    type: 'wallet',
-    details: 'USDT Balance',
-  },
-  {
-    id: 'crypto1',
-    name: 'Crypto Transfer',
-    icon: '🪙',
-    type: 'crypto',
-    details: 'BTC Address',
-  },
+  { id: 'bank1', name: 'Bank Transfer', icon: '🏦', type: 'bank', details: 'Chase •••• 1234' },
+  { id: 'card1', name: 'Credit Card', icon: '💳', type: 'card', details: 'Visa •••• 5678' },
+  { id: 'wallet1', name: 'Wallet Balance', icon: '💰', type: 'wallet', details: 'USDT Balance' },
+  { id: 'crypto1', name: 'Crypto Transfer', icon: '🪙', type: 'crypto', details: 'BTC Address' },
 ];
+
+const money = (n: number) =>
+  `$${n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 // --- Main Component ---
 
 export default function CartPage() {
   const router = useRouter();
+
   const [cartItems, setCartItems] = useState<CartItem[]>(mockCartItems);
   const [selectedPayment, setSelectedPayment] = useState(paymentMethods[0].id);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
   const [promoCode, setPromoCode] = useState('');
+  const [appliedPromo, setAppliedPromo] = useState<string | null>(null);
 
-  // Calculate totals
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const fees = cartItems.reduce(
-    (sum, item) => sum + item.fee * item.quantity,
-    0
-  );
-  const discount = promoCode === 'CRYPTO10' ? subtotal * 0.1 : 0;
-  const total = subtotal + fees - discount;
-
-  const selectedPaymentMethod = paymentMethods.find(
-    (method) => method.id === selectedPayment
+  const selectedPaymentMethod = useMemo(
+    () => paymentMethods.find((m) => m.id === selectedPayment),
+    [selectedPayment]
   );
 
-  const handleBackPress = () => {
-    router.back();
-  };
+  const subtotal = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [cartItems]
+  );
+
+  const fees = useMemo(
+    () => cartItems.reduce((sum, item) => sum + item.fee * item.quantity, 0),
+    [cartItems]
+  );
+
+  const discount = useMemo(() => {
+    const code = (appliedPromo || '').toUpperCase();
+    if (code === 'CRYPTO10') return subtotal * 0.1;
+    return 0;
+  }, [appliedPromo, subtotal]);
+
+  const total = useMemo(() => Math.max(0, subtotal + fees - discount), [subtotal, fees, discount]);
 
   const handleRemoveItem = (itemId: string) => {
-    Alert.alert(
-      'Remove Item',
-      'Are you sure you want to remove this item from your cart?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            setCartItems((prev) => prev.filter((item) => item.id !== itemId));
-          },
-        },
-      ]
-    );
+    Alert.alert('Remove item', 'Remove this item from your cart?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => setCartItems((prev) => prev.filter((i) => i.id !== itemId)),
+      },
+    ]);
   };
 
-  const handleUpdateQuantity = (itemId: string, newQuantity: number) => {
-    if (newQuantity < 1) {
-      handleRemoveItem(itemId);
-      return;
-    }
+  const handleUpdateQuantity = (itemId: string, newQty: number) => {
+    if (newQty < 1) return handleRemoveItem(itemId);
 
     setCartItems((prev) =>
       prev.map((item) => {
-        if (item.id === itemId) {
-          const newTotal = newQuantity * item.price + item.fee * newQuantity;
-          return { ...item, quantity: newQuantity, total: newTotal };
-        }
-        return item;
+        if (item.id !== itemId) return item;
+        const newTotal = newQty * item.price + item.fee * newQty;
+        return { ...item, quantity: newQty, total: newTotal };
       })
     );
   };
 
   const handleApplyPromo = () => {
-    if (promoCode === 'CRYPTO10') {
-      Alert.alert('Success', '10% discount applied!');
-    } else if (promoCode) {
-      Alert.alert('Invalid Code', 'The promo code you entered is invalid.');
+    const code = promoCode.trim().toUpperCase();
+    if (!code) return;
+
+    if (code === 'CRYPTO10') {
+      setAppliedPromo(code);
+      setPromoCode('');
+      Alert.alert('Promo applied', '10% discount applied.');
+      return;
     }
+
+    Alert.alert('Invalid code', 'The promo code you entered is invalid.');
+  };
+
+  const handleClearPromo = () => {
+    setAppliedPromo(null);
+    setPromoCode('');
   };
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-      Alert.alert('Empty Cart', 'Your cart is empty. Add some items to proceed.');
+      Alert.alert('Empty cart', 'Add items to proceed.');
       return;
     }
     setShowConfirmModal(true);
@@ -184,92 +143,70 @@ export default function CartPage() {
   const confirmCheckout = () => {
     setIsProcessing(true);
 
-    // Simulate API call
     setTimeout(() => {
       setIsProcessing(false);
       setShowConfirmModal(false);
-      Alert.alert(
-        'Order Placed!',
-        'Your order has been successfully placed and is being processed.',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              setCartItems([]);
-              router.back();
-            },
-          },
-        ]
-      );
-    }, 3000);
+
+      router.push('/checkout');
+    }, 1500);
   };
 
   const renderCartItem = ({ item }: { item: CartItem }) => (
-    <View className="bg-white rounded-2xl p-4 mb-3 shadow-sm">
-      {/* Product Image and Basic Info */}
-      <View className="flex-row items-center mb-4">
-        <View className="w-12 h-12 rounded-xl bg-[#FFC000] items-center justify-center mr-3">
+    <View className="bg-white rounded-2xl p-4 mb-3 border border-gray-100">
+      <View className="flex-row items-start">
+        <View className="w-12 h-12 rounded-xl bg-[#FFF8E6] border border-[#FFE5B4] items-center justify-center mr-3">
           <Text className="text-2xl">{item.image}</Text>
         </View>
 
-        <View className="flex-1">
-          <Text className="text-base font-semibold text-black mb-1">
+        <View className="flex-1 pr-2">
+          <Text className="text-sm font-extrabold text-black" numberOfLines={2}>
             {item.name}
           </Text>
-          <Text className="text-sm text-[#8E8E93]">Mines {item.coin}</Text>
-        </View>
+          <Text className="text-xs text-gray-500 mt-1">Mines {item.coin}</Text>
 
-        <TouchableOpacity
-          onPress={() => handleRemoveItem(item.id)}
-          className="p-2 rounded-lg bg-[#F8F9FA]"
-        >
-          <Ionicons name="close" size={20} color="#8E8E93" />
-        </TouchableOpacity>
-      </View>
+          <View className="flex-row items-center justify-between mt-3">
+            <Text className="text-xs text-gray-500">Unit</Text>
+            <Text className="text-sm font-semibold text-black">{money(item.price)}</Text>
+          </View>
 
-      {/* Quantity and Price Row */}
-      <View className="flex-row justify-between items-center mb-3">
-        <View>
-          <Text className="text-xs text-[#8E8E93] font-medium mb-2">
-            Quantity
-          </Text>
-
-          <View className="flex-row items-center bg-[#F8F9FA] rounded-xl p-1">
-            <TouchableOpacity
-              className="w-8 h-8 rounded-lg bg-white items-center justify-center shadow"
-              onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-            >
-              <Ionicons name="remove" size={16} color="#007AFF" />
-            </TouchableOpacity>
-
-            <Text className="mx-4 min-w-[20px] text-center text-base font-semibold text-black">
-              {item.quantity}
-            </Text>
-
-            <TouchableOpacity
-              className="w-8 h-8 rounded-lg bg-white items-center justify-center shadow"
-              onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-            >
-              <Ionicons name="add" size={16} color="#007AFF" />
-            </TouchableOpacity>
+          <View className="flex-row items-center justify-between mt-2">
+            <Text className="text-xs text-gray-500">Fee (each)</Text>
+            <Text className="text-sm font-semibold text-black">{money(item.fee)}</Text>
           </View>
         </View>
 
-        <View className="items-end">
-          <Text className="text-base font-semibold text-black mb-1">
-            ${item.price.toLocaleString()} each
-          </Text>
-          <Text className="text-xs text-[#8E8E93]">
-            + ${item.fee} fee per item
-          </Text>
-        </View>
+        <TouchableOpacity onPress={() => handleRemoveItem(item.id)} className="p-2 rounded-xl bg-gray-50 border border-gray-200">
+          <Ionicons name="trash-outline" size={18} color="#6B7280" />
+        </TouchableOpacity>
       </View>
 
-      {/* Total for this item */}
-      <View className="border-t border-[#F2F2F7] pt-3 items-end">
-        <Text className="text-base font-bold text-[#FFC000]">
-          Item Total: ${item.total.toFixed(2)}
-        </Text>
+      <View className="mt-4 flex-row items-center justify-between border-t border-gray-100 pt-4">
+        {/* Quantity */}
+        <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl p-1">
+          <TouchableOpacity
+            onPress={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+            className="w-9 h-9 rounded-xl bg-white border border-gray-200 items-center justify-center"
+          >
+            <Ionicons name="remove" size={16} color="#111827" />
+          </TouchableOpacity>
+
+          <Text className="mx-4 text-base font-extrabold text-black min-w-[22px] text-center">
+            {item.quantity}
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+            className="w-9 h-9 rounded-xl bg-white border border-gray-200 items-center justify-center"
+          >
+            <Ionicons name="add" size={16} color="#111827" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Item Total */}
+        <View className="items-end">
+          <Text className="text-xs text-gray-500">Item total</Text>
+          <Text className="text-base font-extrabold text-[#FFC000]">{money(item.total)}</Text>
+        </View>
       </View>
     </View>
   );
@@ -279,341 +216,271 @@ export default function CartPage() {
 
     return (
       <TouchableOpacity
-        className={[
-          'flex-row items-center justify-between p-4 border rounded-xl mb-2',
-          isSelected
-            ? 'border-[#E6B800] bg-[#FFF6D6]'
-            : 'border-[#E9ECEF] bg-white',
-        ].join(' ')}
         onPress={() => setSelectedPayment(item.id)}
+        className={`flex-row items-center justify-between p-4 rounded-2xl border mb-2 ${
+          isSelected ? 'bg-[#FFF8E6] border-[#FFE5B4]' : 'bg-white border-gray-200'
+        }`}
       >
         <View className="flex-row items-center flex-1">
           <Text className="text-xl mr-3">{item.icon}</Text>
           <View className="flex-1">
-            <Text className="text-base font-semibold text-black">
-              {item.name}
-            </Text>
-            <Text className="text-sm text-[#8E8E93] mt-0.5">
-              {item.details}
-            </Text>
+            <Text className="text-sm font-extrabold text-black">{item.name}</Text>
+            <Text className="text-xs text-gray-500 mt-1">{item.details}</Text>
           </View>
         </View>
 
         <View
-          className={[
-            'w-5 h-5 rounded-full border-2 items-center justify-center',
-            isSelected ? 'border-[#E6B800]' : 'border-[#E9ECEF]'
-          ].join(' ')}
+          className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+            isSelected ? 'border-[#FFC000]' : 'border-gray-300'
+          }`}
         >
-          {isSelected && (
-            <View className="w-2.5 h-2.5 rounded-full bg-[#E6B800]" />
-          )}
+          {isSelected && <View className="w-2.5 h-2.5 rounded-full bg-[#FFC000]" />}
         </View>
       </TouchableOpacity>
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-[#E9ECEF]">
-        <TouchableOpacity onPress={handleBackPress} className="p-1 mr-3">
-          <Ionicons name="arrow-back" size={24} color="#000" />
+      <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+        <TouchableOpacity onPress={() => router.back()} className="p-1">
+          <Ionicons name="arrow-back" size={22} color="#000" />
         </TouchableOpacity>
 
-        <Text className="flex-1 text-center text-lg font-semibold text-black">
-          Cart
-        </Text>
+        <View className="flex-row items-baseline">
+          <Text className="text-lg font-extrabold text-[#FFC000]">one</Text>
+          <Text className="text-lg font-extrabold text-black">miners</Text>
+        </View>
 
-        <View className="w-9" />
+        <View className="w-8" />
       </View>
 
       {/* Content */}
-      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
-        {/* Cart Items */}
+      <ScrollView
+        className="flex-1"
+        contentContainerStyle={{ padding: 16, paddingBottom: 140 }}
+        showsVerticalScrollIndicator={false}
+      >
         {cartItems.length > 0 ? (
           <>
-            <View className="mb-6">
-              <Text className="text-lg font-bold text-black mb-4">
-                Your Items ({cartItems.length})
+            {/* Items */}
+            <View className="mb-4">
+              <Text className="text-base font-extrabold text-black mb-3">
+                Your items ({cartItems.length})
               </Text>
 
               <FlatList
                 data={cartItems}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(i) => i.id}
                 renderItem={renderCartItem}
                 scrollEnabled={false}
                 showsVerticalScrollIndicator={false}
               />
             </View>
 
-            {/* Promo Code */}
-            <View className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
-              <Text className="text-lg font-bold text-black mb-4">
-                Promo Code
-              </Text>
+            {/* Promo */}
+            <View className="bg-white rounded-2xl p-5 border border-gray-100 mb-4">
+              <Text className="text-base font-extrabold text-black mb-3">Promo code</Text>
 
-              <View className="flex-row items-center">
-                <TextInput
-                  className="flex-1 border border-[#E9ECEF] rounded-xl p-4 mr-3 text-base bg-[#F8F9FA]"
-                  placeholder="Enter promo code"
-                  value={promoCode}
-                  onChangeText={setPromoCode}
-                  placeholderTextColor="#8E8E93"
-                />
+              {appliedPromo ? (
+                <View className="flex-row items-center justify-between bg-[#FFF8E6] border border-[#FFE5B4] rounded-2xl p-4">
+                  <View>
+                    <Text className="text-sm font-extrabold text-black">{appliedPromo}</Text>
+                    <Text className="text-xs text-gray-600 mt-1">10% discount applied</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={handleClearPromo}
+                    className="px-3 py-2 rounded-xl bg-white border border-gray-200"
+                  >
+                    <Text className="text-xs font-semibold text-black">Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View className="flex-row items-center">
+                  <View className="flex-1 flex-row items-center bg-gray-50 border border-gray-200 rounded-xl px-3 h-11">
+                    <Ionicons name="pricetag-outline" size={16} color="#9CA3AF" />
+                    <TextInput
+                      className="flex-1 ml-2 text-sm text-black"
+                      placeholder="Enter code (e.g., CRYPTO10)"
+                      placeholderTextColor="#9CA3AF"
+                      value={promoCode}
+                      onChangeText={setPromoCode}
+                      autoCapitalize="characters"
+                    />
+                  </View>
 
-                <TouchableOpacity
-                  className="bg-[#FFC000] px-5 py-4 rounded-xl"
-                  onPress={handleApplyPromo}
-                >
-                  <Text className="text-sm font-semibold text-white">
-                    Apply
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {discount > 0 && (
-                <View className="flex-row items-center mt-3 p-3 bg-green-50 rounded-lg">
-                  <Ionicons
-                    name="checkmark-circle"
-                    size={16}
-                    color="#34C759"
-                  />
-                  <Text className="ml-2 text-sm font-medium text-green-700">
-                    10% discount applied
-                  </Text>
+                  <TouchableOpacity
+                    onPress={handleApplyPromo}
+                    className="ml-3 bg-[#FFC000] px-4 h-11 rounded-xl items-center justify-center"
+                  >
+                    <Text className="text-sm font-extrabold text-black">Apply</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
 
-            {/* Payment Method */}
-            <View className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
-              <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-lg font-bold text-black">
-                  Payment Method
-                </Text>
+            {/* Payment */}
+            <View className="bg-white rounded-2xl p-5 border border-gray-100 mb-4">
+              <View className="flex-row items-center justify-between mb-3">
+                <Text className="text-base font-extrabold text-black">Payment</Text>
                 <TouchableOpacity onPress={() => setShowPaymentModal(true)}>
-                  <Text className="text-sm font-semibold text-[#FFC000]">
-                    Change
-                  </Text>
+                  <Text className="text-xs font-semibold text-black">Change</Text>
                 </TouchableOpacity>
               </View>
 
-              {selectedPaymentMethod && (
-                <View className="flex-row items-center p-4 bg-[#F8F9FA] rounded-xl">
-                  <Text className="text-2xl mr-3">
-                    {selectedPaymentMethod.icon}
-                  </Text>
+              {selectedPaymentMethod ? (
+                <View className="flex-row items-center bg-gray-50 border border-gray-200 rounded-2xl p-4">
+                  <Text className="text-xl mr-3">{selectedPaymentMethod.icon}</Text>
                   <View className="flex-1">
-                    <Text className="text-base font-semibold text-black">
-                      {selectedPaymentMethod.name}
-                    </Text>
-                    <Text className="text-sm text-[#8E8E93] mt-0.5">
-                      {selectedPaymentMethod.details}
-                    </Text>
+                    <Text className="text-sm font-extrabold text-black">{selectedPaymentMethod.name}</Text>
+                    <Text className="text-xs text-gray-500 mt-1">{selectedPaymentMethod.details}</Text>
                   </View>
                 </View>
-              )}
+              ) : null}
             </View>
 
-            {/* Order Total */}
-            <View className="bg-white rounded-2xl p-5 mb-6 shadow-sm">
-              <Text className="text-lg font-bold text-black mb-4">
-                Order Summary
-              </Text>
+            {/* Summary */}
+            <View className="bg-white rounded-2xl p-5 border border-gray-100">
+              <Text className="text-base font-extrabold text-black mb-3">Order summary</Text>
 
-              <View>
-                <View className="flex-row justify-between items-center mb-3">
-                  <Text className="text-base text-[#8E8E93]">Subtotal</Text>
-                  <Text className="text-base font-semibold text-black">
-                    ${subtotal.toFixed(2)}
-                  </Text>
+              <View className="flex-row items-center justify-between py-2">
+                <Text className="text-xs text-gray-500">Subtotal</Text>
+                <Text className="text-sm font-semibold text-black">{money(subtotal)}</Text>
+              </View>
+
+              <View className="flex-row items-center justify-between py-2">
+                <Text className="text-xs text-gray-500">Fees</Text>
+                <Text className="text-sm font-semibold text-black">{money(fees)}</Text>
+              </View>
+
+              {discount > 0 ? (
+                <View className="flex-row items-center justify-between py-2">
+                  <Text className="text-xs text-green-700">Discount</Text>
+                  <Text className="text-sm font-semibold text-green-700">- {money(discount)}</Text>
                 </View>
+              ) : null}
 
-                <View className="flex-row justify-between items-center mb-3">
-                  <Text className="text-base text-[#8E8E93]">Fees</Text>
-                  <Text className="text-base font-semibold text-black">
-                    ${fees.toFixed(2)}
-                  </Text>
-                </View>
+              <View className="h-px bg-gray-100 my-3" />
 
-                {discount > 0 && (
-                  <View className="flex-row justify-between items-center mb-3">
-                    <Text className="text-base text-[#34C759]">Discount</Text>
-                    <Text className="text-base font-semibold text-[#34C759]">
-                      -${discount.toFixed(2)}
-                    </Text>
-                  </View>
-                )}
-
-                <View className="h-px bg-[#E9ECEF] my-3" />
-
-                <View className="flex-row justify-between items-center">
-                  <Text className="text-lg font-bold text-black">Total</Text>
-                  <Text className="text-xl font-bold text-[#FFC000]">
-                    ${total.toFixed(2)}
-                  </Text>
-                </View>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-sm font-extrabold text-black">Total</Text>
+                <Text className="text-lg font-extrabold text-black">{money(total)}</Text>
               </View>
             </View>
-
-            {/* Checkout Button */}
-            <TouchableOpacity
-              className="bg-[#FFC000] rounded-2xl p-5 items-center mb-8 shadow-lg"
-              onPress={handleCheckout}
-            >
-              <Text className="text-[17px] font-semibold text-white">
-                Proceed to Checkout
-              </Text>
-            </TouchableOpacity>
           </>
         ) : (
-          // Empty Cart State
-          <View className="items-center justify-center py-20">
-            <View className="mb-6">
-              <Ionicons name="cart-outline" size={64} color="#E9ECEF" />
-            </View>
-
-            <Text className="text-xl font-bold text-black mb-2">
-              Your cart is empty
-            </Text>
-
-            <Text className="text-base text-[#8E8E93] text-center mb-8">
-              Add some mining equipment to get started
+          <View className="items-center justify-center py-24">
+            <Ionicons name="cart-outline" size={64} color="#E5E7EB" />
+            <Text className="text-lg font-extrabold text-black mt-4">Your cart is empty</Text>
+            <Text className="text-sm text-gray-500 text-center mt-2">
+              Add mining equipment to get started.
             </Text>
 
             <TouchableOpacity
-              className="bg-[#007AFF] px-8 py-4 rounded-xl"
+              className="mt-6 bg-[#FFC000] px-6 py-4 rounded-2xl"
               onPress={() => router.back()}
             >
-              <Text className="text-base font-semibold text-white">
-                Start Shopping
-              </Text>
+              <Text className="text-sm font-extrabold text-black">Start shopping</Text>
             </TouchableOpacity>
           </View>
         )}
       </ScrollView>
 
-      {/* Payment Methods Modal */}
-      <Modal visible={showPaymentModal} transparent animationType="slide">
-        <View className="flex-1 bg-black/50 justify-center items-center p-5">
-          <View className="bg-white rounded-2xl p-5 w-full max-w-md max-h-[80%]">
-            <View className="flex-row justify-between items-center mb-5">
-              <Text className="text-xl font-bold text-black">
-                Select Payment Method
-              </Text>
-              <TouchableOpacity onPress={() => setShowPaymentModal(false)}>
-                <Ionicons name="close" size={24} color="#000" />
+      {/* Sticky Bottom Bar */}
+      {cartItems.length > 0 && (
+        <View className="absolute left-0 right-0 bottom-0 bg-white border-t border-gray-200 px-4 py-3">
+          <View className="flex-row items-center justify-between mb-3">
+            <Text className="text-xs text-gray-500">Total</Text>
+            <Text className="text-lg font-extrabold text-black">{money(total)}</Text>
+          </View>
+
+          <TouchableOpacity
+            onPress={handleCheckout}
+            className="bg-[#FFC000] rounded-2xl py-4 items-center"
+            activeOpacity={0.9}
+          >
+            <Text className="text-sm font-extrabold text-black">Checkout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Payment Modal */}
+      <Modal visible={showPaymentModal} transparent animationType="fade">
+        <Pressable className="flex-1 bg-black/40" onPress={() => setShowPaymentModal(false)}>
+          <Pressable
+            className="absolute left-4 right-4 bottom-10 bg-white rounded-2xl p-5 border border-gray-100"
+            onPress={() => {}}
+          >
+            <View className="flex-row items-center justify-between mb-4">
+              <Text className="text-lg font-extrabold text-black">Payment method</Text>
+              <TouchableOpacity onPress={() => setShowPaymentModal(false)} className="p-2">
+                <Ionicons name="close" size={20} color="#111827" />
               </TouchableOpacity>
             </View>
 
             <FlatList
               data={paymentMethods}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(i) => i.id}
               renderItem={renderPaymentMethod}
               showsVerticalScrollIndicator={false}
             />
 
             <TouchableOpacity
-              className="bg-[#FFC000] rounded-xl p-4 items-center mt-4"
+              className="bg-[#FFC000] rounded-2xl py-4 items-center mt-3"
               onPress={() => setShowPaymentModal(false)}
             >
-              <Text className="text-base font-semibold text-white">
-                Confirm Payment Method
-              </Text>
+              <Text className="text-sm font-extrabold text-black">Confirm</Text>
             </TouchableOpacity>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
 
-      {/* Confirmation Modal */}
-      <Modal visible={showConfirmModal} transparent animationType="slide">
-        <View className="flex-1 bg-black/50 justify-center items-center p-5">
-          <View className="bg-white rounded-2xl p-5 w-full max-w-md max-h-[80%]">
-            <Text className="text-xl font-bold text-black mb-4">
-              Confirm Order
+      {/* Confirm Checkout Modal */}
+      <Modal visible={showConfirmModal} transparent animationType="fade">
+        <Pressable className="flex-1 bg-black/40" onPress={() => setShowConfirmModal(false)}>
+          <Pressable
+            className="absolute left-4 right-4 bottom-10 bg-white rounded-2xl p-5 border border-gray-100"
+            onPress={() => {}}
+          >
+            <Text className="text-lg font-extrabold text-black">Confirm checkout</Text>
+            <Text className="text-sm text-gray-500 mt-1">
+              Review your cart total and place your order.
             </Text>
 
-            <View className="mb-6">
-              <Text className="text-base text-[#8E8E93] mb-4">
-                Please review your order details:
+            <View className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mt-4">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-xs text-gray-500">Total</Text>
+                <Text className="text-base font-extrabold text-black">{money(total)}</Text>
+              </View>
+              <Text className="text-[11px] text-gray-400 mt-2">
+                This is a mock checkout. Connect to your backend to process payments.
               </Text>
-
-              <View className="bg-[#F8F9FA] rounded-xl p-4 mb-4">
-                {cartItems.map((item) => (
-                  <View
-                    key={item.id}
-                    className="flex-row justify-between items-center mb-3"
-                  >
-                    <View className="flex-row items-center flex-1">
-                      <Text className="text-xl mr-3">{item.image}</Text>
-                      <View>
-                        <Text className="text-sm font-semibold text-black">
-                          {item.name}
-                        </Text>
-                        <Text className="text-xs text-[#8E8E93] mt-0.5">
-                          Qty: {item.quantity} × ${item.price}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <Text className="text-sm font-semibold text-black">
-                      ${item.total.toFixed(2)}
-                    </Text>
-                  </View>
-                ))}
-              </View>
-
-              <View className="bg-[#F8F9FA] rounded-xl p-4 mb-4">
-                <View className="flex-row justify-between items-center mb-2">
-                  <Text className="text-sm text-[#8E8E93]">Payment Method:</Text>
-                  <Text className="text-sm font-semibold text-black">
-                    {selectedPaymentMethod?.name}
-                  </Text>
-                </View>
-
-                <View className="flex-row justify-between items-center">
-                  <Text className="text-sm text-[#8E8E93]">Total Amount:</Text>
-                  <Text className="text-base font-bold text-[#007AFF]">
-                    ${total.toFixed(2)}
-                  </Text>
-                </View>
-              </View>
-
-              <View className="flex-row bg-[#FFF8E1] p-3 rounded-lg">
-                <Ionicons name="warning-outline" size={16} color="#FF9500" />
-                <Text className="text-xs text-[#8B6914] ml-2 flex-1">
-                  Orders cannot be cancelled once confirmed. Please double-check all details.
-                </Text>
-              </View>
             </View>
 
-            <View className="flex-row">
+            <View className="flex-row items-center mt-4">
               <TouchableOpacity
-                className="flex-1 bg-[#F8F9FA] rounded-xl p-4 items-center mr-3"
+                className="flex-1 bg-white border border-gray-200 rounded-2xl py-4 items-center"
                 onPress={() => setShowConfirmModal(false)}
                 disabled={isProcessing}
               >
-                <Text className="text-base font-semibold text-[#8E8E93]">
-                  Cancel
-                </Text>
+                <Text className="text-sm font-extrabold text-black">Cancel</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                className={[
-                  'flex-1 rounded-xl p-4 items-center',
-                  isProcessing ? 'bg-[#E9ECEF]' : 'bg-[#007AFF]',
-                ].join(' ')}
+                className={`flex-1 rounded-2xl py-4 items-center ml-3 ${
+                  isProcessing ? 'bg-gray-100' : 'bg-[#FFC000]'
+                }`}
                 onPress={confirmCheckout}
                 disabled={isProcessing}
               >
-                <Text className="text-base font-semibold text-white">
-                  {isProcessing ? 'Processing...' : 'Confirm Order'}
+                <Text className={`text-sm font-extrabold ${isProcessing ? 'text-gray-400' : 'text-black'}`}>
+                  {isProcessing ? 'Processing...' : 'Place order'}
                 </Text>
               </TouchableOpacity>
             </View>
-          </View>
-        </View>
+          </Pressable>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );
