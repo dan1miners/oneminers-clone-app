@@ -97,7 +97,7 @@ export default function WithdrawPage() {
     }[s]);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 bg-white border-b border-[#E9ECEF]">
         <TouchableOpacity onPress={() => router.back()} className="mr-3">

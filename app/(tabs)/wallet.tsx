@@ -65,7 +65,7 @@ export default function WalletScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* Gold Balance Card */}
         <View className="bg-[#FFD700] rounded-[20px] p-6 mb-8 shadow-lg">

@@ -60,7 +60,7 @@ export default function AddAddressScreen() {
   const addressTypes = ['Home', 'Office', 'Warehouse', 'Other'];
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-[#E9ECEF]">
         <TouchableOpacity onPress={handleBackPress} className="p-1">

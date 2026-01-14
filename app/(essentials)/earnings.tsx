@@ -65,7 +65,7 @@ export default function EarningsScreen() {
   const totalUsd = useMemo(() => rows.reduce((s, r) => s + r.amountUsd, 0), [rows]);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 bg-white border-b border-gray-200">
         <Link href="../" asChild>

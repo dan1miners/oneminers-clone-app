@@ -267,7 +267,7 @@ export default function MinersScreen() {
   
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header with inline search bar */}
       <View className="py-2 px-4 border-b border-gray-200 h-[60px]">
         <View className="flex-row items-center justify-between flex-1">

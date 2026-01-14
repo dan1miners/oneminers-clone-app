@@ -26,7 +26,7 @@ export default function ForgotPasswordScreen() {
     <>
       <StatusBar style="dark" />
       
-      <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right', 'bottom']}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           className="flex-1"

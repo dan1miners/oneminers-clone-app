@@ -215,7 +215,7 @@ export default function ProductDetailsPage() {
   const isReviews = selectedSpecTab === 'reviews';
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header (simpler + pro) */}
       <View className="flex-row items-center justify-between px-4 py-3 border-b border-[#F2F2F7] bg-white">
         <TouchableOpacity onPress={handleBackPress} className="p-1">

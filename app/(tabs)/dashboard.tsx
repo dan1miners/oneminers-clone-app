@@ -252,7 +252,7 @@ export default function DashboardScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View className="py-3 px-5 border-b border-gray-200 flex-row justify-between items-center h-[60px]">
         <OneminersLogo />

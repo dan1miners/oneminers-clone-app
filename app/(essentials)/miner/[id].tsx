@@ -109,7 +109,7 @@ export default function MinerInfoScreen() {
 
   if (!miner) {
     return (
-      <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
         <View className="flex-row items-center justify-start px-4 py-3 border-b border-[#E5E7EB]">
           <TouchableOpacity onPress={handleBackPress} className="p-1">
             <Ionicons name="arrow-back" size={24} color="#000" />

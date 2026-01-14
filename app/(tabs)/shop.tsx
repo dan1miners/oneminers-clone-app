@@ -295,7 +295,7 @@ export default function ShopScreen() {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header with Search and Cart */}
       <View className="px-4 py-3 border-b border-gray-200">
         <View className="flex-row items-center justify-between">

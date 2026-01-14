@@ -41,7 +41,7 @@ export default function PointsScreen() {
   const canRedeem = (needed: number) => totalCoins >= needed;
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 bg-white border-b border-gray-200">
         <Link href="/dashboard" asChild>

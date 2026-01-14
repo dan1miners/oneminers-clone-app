@@ -23,7 +23,7 @@ export default function TermsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
       <View className="flex-row items-center px-4 py-3 bg-white border-b border-neutral-200">
         <TouchableOpacity onPress={() => router.back()} className="p-1 mr-3">
