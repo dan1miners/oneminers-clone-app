@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -42,6 +42,8 @@ type Transaction = {
 };
 
 type FilterType = 'all' | TransactionType;
+
+/* ---------- Mock ---------- */
 
 const mockTransactions: Transaction[] = [
   {
@@ -112,6 +114,18 @@ const mockTransactions: Transaction[] = [
   },
 ];
 
+/* ---------- Theme (match dashboard) ---------- */
+
+const COLORS = {
+  accent: '#FFC000',
+  text: '#000000',
+  subtext: '#6B7280', // gray-500/600 range
+  muted: '#8E8E93',
+  border: '#E5E7EB',
+  success: '#34C759',
+  danger: '#FF3B30',
+  info: '#007AFF',
+};
 
 /* ---------- Component ---------- */
 
@@ -125,91 +139,99 @@ export default function TransactionsPage() {
     useState<Transaction | null>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
-  /* ---------- Filtering ---------- */
+  /* ---------- Helpers ---------- */
 
-  const filtered = transactions.filter(t => {
-    const matchFilter = filter === 'all' || t.type === filter;
-    const matchSearch =
-      !searchQuery ||
-      t.asset.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.assetSymbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      t.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchFilter && matchSearch;
-  });
+  const statusMeta = (s: Transaction['status']) => {
+    switch (s) {
+      case 'completed':
+        return { fg: COLORS.success, bg: `${COLORS.success}1A` };
+      case 'processing':
+        return { fg: COLORS.accent, bg: `${COLORS.accent}1A` };
+      case 'pending':
+        return { fg: '#FF9500', bg: '#FF95001A' };
+      case 'failed':
+      default:
+        return { fg: COLORS.danger, bg: `${COLORS.danger}1A` };
+    }
+  };
 
-  const sorted = [...filtered].sort(
-    (a, b) =>
-      new Date(b.timestamp).getTime() -
-      new Date(a.timestamp).getTime()
-  );
+  const typeMeta = (t: TransactionType) => {
+    switch (t) {
+      case 'deposit':
+        return { color: COLORS.success, icon: 'arrow-down-circle' as const };
+      case 'withdrawal':
+        return { color: COLORS.danger, icon: 'arrow-up-circle' as const };
+      case 'exchange':
+        return { color: COLORS.accent, icon: 'swap-horizontal' as const };
+      case 'earning':
+        return { color: COLORS.accent, icon: 'trending-up' as const };
+      case 'mining':
+        return { color: COLORS.accent, icon: 'hammer' as const };
+      case 'staking':
+        return { color: COLORS.info, icon: 'flash' as const };
+      default:
+        return { color: COLORS.accent, icon: 'receipt-outline' as const };
+    }
+  };
 
-  /* ---------- Totals ---------- */
+  const parseUSD = (v: string) => Number(v.replace(/[$,]/g, ''));
 
-  const totals = {
-    deposits: transactions
-      .filter(t => t.type === 'deposit' && t.status === 'completed')
-      .reduce((s, t) => s + Number(t.amountUSD.replace(/[$,]/g, '')), 0),
-    withdrawals: transactions
-      .filter(t => t.type === 'withdrawal' && t.status === 'completed')
-      .reduce((s, t) => s + Number(t.amountUSD.replace(/[$,]/g, '')), 0),
-    earnings: transactions
+  /* ---------- Derived Data ---------- */
+
+  const filtered = useMemo(() => {
+    return transactions.filter((t) => {
+      const matchFilter = filter === 'all' || t.type === filter;
+      const q = searchQuery.trim().toLowerCase();
+
+      const matchSearch =
+        !q ||
+        t.asset.toLowerCase().includes(q) ||
+        t.assetSymbol.toLowerCase().includes(q) ||
+        (t.description?.toLowerCase().includes(q) ?? false);
+
+      return matchFilter && matchSearch;
+    });
+  }, [transactions, filter, searchQuery]);
+
+  const sorted = useMemo(() => {
+    return [...filtered].sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+  }, [filtered]);
+
+  const totals = useMemo(() => {
+    const deposits = transactions
+      .filter((t) => t.type === 'deposit' && t.status === 'completed')
+      .reduce((s, t) => s + parseUSD(t.amountUSD), 0);
+
+    const withdrawals = transactions
+      .filter((t) => t.type === 'withdrawal' && t.status === 'completed')
+      .reduce((s, t) => s + parseUSD(t.amountUSD), 0);
+
+    const earnings = transactions
       .filter(
-        t =>
+        (t) =>
           (t.type === 'earning' || t.type === 'staking') &&
           t.status === 'completed'
       )
-      .reduce((s, t) => s + Number(t.amountUSD.replace(/[$,]/g, '')), 0),
-  };
+      .reduce((s, t) => s + parseUSD(t.amountUSD), 0);
 
-  const netEarnings =
-    totals.earnings + totals.deposits - totals.withdrawals;
+    return { deposits, withdrawals, earnings };
+  }, [transactions]);
 
-  /* ---------- Helpers ---------- */
-
-  const statusColor = (s: Transaction['status']) =>
-    ({
-      completed: '#34C759',
-      processing: '#FFC000',
-      pending: '#FF9500',
-      failed: '#FF3B30',
-    }[s]);
-
-  const statusBg = (s: Transaction['status']) =>
-    ({
-      completed: '#E8F5E9',
-      processing: '#FFF8E1',
-      pending: '#FFF3CD',
-      failed: '#FDECEA',
-    }[s]);
-
-  const typeColor = (t: TransactionType) =>
-    ({
-      deposit: '#34C759',
-      withdrawal: '#FF3B30',
-      exchange: '#FFC000',
-      earning: '#FFC000',
-      mining: '#FFC000',
-      staking: '#5856D6',
-    }[t]);
-
-  const typeIcon = (t: TransactionType) =>
-    ({
-      deposit: 'arrow-down-circle',
-      withdrawal: 'arrow-up-circle',
-      exchange: 'swap-horizontal',
-      earning: 'trending-up',
-      mining: 'hammer',
-      staking: 'flash',
-    }[t]);
+  const netEarnings = totals.earnings + totals.deposits - totals.withdrawals;
 
   /* ---------- Render Item ---------- */
 
   const renderItem = ({ item }: { item: Transaction }) => {
-    const positive =
+    const isPositive =
       item.type === 'deposit' ||
       item.type === 'earning' ||
       item.type === 'staking' ||
       item.type === 'mining';
+
+    const tm = typeMeta(item.type);
+    const sm = statusMeta(item.status);
 
     return (
       <TouchableOpacity
@@ -217,31 +239,28 @@ export default function TransactionsPage() {
           setSelectedTransaction(item);
           setShowDetailsModal(true);
         }}
-        className="flex-row justify-between bg-white p-4 rounded-xl mb-2"
+        activeOpacity={0.85}
+        className="flex-row justify-between bg-white p-4 rounded-2xl mb-2 border border-gray-100"
       >
         <View className="flex-row items-center flex-1">
           <View
             className="w-10 h-10 rounded-full items-center justify-center mr-3"
-            style={{ backgroundColor: `${typeColor(item.type)}20` }}
+            style={{ backgroundColor: `${tm.color}20` }}
           >
-            <Ionicons
-              name={typeIcon(item.type) as any}
-              size={20}
-              color={typeColor(item.type)}
-            />
+            <Ionicons name={tm.icon as any} size={20} color={tm.color} />
           </View>
 
           <View className="flex-1">
-            <Text className="text-base font-semibold text-black">
+            <Text className="text-base font-bold text-black">
               {item.type === 'exchange' && item.description
                 ? item.description
                 : item.asset}
             </Text>
-            <Text className="text-xs text-[#8E8E93] mt-1">
-              {item.timestamp}
-            </Text>
+
+            <Text className="text-xs text-gray-400 mt-1">{item.timestamp}</Text>
+
             {item.description && item.type !== 'exchange' && (
-              <Text className="text-xs text-[#8E8E93] mt-1">
+              <Text className="text-xs text-gray-400 mt-1">
                 {item.description}
               </Text>
             )}
@@ -250,25 +269,19 @@ export default function TransactionsPage() {
 
         <View className="items-end">
           <Text
-            className="text-base font-semibold"
-            style={{
-              color: positive ? '#34C759' : '#FF3B30',
-            }}
+            className="text-base font-bold"
+            style={{ color: isPositive ? COLORS.success : COLORS.danger }}
           >
-            {positive ? '+' : '-'} {item.amount} {item.assetSymbol}
+            {isPositive ? '+' : '-'} {item.amount} {item.assetSymbol}
           </Text>
-          <Text className="text-xs text-[#8E8E93] mt-1">
-            {item.amountUSD}
-          </Text>
+
+          <Text className="text-xs text-gray-400 mt-1">{item.amountUSD}</Text>
 
           <View
             className="mt-2 px-2 py-1 rounded-md"
-            style={{ backgroundColor: statusBg(item.status) }}
+            style={{ backgroundColor: sm.bg }}
           >
-            <Text
-              className="text-[10px] font-semibold"
-              style={{ color: statusColor(item.status) }}
-            >
+            <Text className="text-[10px] font-semibold" style={{ color: sm.fg }}>
               {item.status.toUpperCase()}
             </Text>
           </View>
@@ -280,49 +293,77 @@ export default function TransactionsPage() {
   /* ---------- UI ---------- */
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView
+      className="flex-1 bg-gray-50"
+      edges={['top', 'bottom', 'left', 'right']}
+    >
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 bg-white border-b border-[#E9ECEF]">
+      <View className="py-3 px-5 border-b border-gray-200 flex-row items-center h-[60px]">
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
-          <Ionicons name="arrow-back" size={24} />
+          <Ionicons name="arrow-back" size={24} color={COLORS.text} />
         </TouchableOpacity>
-        <Text className="text-lg font-semibold">Transactions</Text>
+        <Text className="text-lg font-bold text-black">Transactions</Text>
       </View>
 
-      <ScrollView className="flex-1 p-4">
-        {/* Summary */}
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+        {/* Summary (match dashboard tiles) */}
         <View className="flex-row mb-4">
           {[
-            ['Deposits', totals.deposits, '#34C759'],
-            ['Withdrawals', totals.withdrawals, '#FF3B30'],
-            ['Earnings', totals.earnings, '#34C759'],
-          ].map(([label, value, color], i) => (
+            {
+              label: 'Deposits',
+              value: totals.deposits,
+              icon: 'arrow-down-circle-outline',
+              iconColor: COLORS.success,
+            },
+            {
+              label: 'Withdrawals',
+              value: totals.withdrawals,
+              icon: 'arrow-up-circle-outline',
+              iconColor: COLORS.danger,
+            },
+            {
+              label: 'Earnings',
+              value: totals.earnings,
+              icon: 'trending-up-outline',
+              iconColor: COLORS.accent,
+            },
+          ].map((x, i) => (
             <View
               key={i}
-              className="flex-1 bg-white rounded-xl p-4 mx-1 items-center"
+              className="flex-1 bg-white rounded-2xl p-4 mx-1 border border-gray-100"
             >
-              <Text className="text-xs text-[#8E8E93] mb-1">
-                {label}
+              <View className="flex-row items-center mb-2">
+                <View
+                  className="w-7 h-7 rounded-full items-center justify-center mr-2"
+                  style={{ backgroundColor: `${x.iconColor}20` }}
+                >
+                  <Ionicons name={x.icon as any} size={16} color={x.iconColor} />
+                </View>
+                <View className='flex-1 min-w-0'>
+                  <Text className="text-xs text-gray-600 font-medium"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    >
+                    {x.label}
+                  </Text>
+                </View>
+              </View>
+
+              <Text className="text-lg font-bold text-black">
+                ${Number(x.value).toLocaleString()}
               </Text>
-              <Text
-                className="text-base font-bold"
-                style={{ color: color as string }}
-              >
-                ${Number(value).toLocaleString()}
-              </Text>
+              <Text className="text-[11px] text-gray-400 mt-0.5">Completed</Text>
             </View>
           ))}
         </View>
 
         {/* Net */}
-        <View className="bg-white rounded-2xl p-5 items-center mb-5">
-          <Text className="text-sm text-[#8E8E93] mb-2">
-            Net Earnings
-          </Text>
+        <View className="bg-white rounded-2xl p-5 items-center mb-5 border border-gray-100">
+          <Text className="text-sm text-gray-400 mb-2">Net Earnings</Text>
           <Text
             className="text-3xl font-bold"
             style={{
-              color: netEarnings >= 0 ? '#34C759' : '#FF3B30',
+              color: netEarnings >= 0 ? COLORS.success : COLORS.danger,
             }}
           >
             {netEarnings >= 0 ? '+' : '-'}$
@@ -331,45 +372,56 @@ export default function TransactionsPage() {
         </View>
 
         {/* Search */}
-        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 mb-4">
-          <Ionicons name="search" size={18} color="#8E8E93" />
+        <View className="flex-row items-center bg-white rounded-xl px-4 py-3 mb-4 border border-gray-100">
+          <Ionicons name="search" size={18} color={COLORS.muted} />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search transactions..."
-            placeholderTextColor="#8E8E93"
-            className="flex-1 ml-3"
+            placeholderTextColor={COLORS.muted}
+            className="flex-1 ml-3 text-black"
           />
           {!!searchQuery && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Ionicons name="close-circle" size={18} color="#8E8E93" />
+              <Ionicons name="close-circle" size={18} color={COLORS.muted} />
             </TouchableOpacity>
           )}
         </View>
 
         {/* Filters */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-          {(['all', 'deposit', 'withdrawal', 'exchange', 'earning', 'staking'] as FilterType[]).map(f => (
-            <TouchableOpacity
-              key={f}
-              onPress={() => setFilter(f)}
-              className={`px-4 py-2 rounded-full mr-2 ${
-                filter === f ? 'bg-[#FFF8E1]' : 'bg-[#E9ECEF]'
-              }`}
-            >
-              <Text
-                className={`text-sm font-semibold ${
-                  filter === f ? 'text-black' : 'text-[#8E8E93]'
-                }`}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mb-4"
+        >
+          {(
+            ['all', 'deposit', 'withdrawal', 'exchange', 'earning', 'staking'] as FilterType[]
+          ).map((f) => {
+            const active = filter === f;
+            return (
+              <TouchableOpacity
+                key={f}
+                onPress={() => setFilter(f)}
+                activeOpacity={0.85}
+                className="px-4 py-2 rounded-full mr-2 border"
+                style={{
+                  backgroundColor: active ? `${COLORS.accent}1A` : '#F3F4F6',
+                  borderColor: active ? `${COLORS.accent}33` : '#E5E7EB',
+                }}
               >
-                {f.toUpperCase()}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  className="text-sm font-semibold"
+                  style={{ color: active ? COLORS.text : COLORS.muted }}
+                >
+                  {f.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
 
         {/* List */}
-        <Text className="text-lg font-bold mb-3">
+        <Text className="text-lg font-bold text-black mb-3">
           {sorted.length} Transactions
         </Text>
 
@@ -377,13 +429,13 @@ export default function TransactionsPage() {
           <FlatList
             data={sorted}
             renderItem={renderItem}
-            keyExtractor={i => i.id}
+            keyExtractor={(i) => i.id}
             scrollEnabled={false}
           />
         ) : (
           <View className="items-center py-16">
             <Ionicons name="receipt-outline" size={64} color="#E5E5EA" />
-            <Text className="text-base font-semibold text-[#8E8E93] mt-4">
+            <Text className="text-base font-semibold text-gray-400 mt-4">
               No transactions found
             </Text>
           </View>
@@ -391,22 +443,20 @@ export default function TransactionsPage() {
       </ScrollView>
 
       {/* Details Modal */}
-      <Modal transparent visible={showDetailsModal} animationType="slide">
-        <View className="flex-1 bg-black/50 items-center justify-center px-5">
-          <View className="bg-white rounded-2xl p-5 w-full max-h-[80%]">
-            <View className="flex-row justify-between mb-4">
-              <Text className="text-lg font-bold">
+      <Modal transparent visible={showDetailsModal} animationType="fade">
+        <View className="flex-1 bg-black/40 items-center justify-center px-5">
+          <View className="bg-white rounded-2xl p-5 w-full max-h-[80%] border border-gray-100">
+            <View className="flex-row justify-between mb-4 items-center">
+              <Text className="text-lg font-bold text-black">
                 Transaction Details
               </Text>
-              <TouchableOpacity
-                onPress={() => setShowDetailsModal(false)}
-              >
-                <Ionicons name="close" size={24} />
+              <TouchableOpacity onPress={() => setShowDetailsModal(false)}>
+                <Ionicons name="close" size={22} color={COLORS.text} />
               </TouchableOpacity>
             </View>
 
             {selectedTransaction && (
-              <ScrollView>
+              <ScrollView showsVerticalScrollIndicator={false}>
                 {[
                   ['Type', selectedTransaction.type],
                   [
@@ -425,9 +475,7 @@ export default function TransactionsPage() {
                         key={i}
                         className="flex-row justify-between mb-3"
                       >
-                        <Text className="text-sm text-[#8E8E93]">
-                          {label}
-                        </Text>
+                        <Text className="text-sm text-gray-400">{label}</Text>
                         <Text className="text-sm font-semibold text-black text-right ml-4">
                           {value}
                         </Text>

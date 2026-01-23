@@ -50,23 +50,39 @@ const mockWithdrawals: WithdrawalTransaction[] = [
   { id: 'wd5', assetId: 'eth', amount: '1.0', address: '0xinvalid...', status: 'Failed', timestamp: '2023-10-24 04:45 PM' },
 ];
 
+
 /* ---------- Component ---------- */
 
 export default function WithdrawPage() {
   const router = useRouter();
+  const [selectedCrypto, setSelectedCrypto] = useState<string>('btc');
 
-  const [selectedCrypto, setSelectedCrypto] = useState(mockCryptoAssets[0].id);
   const [withdrawalAddress, setWithdrawalAddress] = useState('');
   const [withdrawalAmount, setWithdrawalAmount] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const currentCrypto = mockCryptoAssets.find(c => c.id === selectedCrypto);
-  const withdrawals = mockWithdrawals.filter(w => w.assetId === selectedCrypto);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+
+  const [showCoinPicker, setShowCoinPicker] = useState(false);
+
+  // Quick coins shown in the horizontal row (user can customize)
+  const [quickCoins, setQuickCoins] = useState<string[]>(['btc', 'eth', 'usdt', 'kas', 'aleo']);
+
+  // Search inside coin picker modal
+  const [coinSearch, setCoinSearch] = useState('');
+
+
+  const currentCrypto = mockCryptoAssets.find((c) => c.id === selectedCrypto);
+
+  const withdrawals = mockWithdrawals.filter((w) => w.assetId === selectedCrypto);
 
   const availableBalance = currentCrypto
     ? (parseFloat(currentCrypto.balance) - parseFloat(currentCrypto.fee)).toFixed(8)
     : '0';
+
 
   const handleWithdraw = () => {
     if (!withdrawalAddress.trim()) return Alert.alert('Error', 'Enter a valid address.');
@@ -80,13 +96,13 @@ export default function WithdrawPage() {
     setShowConfirmModal(false);
     setTimeout(() => {
       setIsProcessing(false);
-      Alert.alert(
-        'Success',
-        `Withdrawal of ${withdrawalAmount} ${currentCrypto?.symbol} submitted.`,
-        [{ text: 'OK', onPress: () => { setWithdrawalAmount(''); setWithdrawalAddress(''); } }]
-      );
+      setSuccessMessage(
+      `Withdrawal of ${withdrawalAmount} ${currentCrypto?.symbol} submitted.`
+    );
+    setShowSuccessModal(true);
     }, 2000);
   };
+
 
   const statusStyle = (s: WithdrawalTransaction['status']) =>
     ({
@@ -99,7 +115,7 @@ export default function WithdrawPage() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 bg-white border-b border-[#E9ECEF]">
+      <View className="py-3 px-5 border-b border-gray-200 flex-row  items-center h-[60px]">
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
@@ -108,23 +124,51 @@ export default function WithdrawPage() {
 
       <ScrollView className="p-4">
         {/* Crypto Selector */}
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
-          {mockCryptoAssets.map(c => (
+        <View className="mb-5">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {mockCryptoAssets
+              .filter((c) => quickCoins.includes(c.id))
+              .map((c) => {
+                const active = selectedCrypto === c.id;
+                return (
+                  <TouchableOpacity
+                    key={c.id}
+                    onPress={() => setSelectedCrypto(c.id)}
+                    activeOpacity={0.85}
+                    className="px-4 py-2 mr-3 rounded-full border"
+                    style={{
+                      backgroundColor: active ? '#FFF8E1' : '#F3F4F6',
+                      borderColor: active ? '#FFC00055' : '#E5E7EB',
+                    }}
+                  >
+                    <Text
+                      className="font-semibold"
+                      style={{ color: active ? '#000' : '#8E8E93' }}
+                    >
+                      {c.symbol}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+
+            {/* More button */}
             <TouchableOpacity
-              key={c.id}
-              onPress={() => setSelectedCrypto(c.id)}
-              className={`px-4 py-2 mr-3 rounded-full ${
-                selectedCrypto === c.id ? 'bg-[#FFF8E1]' : 'bg-[#E9ECEF]'
-              }`}
+              onPress={() => setShowCoinPicker(true)}
+              activeOpacity={0.85}
+              className="px-4 py-2 mr-3 rounded-full border bg-white flex-row items-center"
+              style={{ borderColor: '#E5E7EB' }}
             >
-              <Text className={`font-semibold ${
-                selectedCrypto === c.id ? 'text-black' : 'text-[#8E8E93]'
-              }`}>
-                {c.symbol}
-              </Text>
+              <Ionicons name="add" size={16} color="#000" />
+              <Text className="ml-1 font-semibold text-black">More</Text>
             </TouchableOpacity>
-          ))}
-        </ScrollView>
+          </ScrollView>
+
+          {/* Small helper line (optional) */}
+          <Text className="text-[11px] text-gray-400 mt-2">
+            Tip: Use “More” to pick any coin (and pin it to this row).
+          </Text>
+        </View>
+
 
         {/* Withdraw Card */}
         <View className="bg-white rounded-2xl p-5 mb-6">
@@ -274,6 +318,150 @@ export default function WithdrawPage() {
           </View>
         </View>
       </Modal>
+      <Modal transparent visible={showSuccessModal} animationType="fade">
+        <View className="flex-1 bg-black/40 items-center justify-center px-5">
+          <View className="bg-white rounded-2xl p-5 w-full border border-gray-100">
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-lg font-bold text-black">Success</Text>
+
+              <TouchableOpacity onPress={() => setShowSuccessModal(false)}>
+                <Ionicons name="close" size={20} color="#111827" />
+              </TouchableOpacity>
+            </View>
+
+            <Text className="text-sm text-gray-600 leading-5 mt-1">
+              {successMessage}
+            </Text>
+
+            <TouchableOpacity
+              activeOpacity={0.9}
+              className="mt-5 bg-[#FFC000] rounded-xl py-4 items-center"
+              onPress={() => {
+                setShowSuccessModal(false);
+                setWithdrawalAmount('');
+                setWithdrawalAddress('');
+              }}
+            >
+              <Text className="text-base font-bold text-white">OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal transparent visible={showCoinPicker} animationType="fade">
+        <View className="flex-1 bg-black/40 items-center justify-center px-5">
+          <View className="bg-white rounded-2xl p-5 w-full max-h-[80%] border border-gray-100">
+            {/* Header */}
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-lg font-bold text-black">Select coin</Text>
+              <TouchableOpacity onPress={() => setShowCoinPicker(false)}>
+                <Ionicons name="close" size={20} color="#111827" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Search */}
+            <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 mb-4">
+              <Ionicons name="search" size={18} color="#8E8E93" />
+              <TextInput
+                value={coinSearch}
+                onChangeText={setCoinSearch}
+                placeholder="Search coin"
+                placeholderTextColor="#8E8E93"
+                className="flex-1 ml-3 text-black"
+              />
+              {!!coinSearch && (
+                <TouchableOpacity onPress={() => setCoinSearch('')}>
+                  <Ionicons name="close-circle" size={18} color="#8E8E93" />
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* List */}
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {mockCryptoAssets
+                .filter((c) => {
+                  const q = coinSearch.trim().toLowerCase();
+                  if (!q) return true;
+                  return (
+                    c.name.toLowerCase().includes(q) ||
+                    c.symbol.toLowerCase().includes(q)
+                  );
+                })
+                .map((c) => {
+                  const active = selectedCrypto === c.id;
+                  const pinned = quickCoins.includes(c.id);
+
+                  return (
+                    <TouchableOpacity
+                      key={c.id}
+                      activeOpacity={0.85}
+                      onPress={() => {
+                        setSelectedCrypto(c.id);
+                        setShowCoinPicker(false);
+                        setCoinSearch('');
+                      }}
+                      className="flex-row items-center justify-between p-4 rounded-2xl mb-2 border"
+                      style={{
+                        backgroundColor: active ? '#FFF8E1' : '#FFFFFF',
+                        borderColor: active ? '#FFC00055' : '#F3F4F6',
+                      }}
+                    >
+                      <View className="flex-row items-center flex-1">
+                        <View
+                          className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                          style={{ backgroundColor: '#FFC00020' }}
+                        >
+                          <Text className="font-bold text-black">
+                            {c.symbol.slice(0, 3)}
+                          </Text>
+                        </View>
+
+                        <View className="flex-1">
+                          <Text className="text-base font-bold text-black">
+                            {c.symbol}
+                          </Text>
+                          <Text className="text-xs text-gray-400 mt-0.5">
+                            {c.name} • {c.network}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {/* Pin/unpin */}
+                      <TouchableOpacity
+                        onPress={() => {
+                          setQuickCoins((prev) => {
+                            const exists = prev.includes(c.id);
+                            if (exists) return prev.filter((id) => id !== c.id);
+
+                            // limit quick row to 6 to keep it clean
+                            const next = [...prev, c.id];
+                            return next.slice(-6);
+                          });
+                        }}
+                        className="p-2"
+                      >
+                        <Ionicons
+                          name={pinned ? 'star' : 'star-outline'}
+                          size={18}
+                          color={pinned ? '#FFC000' : '#8E8E93'}
+                        />
+                      </TouchableOpacity>
+                    </TouchableOpacity>
+                  );
+                })}
+            </ScrollView>
+
+            {/* Footer */}
+            <TouchableOpacity
+              activeOpacity={0.9}
+              className="mt-3 bg-[#FFC000] rounded-xl py-4 items-center"
+              onPress={() => setShowCoinPicker(false)}
+            >
+              <Text className="text-base font-bold text-white">Done</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }

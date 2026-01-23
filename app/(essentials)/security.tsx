@@ -100,7 +100,7 @@ export default function SecurityScreen() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 bg-white border-b border-[#E9ECEF]">
+      <View className="py-3 px-5 border-b border-[#E5E7EB] flex-row items-center h-[60px] ">
         <TouchableOpacity onPress={() => router.back()} className="p-1 mr-3">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
@@ -185,7 +185,7 @@ export default function SecurityScreen() {
             onPress={handleChangePassword}
             className="bg-[#FFC000] rounded-xl py-4 items-center"
           >
-            <Text className="text-base font-bold text-black">
+            <Text className="text-base font-bold text-white">
               Change Password
             </Text>
           </TouchableOpacity>
@@ -374,7 +374,7 @@ export default function SecurityScreen() {
           </View>
 
           <TouchableOpacity className="flex-row items-center justify-center py-3">
-            <Text className="text-base font-medium text-[#007AFF] mr-1">
+            <Text className="text-base font-medium text-black mr-1">
               View All Sessions
             </Text>
             <Ionicons name="chevron-forward" size={18} color="#C7C7CC" />

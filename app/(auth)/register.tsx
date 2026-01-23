@@ -239,7 +239,7 @@ export default function SignupScreen() {
               disabled={!canSubmit}
               activeOpacity={0.85}
             >
-              <Text className={`text-base font-semibold ${canSubmit ? 'text-black' : 'text-gray-400'}`}>
+              <Text className={`text-base font-semibold ${canSubmit ? 'text-white' : 'text-gray-400'}`}>
                 Create Account
               </Text>
             </TouchableOpacity>
@@ -266,7 +266,7 @@ export default function SignupScreen() {
             <View className="items-center">
               <Link href="/(auth)/login" asChild>
                 <TouchableOpacity className="w-full bg-gray-50 rounded-xl py-4 items-center border border-gray-200">
-                  <Text className="text-gray-700 text-base font-semibold">Sign In</Text>
+                  <Text className="text-black text-base font-semibold">Sign In</Text>
                 </TouchableOpacity>
               </Link>
             </View>

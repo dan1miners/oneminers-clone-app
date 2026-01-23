@@ -97,15 +97,16 @@ export default function EditProfileScreen() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-[#E9ECEF]">
-        <TouchableOpacity onPress={() => router.back()} className="p-1">
-          <Ionicons name="arrow-back" size={24} color="#000" />
-        </TouchableOpacity>
+      <View className="py-3 px-5 border-b border-[#E5E7EB] flex-row items-center h-[60px] ">
+        <View className="flex-row items-center flex-1">
+          <TouchableOpacity onPress={() => router.back()} className="p-1">
+            <Ionicons name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
 
-        <Text className="text-lg font-semibold text-black">
-          Edit Profile
-        </Text>
-
+          <Text className="text-lg font-semibold text-black">
+            Edit Profile
+          </Text>
+        </View>
         <TouchableOpacity onPress={handleSaveChanges} className="px-4 py-2">
           <Text className="text-base font-semibold text-[#FFC000]">
             Save
@@ -211,61 +212,7 @@ export default function EditProfileScreen() {
           </View>
         </View>
 
-        {/* Privacy & Security */}
-        <View className="bg-white rounded-2xl p-5 mb-4">
-          <Text className="text-lg font-bold text-black mb-4">
-            Privacy & Security
-          </Text>
-
-          {[
-            {
-              key: 'isTwoFactorEnabled',
-              title: 'Two-Factor Authentication',
-              desc: 'Add extra security to your account',
-              icon: 'shield-checkmark-outline',
-            },
-            {
-              key: 'emailNotifications',
-              title: 'Email Notifications',
-              desc: 'Receive important updates',
-              icon: 'mail-outline',
-            },
-            {
-              key: 'marketingEmails',
-              title: 'Marketing Emails',
-              desc: 'Receive promotional content',
-              icon: 'megaphone-outline',
-            },
-          ].map(item => (
-            <View
-              key={item.key}
-              className="flex-row items-center justify-between py-4 border-b border-[#F2F2F7]"
-            >
-              <View className="flex-row items-center flex-1">
-                <Ionicons
-                  name={item.icon as any}
-                  size={22}
-                  color="#FFC000"
-                />
-                <View className="ml-3 flex-1">
-                  <Text className="text-base font-medium text-black">
-                    {item.title}
-                  </Text>
-                  <Text className="text-sm text-[#8E8E93]">
-                    {item.desc}
-                  </Text>
-                </View>
-              </View>
-
-              <Switch
-                value={(userData as any)[item.key]}
-                onValueChange={v => handleInputChange(item.key, v)}
-                trackColor={{ false: '#F2F2F7', true: '#FFC000' }}
-                thumbColor="#FFFFFF"
-              />
-            </View>
-          ))}
-        </View>
+        
 
         <View className="h-8" />
       </ScrollView>

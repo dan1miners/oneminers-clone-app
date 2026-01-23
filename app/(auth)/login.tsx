@@ -114,7 +114,7 @@ export default function LoginScreen() {
                 onPress={handleLogin}
                 disabled={!email || !password}
               >
-                <Text className="text-black text-base font-semibold">Sign In</Text>
+                <Text className="text-white text-base font-semibold">Sign In</Text>
               </TouchableOpacity>
 
               {/* Divider */}

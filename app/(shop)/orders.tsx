@@ -193,7 +193,7 @@ export default function OrderPage() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 border-b border-[#E9ECEF]">
+      <View className="py-3 px-5 border-b border-[#E5E7EB] flex-row items-center h-[60px] bg-[#F9FAFB]">
         <TouchableOpacity onPress={handleBackPress} className="p-1 mr-3">
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>

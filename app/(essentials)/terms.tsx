@@ -25,20 +25,11 @@ export default function TermsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
       {/* Header */}
-      <View className="flex-row items-center px-4 py-3 bg-white border-b border-neutral-200">
+      <View className="py-3 px-5 border-b border-[#E5E7EB] flex-row items-center h-[60px] bg-[#F9FAFB]">
         <TouchableOpacity onPress={() => router.back()} className="p-1 mr-3">
           <Ionicons name="arrow-back" size={22} color="#000" />
         </TouchableOpacity>
 
-        {/* Brand Text Logo */}
-        <View className="flex-row items-baseline">
-          <Text className="text-xl font-extrabold text-[#FFC000]">
-            one
-          </Text>
-          <Text className="text-xl font-extrabold text-black">
-            miners
-          </Text>
-        </View>
       </View>
 
       <ScrollView
