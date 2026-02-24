@@ -1,35 +1,34 @@
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { APP_COLORS } from "../../constants/colors";
+import { useAppTheme } from "../../providers/theme-provider";
 
 export default function TermsScreen() {
+  const { colors: themeColors } = useAppTheme();
   const router = useRouter();
   const [acceptedTerms, setAcceptedTerms] = useState(true);
 
   const handleAcceptTerms = () => {
     setAcceptedTerms(true);
     Alert.alert(
-      'Terms Accepted',
-      'Thank you for accepting our terms and conditions.'
+      "Terms Accepted",
+      "Thank you for accepting our terms and conditions.",
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView
+      className="flex-1 bg-gray-50 dark:bg-slate-950"
+      edges={["top", "bottom", "left", "right"]}
+    >
       {/* Header */}
-      <View className="py-3 px-5 border-b border-[#E5E7EB] flex-row items-center h-[60px] bg-[#F9FAFB]">
+      <View className="py-3 px-5 border-b border-om-border dark:border-slate-700 flex-row items-center h-[60px] bg-white dark:bg-slate-900">
         <TouchableOpacity onPress={() => router.back()} className="p-1 mr-3">
-          <Ionicons name="arrow-back" size={22} color="#000" />
+          <Ionicons name="arrow-back" size={22} color={themeColors.text} />
         </TouchableOpacity>
-
       </View>
 
       <ScrollView
@@ -38,8 +37,8 @@ export default function TermsScreen() {
         contentContainerStyle={{ padding: 16 }}
       >
         {/* Intro */}
-        <View className="bg-white rounded-2xl p-6 mb-4">
-          <Text className="text-2xl font-bold text-black mb-2">
+        <View className="bg-white dark:bg-slate-900 rounded-2xl p-6 mb-4">
+          <Text className="text-2xl font-bold text-black dark:text-slate-100 mb-2">
             Terms of Service & Privacy Policy
           </Text>
           <Text className="text-sm text-neutral-500">
@@ -54,41 +53,35 @@ export default function TermsScreen() {
         {/* Sections */}
         {[
           {
-            title: '1. Acceptance of Terms',
-            text:
-              'By using the Oneminers platform, you agree to comply with these terms. If you do not agree, please do not use our services.',
+            title: "1. Acceptance of Terms",
+            text: "By using the Oneminers platform, you agree to comply with these terms. If you do not agree, please do not use our services.",
           },
           {
-            title: '2. User Accounts',
-            text:
-              'You are responsible for maintaining the security of your account and all activities under it.',
+            title: "2. User Accounts",
+            text: "You are responsible for maintaining the security of your account and all activities under it.",
           },
           {
-            title: '3. Mining Equipment',
-            text:
-              'Mining hardware specifications and performance figures are provided by manufacturers and may vary.',
+            title: "3. Mining Equipment",
+            text: "Mining hardware specifications and performance figures are provided by manufacturers and may vary.",
           },
           {
-            title: '4. Payments & Fees',
-            text:
-              'Payments may be made via supported methods. Network, processing, or service fees may apply.',
+            title: "4. Payments & Fees",
+            text: "Payments may be made via supported methods. Network, processing, or service fees may apply.",
           },
           {
-            title: '5. Privacy Policy',
-            text:
-              'We collect only necessary data to provide services and support. We do not sell personal information.',
+            title: "5. Privacy Policy",
+            text: "We collect only necessary data to provide services and support. We do not sell personal information.",
           },
           {
-            title: '6. Limitation of Liability',
-            text:
-              'Oneminers is not responsible for indirect or consequential losses related to service usage.',
+            title: "6. Limitation of Liability",
+            text: "Oneminers is not responsible for indirect or consequential losses related to service usage.",
           },
         ].map((section, idx) => (
           <View
             key={idx}
-            className="bg-white rounded-2xl p-5 mb-4"
+            className="bg-white dark:bg-slate-900 rounded-2xl p-5 mb-4"
           >
-            <Text className="text-lg font-semibold text-black mb-3">
+            <Text className="text-lg font-semibold text-black dark:text-slate-100 mb-3">
               {section.title}
             </Text>
             <Text className="text-sm text-neutral-600 leading-6">
@@ -98,14 +91,13 @@ export default function TermsScreen() {
         ))}
 
         {/* Contact */}
-        <View className="bg-white rounded-2xl p-5 mb-6">
-          <Text className="text-lg font-semibold text-black mb-3">
+        <View className="bg-white dark:bg-slate-900 rounded-2xl p-5 mb-6">
+          <Text className="text-lg font-semibold text-black dark:text-slate-100 mb-3">
             Contact
           </Text>
           <Text className="text-sm text-neutral-600">
-            For questions about these terms, please contact our support team at
-            {' '}
-            <Text className="font-medium text-black">
+            For questions about these terms, please contact our support team at{" "}
+            <Text className="font-medium text-black dark:text-slate-100">
               legal@oneminers.com
             </Text>
           </Text>
@@ -115,9 +107,9 @@ export default function TermsScreen() {
         {!acceptedTerms && (
           <TouchableOpacity
             onPress={handleAcceptTerms}
-            className="bg-[#FFC000] rounded-xl py-4 items-center mb-6"
+            className="bg-om-accent rounded-xl py-4 items-center mb-6"
           >
-            <Text className="text-base font-bold text-black">
+            <Text className="text-base font-bold text-black dark:text-slate-100">
               Accept Terms & Conditions
             </Text>
           </TouchableOpacity>

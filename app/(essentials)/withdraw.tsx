@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,12 @@ import {
   Alert,
   TextInput,
   Modal,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { APP_COLORS } from "../../constants/colors";
+import { useAppTheme } from "../../providers/theme-provider";
 
 /* ---------- Types ---------- */
 
@@ -29,7 +31,7 @@ type WithdrawalTransaction = {
   assetId: string;
   amount: string;
   address: string;
-  status: 'Completed' | 'Pending' | 'Failed' | 'Processing';
+  status: "Completed" | "Pending" | "Failed" | "Processing";
   timestamp: string;
   txHash?: string;
 };
@@ -37,57 +39,126 @@ type WithdrawalTransaction = {
 /* ---------- Mock Data ---------- */
 
 const mockCryptoAssets: CryptoAsset[] = [
-  { id: 'btc', name: 'Bitcoin', symbol: 'BTC', balance: '0.01234567', network: 'Bitcoin Network', fee: '0.0005' },
-  { id: 'eth', name: 'Ethereum', symbol: 'ETH', balance: '1.57890', network: 'ERC20 Network', fee: '0.003' },
-  { id: 'usdt', name: 'Tether', symbol: 'USDT', balance: '500.00', network: 'TRC20 Network', fee: '1.0' },
+  {
+    id: "btc",
+    name: "Bitcoin",
+    symbol: "BTC",
+    balance: "0.01234567",
+    network: "Bitcoin Network",
+    fee: "0.0005",
+  },
+  {
+    id: "eth",
+    name: "Ethereum",
+    symbol: "ETH",
+    balance: "1.57890",
+    network: "ERC20 Network",
+    fee: "0.003",
+  },
+  {
+    id: "usdt",
+    name: "Tether",
+    symbol: "USDT",
+    balance: "500.00",
+    network: "TRC20 Network",
+    fee: "1.0",
+  },
 ];
 
 const mockWithdrawals: WithdrawalTransaction[] = [
-  { id: 'wd1', assetId: 'btc', amount: '0.001', address: 'bc1qxy2kgd...', status: 'Completed', timestamp: '2023-10-27 10:30 AM', txHash: 'a1b2c3...' },
-  { id: 'wd2', assetId: 'eth', amount: '0.5', address: '0x89205A3...', status: 'Processing', timestamp: '2023-10-26 09:15 PM', txHash: 'x1y2z3...' },
-  { id: 'wd3', assetId: 'btc', amount: '0.002', address: 'bc1qwerty...', status: 'Pending', timestamp: '2023-10-26 05:00 PM' },
-  { id: 'wd4', assetId: 'usdt', amount: '100.00', address: 'TRX9cQiVW...', status: 'Completed', timestamp: '2023-10-25 11:00 AM', txHash: 'q1w2e3...' },
-  { id: 'wd5', assetId: 'eth', amount: '1.0', address: '0xinvalid...', status: 'Failed', timestamp: '2023-10-24 04:45 PM' },
+  {
+    id: "wd1",
+    assetId: "btc",
+    amount: "0.001",
+    address: "bc1qxy2kgd...",
+    status: "Completed",
+    timestamp: "2023-10-27 10:30 AM",
+    txHash: "a1b2c3...",
+  },
+  {
+    id: "wd2",
+    assetId: "eth",
+    amount: "0.5",
+    address: "0x89205A3...",
+    status: "Processing",
+    timestamp: "2023-10-26 09:15 PM",
+    txHash: "x1y2z3...",
+  },
+  {
+    id: "wd3",
+    assetId: "btc",
+    amount: "0.002",
+    address: "bc1qwerty...",
+    status: "Pending",
+    timestamp: "2023-10-26 05:00 PM",
+  },
+  {
+    id: "wd4",
+    assetId: "usdt",
+    amount: "100.00",
+    address: "TRX9cQiVW...",
+    status: "Completed",
+    timestamp: "2023-10-25 11:00 AM",
+    txHash: "q1w2e3...",
+  },
+  {
+    id: "wd5",
+    assetId: "eth",
+    amount: "1.0",
+    address: "0xinvalid...",
+    status: "Failed",
+    timestamp: "2023-10-24 04:45 PM",
+  },
 ];
-
 
 /* ---------- Component ---------- */
 
 export default function WithdrawPage() {
+  const { colors: themeColors } = useAppTheme();
   const router = useRouter();
-  const [selectedCrypto, setSelectedCrypto] = useState<string>('btc');
+  const [selectedCrypto, setSelectedCrypto] = useState<string>("btc");
 
-  const [withdrawalAddress, setWithdrawalAddress] = useState('');
-  const [withdrawalAmount, setWithdrawalAmount] = useState('');
+  const [withdrawalAddress, setWithdrawalAddress] = useState("");
+  const [withdrawalAmount, setWithdrawalAmount] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [showCoinPicker, setShowCoinPicker] = useState(false);
 
   // Quick coins shown in the horizontal row (user can customize)
-  const [quickCoins, setQuickCoins] = useState<string[]>(['btc', 'eth', 'usdt', 'kas', 'aleo']);
+  const [quickCoins, setQuickCoins] = useState<string[]>([
+    "btc",
+    "eth",
+    "usdt",
+    "kas",
+    "aleo",
+  ]);
 
   // Search inside coin picker modal
-  const [coinSearch, setCoinSearch] = useState('');
-
+  const [coinSearch, setCoinSearch] = useState("");
 
   const currentCrypto = mockCryptoAssets.find((c) => c.id === selectedCrypto);
 
-  const withdrawals = mockWithdrawals.filter((w) => w.assetId === selectedCrypto);
+  const withdrawals = mockWithdrawals.filter(
+    (w) => w.assetId === selectedCrypto,
+  );
 
   const availableBalance = currentCrypto
-    ? (parseFloat(currentCrypto.balance) - parseFloat(currentCrypto.fee)).toFixed(8)
-    : '0';
-
+    ? (
+        parseFloat(currentCrypto.balance) - parseFloat(currentCrypto.fee)
+      ).toFixed(8)
+    : "0";
 
   const handleWithdraw = () => {
-    if (!withdrawalAddress.trim()) return Alert.alert('Error', 'Enter a valid address.');
-    if (!withdrawalAmount || parseFloat(withdrawalAmount) <= 0) return Alert.alert('Error', 'Enter a valid amount.');
-    if (parseFloat(withdrawalAmount) > parseFloat(availableBalance)) return Alert.alert('Error', 'Insufficient balance.');
+    if (!withdrawalAddress.trim())
+      return Alert.alert("Error", "Enter a valid address.");
+    if (!withdrawalAmount || parseFloat(withdrawalAmount) <= 0)
+      return Alert.alert("Error", "Enter a valid amount.");
+    if (parseFloat(withdrawalAmount) > parseFloat(availableBalance))
+      return Alert.alert("Error", "Insufficient balance.");
     setShowConfirmModal(true);
   };
 
@@ -97,25 +168,27 @@ export default function WithdrawPage() {
     setTimeout(() => {
       setIsProcessing(false);
       setSuccessMessage(
-      `Withdrawal of ${withdrawalAmount} ${currentCrypto?.symbol} submitted.`
-    );
-    setShowSuccessModal(true);
+        `Withdrawal of ${withdrawalAmount} ${currentCrypto?.symbol} submitted.`,
+      );
+      setShowSuccessModal(true);
     }, 2000);
   };
 
-
-  const statusStyle = (s: WithdrawalTransaction['status']) =>
+  const statusStyle = (s: WithdrawalTransaction["status"]) =>
     ({
-      Completed: 'bg-green-100 text-green-700',
-      Processing: 'bg-yellow-100 text-yellow-700',
-      Pending: 'bg-orange-100 text-orange-700',
-      Failed: 'bg-red-100 text-red-700',
-    }[s]);
+      Completed: "bg-green-100 text-green-700",
+      Processing: "bg-yellow-100 text-yellow-700",
+      Pending: "bg-orange-100 text-orange-700",
+      Failed: "bg-red-100 text-red-700",
+    })[s];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView
+      className="flex-1 bg-gray-50 dark:bg-slate-950"
+      edges={["top", "bottom", "left", "right"]}
+    >
       {/* Header */}
-      <View className="py-3 px-5 border-b border-gray-200 flex-row  items-center h-[60px]">
+      <View className="py-3 px-5 border-b border-gray-200 dark:border-slate-700 flex-row  items-center h-[60px] bg-white dark:bg-slate-900">
         <TouchableOpacity onPress={() => router.back()} className="mr-3">
           <Ionicons name="arrow-back" size={24} />
         </TouchableOpacity>
@@ -137,13 +210,21 @@ export default function WithdrawPage() {
                     activeOpacity={0.85}
                     className="px-4 py-2 mr-3 rounded-full border"
                     style={{
-                      backgroundColor: active ? '#FFF8E1' : '#F3F4F6',
-                      borderColor: active ? '#FFC00055' : '#E5E7EB',
+                      backgroundColor: active
+                        ? APP_COLORS.accentSoftWarm
+                        : APP_COLORS.gray100,
+                      borderColor: active
+                        ? APP_COLORS.accentA33
+                        : APP_COLORS.border,
                     }}
                   >
                     <Text
                       className="font-semibold"
-                      style={{ color: active ? '#000' : '#8E8E93' }}
+                      style={{
+                        color: active
+                          ? APP_COLORS.textStrong
+                          : APP_COLORS.muted,
+                      }}
                     >
                       {c.symbol}
                     </Text>
@@ -155,35 +236,41 @@ export default function WithdrawPage() {
             <TouchableOpacity
               onPress={() => setShowCoinPicker(true)}
               activeOpacity={0.85}
-              className="px-4 py-2 mr-3 rounded-full border bg-white flex-row items-center"
-              style={{ borderColor: '#E5E7EB' }}
+              className="px-4 py-2 mr-3 rounded-full border bg-white dark:bg-slate-900 flex-row items-center"
+              style={{ borderColor: APP_COLORS.border }}
             >
-              <Ionicons name="add" size={16} color="#000" />
-              <Text className="ml-1 font-semibold text-black">More</Text>
+              <Ionicons name="add" size={16} color={themeColors.text} />
+              <Text className="ml-1 font-semibold text-black dark:text-slate-100">
+                More
+              </Text>
             </TouchableOpacity>
           </ScrollView>
 
           {/* Small helper line (optional) */}
-          <Text className="text-[11px] text-gray-400 mt-2">
+          <Text className="text-[11px] text-gray-400 dark:text-slate-500 mt-2">
             Tip: Use “More” to pick any coin (and pin it to this row).
           </Text>
         </View>
 
-
         {/* Withdraw Card */}
-        <View className="bg-white rounded-2xl p-5 mb-6">
+        <View className="bg-white dark:bg-slate-900 rounded-2xl p-5 mb-6">
           <Text className="text-lg font-semibold mb-4">
             Withdraw {currentCrypto?.name}
           </Text>
 
-          <View className="bg-[#F8F9FA] rounded-xl p-4 mb-5">
+          <View className="bg-om-bg-soft dark:bg-slate-800 rounded-xl p-4 mb-5">
             {[
-              ['Available Balance', `${availableBalance} ${currentCrypto?.symbol}`],
-              ['Network Fee', `${currentCrypto?.fee} ${currentCrypto?.symbol}`],
-              ['Network', currentCrypto?.network],
+              [
+                "Available Balance",
+                `${availableBalance} ${currentCrypto?.symbol}`,
+              ],
+              ["Network Fee", `${currentCrypto?.fee} ${currentCrypto?.symbol}`],
+              ["Network", currentCrypto?.network],
             ].map(([l, v], i) => (
               <View key={i} className="flex-row justify-between mb-2">
-                <Text className="text-sm text-[#8E8E93]">{l}</Text>
+                <Text className="text-sm text-om-muted dark:text-slate-400">
+                  {l}
+                </Text>
                 <Text className="text-sm font-semibold">{v}</Text>
               </View>
             ))}
@@ -191,7 +278,7 @@ export default function WithdrawPage() {
 
           <Text className="text-sm font-semibold mb-2">Withdrawal Address</Text>
           <TextInput
-            className="border border-[#E9ECEF] rounded-xl p-4 mb-4"
+            className="border border-om-border-soft dark:border-slate-700 rounded-xl p-4 mb-4"
             placeholder={`Enter ${currentCrypto?.symbol} address`}
             value={withdrawalAddress}
             onChangeText={setWithdrawalAddress}
@@ -199,12 +286,14 @@ export default function WithdrawPage() {
 
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-sm font-semibold">Amount</Text>
-            <TouchableOpacity onPress={() => setWithdrawalAmount(availableBalance)}>
-              <Text className="font-semibold text-[#FFC000]">MAX</Text>
+            <TouchableOpacity
+              onPress={() => setWithdrawalAmount(availableBalance)}
+            >
+              <Text className="font-semibold text-om-accent">MAX</Text>
             </TouchableOpacity>
           </View>
 
-          <View className="flex-row items-center border border-[#E9ECEF] rounded-xl mb-5">
+          <View className="flex-row items-center border border-om-border-soft dark:border-slate-700 rounded-xl mb-5">
             <TextInput
               className="flex-1 p-4 text-lg font-semibold"
               placeholder="0.00"
@@ -212,7 +301,7 @@ export default function WithdrawPage() {
               value={withdrawalAmount}
               onChangeText={setWithdrawalAmount}
             />
-            <Text className="px-4 text-[#8E8E93] font-semibold">
+            <Text className="px-4 text-om-muted dark:text-slate-400 font-semibold">
               {currentCrypto?.symbol}
             </Text>
           </View>
@@ -221,18 +310,25 @@ export default function WithdrawPage() {
             disabled={!withdrawalAmount || !withdrawalAddress || isProcessing}
             onPress={handleWithdraw}
             className={`py-4 rounded-xl items-center ${
-              withdrawalAmount && withdrawalAddress ? 'bg-[#FFC000]' : 'bg-[#E9ECEF]'
+              withdrawalAmount && withdrawalAddress
+                ? "bg-om-accent"
+                : "bg-om-border-soft"
             }`}
           >
             <Text className="font-semibold text-white">
-              {isProcessing ? 'Processing...' : 'Withdraw'}
+              {isProcessing ? "Processing..." : "Withdraw"}
             </Text>
           </TouchableOpacity>
 
-          <View className="flex-row bg-[#FFF8E1] p-3 rounded-xl mt-4">
-            <Ionicons name="warning-outline" size={16} color="#FF9500" />
-            <Text className="text-xs text-[#8B6914] ml-2 flex-1">
-              Double-check the withdrawal address. Transactions cannot be reversed.
+          <View className="flex-row bg-om-accent-50 p-3 rounded-xl mt-4">
+            <Ionicons
+              name="warning-outline"
+              size={16}
+              color={APP_COLORS.warning}
+            />
+            <Text className="text-xs text-om-brown ml-2 flex-1">
+              Double-check the withdrawal address. Transactions cannot be
+              reversed.
             </Text>
           </View>
         </View>
@@ -243,58 +339,65 @@ export default function WithdrawPage() {
         <FlatList
           data={withdrawals}
           scrollEnabled={false}
-          keyExtractor={i => i.id}
-          ListEmptyComponent={<Text className="text-center text-[#8E8E93]">No withdrawal history.</Text>}
+          keyExtractor={(i) => i.id}
+          ListEmptyComponent={
+            <Text className="text-center text-om-muted dark:text-slate-400">
+              No withdrawal history.
+            </Text>
+          }
           renderItem={({ item }) => (
-            <View className="bg-white rounded-xl p-4 mb-2 flex-row items-start">
+            <View className="bg-white dark:bg-slate-900 rounded-xl p-4 mb-2 flex-row items-start">
               {/* Left */}
               <View className="flex-1 pr-3">
-                <Text className="font-semibold text-black">
+                <Text className="font-semibold text-black dark:text-slate-100">
                   - {item.amount} {currentCrypto?.symbol}
                 </Text>
-          
-                <Text className="text-xs text-[#8E8E93] mt-1" numberOfLines={1}>
+
+                <Text
+                  className="text-xs text-om-muted dark:text-slate-400 mt-1"
+                  numberOfLines={1}
+                >
                   To: {item.address}
                 </Text>
-          
-                <Text className="text-xs text-[#8E8E93] mt-1">
+
+                <Text className="text-xs text-om-muted dark:text-slate-400 mt-1">
                   {item.timestamp}
                 </Text>
               </View>
-          
+
               {/* Right (Status Pill) */}
               <View
                 className={`px-3 py-1 rounded-full self-start min-w-[92px] items-center ${statusStyle(
-                  item.status
+                  item.status,
                 )}`}
               >
-                <Text className="text-xs font-semibold">
-                  {item.status}
-                </Text>
+                <Text className="text-xs font-semibold">{item.status}</Text>
               </View>
             </View>
           )}
-          
         />
       </ScrollView>
 
       {/* Confirm Modal */}
       <Modal transparent visible={showConfirmModal} animationType="slide">
         <View className="flex-1 bg-black/50 items-center justify-center px-5">
-          <View className="bg-white rounded-2xl p-6 w-full max-w-md">
+          <View className="bg-white dark:bg-slate-900 rounded-2xl p-6 w-full max-w-md">
             <Text className="text-xl font-bold text-center mb-5">
               Confirm Withdrawal
             </Text>
 
             {[
-              ['Amount', `${withdrawalAmount} ${currentCrypto?.symbol}`],
-              ['Fee', `${currentCrypto?.fee} ${currentCrypto?.symbol}`],
-              ['You Receive',
-                `${(parseFloat(withdrawalAmount) - parseFloat(currentCrypto?.fee || '0')).toFixed(8)} ${currentCrypto?.symbol}`
+              ["Amount", `${withdrawalAmount} ${currentCrypto?.symbol}`],
+              ["Fee", `${currentCrypto?.fee} ${currentCrypto?.symbol}`],
+              [
+                "You Receive",
+                `${(parseFloat(withdrawalAmount) - parseFloat(currentCrypto?.fee || "0")).toFixed(8)} ${currentCrypto?.symbol}`,
               ],
             ].map(([l, v], i) => (
               <View key={i} className="flex-row justify-between mb-3">
-                <Text className="text-sm text-[#8E8E93]">{l}</Text>
+                <Text className="text-sm text-om-muted dark:text-slate-400">
+                  {l}
+                </Text>
                 <Text className="text-sm font-semibold">{v}</Text>
               </View>
             ))}
@@ -302,17 +405,17 @@ export default function WithdrawPage() {
             <View className="flex-row gap-3 mt-6">
               <TouchableOpacity
                 onPress={() => setShowConfirmModal(false)}
-                className="flex-1 bg-[#E9ECEF] py-4 rounded-xl items-center"
+                className="flex-1 bg-om-border-soft py-4 rounded-xl items-center"
               >
-                <Text className="font-semibold text-[#8E8E93]">Cancel</Text>
+                <Text className="font-semibold text-om-muted dark:text-slate-400">
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={confirmWithdrawal}
-                className="flex-1 bg-[#FFC000] py-4 rounded-xl items-center"
+                className="flex-1 bg-om-accent py-4 rounded-xl items-center"
               >
-                <Text className="font-semibold text-white">
-                  Confirm
-                </Text>
+                <Text className="font-semibold text-white">Confirm</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -320,26 +423,28 @@ export default function WithdrawPage() {
       </Modal>
       <Modal transparent visible={showSuccessModal} animationType="fade">
         <View className="flex-1 bg-black/40 items-center justify-center px-5">
-          <View className="bg-white rounded-2xl p-5 w-full border border-gray-100">
+          <View className="bg-white dark:bg-slate-900 rounded-2xl p-5 w-full border border-gray-100 dark:border-slate-700">
             <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-lg font-bold text-black">Success</Text>
+              <Text className="text-lg font-bold text-black dark:text-slate-100">
+                Success
+              </Text>
 
               <TouchableOpacity onPress={() => setShowSuccessModal(false)}>
-                <Ionicons name="close" size={20} color="#111827" />
+                <Ionicons name="close" size={20} color={themeColors.text} />
               </TouchableOpacity>
             </View>
 
-            <Text className="text-sm text-gray-600 leading-5 mt-1">
+            <Text className="text-sm text-gray-600 dark:text-slate-300 leading-5 mt-1">
               {successMessage}
             </Text>
 
             <TouchableOpacity
               activeOpacity={0.9}
-              className="mt-5 bg-[#FFC000] rounded-xl py-4 items-center"
+              className="mt-5 bg-om-accent rounded-xl py-4 items-center"
               onPress={() => {
                 setShowSuccessModal(false);
-                setWithdrawalAmount('');
-                setWithdrawalAddress('');
+                setWithdrawalAmount("");
+                setWithdrawalAddress("");
               }}
             >
               <Text className="text-base font-bold text-white">OK</Text>
@@ -349,28 +454,34 @@ export default function WithdrawPage() {
       </Modal>
       <Modal transparent visible={showCoinPicker} animationType="fade">
         <View className="flex-1 bg-black/40 items-center justify-center px-5">
-          <View className="bg-white rounded-2xl p-5 w-full max-h-[80%] border border-gray-100">
+          <View className="bg-white dark:bg-slate-900 rounded-2xl p-5 w-full max-h-[80%] border border-gray-100 dark:border-slate-700">
             {/* Header */}
             <View className="flex-row items-center justify-between mb-3">
-              <Text className="text-lg font-bold text-black">Select coin</Text>
+              <Text className="text-lg font-bold text-black dark:text-slate-100">
+                Select coin
+              </Text>
               <TouchableOpacity onPress={() => setShowCoinPicker(false)}>
-                <Ionicons name="close" size={20} color="#111827" />
+                <Ionicons name="close" size={20} color={themeColors.text} />
               </TouchableOpacity>
             </View>
 
             {/* Search */}
-            <View className="flex-row items-center bg-gray-50 rounded-xl px-4 py-3 border border-gray-100 mb-4">
-              <Ionicons name="search" size={18} color="#8E8E93" />
+            <View className="flex-row items-center bg-gray-50 dark:bg-slate-950 rounded-xl px-4 py-3 border border-gray-100 dark:border-slate-700 mb-4">
+              <Ionicons name="search" size={18} color={themeColors.subtext} />
               <TextInput
                 value={coinSearch}
                 onChangeText={setCoinSearch}
                 placeholder="Search coin"
-                placeholderTextColor="#8E8E93"
-                className="flex-1 ml-3 text-black"
+                placeholderTextColor={themeColors.subtext}
+                className="flex-1 ml-3 text-black dark:text-slate-100"
               />
               {!!coinSearch && (
-                <TouchableOpacity onPress={() => setCoinSearch('')}>
-                  <Ionicons name="close-circle" size={18} color="#8E8E93" />
+                <TouchableOpacity onPress={() => setCoinSearch("")}>
+                  <Ionicons
+                    name="close-circle"
+                    size={18}
+                    color={themeColors.subtext}
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -397,29 +508,33 @@ export default function WithdrawPage() {
                       onPress={() => {
                         setSelectedCrypto(c.id);
                         setShowCoinPicker(false);
-                        setCoinSearch('');
+                        setCoinSearch("");
                       }}
                       className="flex-row items-center justify-between p-4 rounded-2xl mb-2 border"
                       style={{
-                        backgroundColor: active ? '#FFF8E1' : '#FFFFFF',
-                        borderColor: active ? '#FFC00055' : '#F3F4F6',
+                        backgroundColor: active
+                          ? APP_COLORS.accentSoftWarm
+                          : APP_COLORS.white,
+                        borderColor: active
+                          ? APP_COLORS.accentA33
+                          : APP_COLORS.gray100,
                       }}
                     >
                       <View className="flex-row items-center flex-1">
                         <View
                           className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                          style={{ backgroundColor: '#FFC00020' }}
+                          style={{ backgroundColor: APP_COLORS.accentA12 }}
                         >
-                          <Text className="font-bold text-black">
+                          <Text className="font-bold text-black dark:text-slate-100">
                             {c.symbol.slice(0, 3)}
                           </Text>
                         </View>
 
                         <View className="flex-1">
-                          <Text className="text-base font-bold text-black">
+                          <Text className="text-base font-bold text-black dark:text-slate-100">
                             {c.symbol}
                           </Text>
-                          <Text className="text-xs text-gray-400 mt-0.5">
+                          <Text className="text-xs text-gray-400 dark:text-slate-500 mt-0.5">
                             {c.name} • {c.network}
                           </Text>
                         </View>
@@ -440,9 +555,9 @@ export default function WithdrawPage() {
                         className="p-2"
                       >
                         <Ionicons
-                          name={pinned ? 'star' : 'star-outline'}
+                          name={pinned ? "star" : "star-outline"}
                           size={18}
-                          color={pinned ? '#FFC000' : '#8E8E93'}
+                          color={pinned ? APP_COLORS.accent : APP_COLORS.muted}
                         />
                       </TouchableOpacity>
                     </TouchableOpacity>
@@ -453,7 +568,7 @@ export default function WithdrawPage() {
             {/* Footer */}
             <TouchableOpacity
               activeOpacity={0.9}
-              className="mt-3 bg-[#FFC000] rounded-xl py-4 items-center"
+              className="mt-3 bg-om-accent rounded-xl py-4 items-center"
               onPress={() => setShowCoinPicker(false)}
             >
               <Text className="text-base font-bold text-white">Done</Text>
@@ -461,7 +576,6 @@ export default function WithdrawPage() {
           </View>
         </View>
       </Modal>
-
     </SafeAreaView>
   );
 }

@@ -1,10 +1,44 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: "class",
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
   content: ["./app/**/*.{js,jsx,ts,tsx}", "./components/**/*.{js,jsx,ts,tsx}"],
   presets: [require("nativewind/preset")],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "om-accent": "#FFC000",
+        "om-accent-50": "#FFF8E1",
+        "om-accent-75": "#FFF9E6",
+        "om-accent-100": "#FFF8E6",
+        "om-accent-200": "#FFE5B4",
+        "om-text": "#111827",
+        "om-text-strong": "#212529",
+        "om-subtext": "#6B7280",
+        "om-muted": "#8E8E93",
+        "om-muted-2": "#6C757D",
+        "om-border": "#E5E7EB",
+        "om-border-soft": "#E9ECEF",
+        "om-bg": "#F9FAFB",
+        "om-bg-soft": "#F8F9FA",
+        "om-surface": "#F2F2F7",
+        "om-success": "#34C759",
+        "om-lime": "#32D74B",
+        "om-success-700": "#16A34A",
+        "om-danger": "#FF3B30",
+        "om-warning": "#FF9500",
+        "om-info": "#007AFF",
+        "om-purple": "#5856D6",
+        "om-pink": "#BF5AF2",
+        "om-rose": "#FF2D55",
+        "om-green-dark": "#2E7D32",
+        "om-brown": "#8B6914",
+        "om-slate": "#495057",
+        "om-gray-300": "#D1D5DB",
+        "om-gray-200": "#C7C7CC",
+        "om-emerald-bg": "#E8F5E9",
+      },
+    },
   },
   plugins: [],
-}
+};

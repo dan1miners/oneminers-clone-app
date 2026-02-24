@@ -1,48 +1,48 @@
-import React, { useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Switch, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { Link, useRouter } from 'expo-router';
-
-const COLORS = {
-  accent: '#FFC000',
-  text: '#111827',
-  subtext: '#6B7280',
-  border: '#E5E7EB',
-  bg: '#F9FAFB',
-  danger: '#FF3B30',
-};
+import React, { useMemo, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+  Modal,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { APP_COLORS } from "../../constants/colors";
+import { useAppTheme } from "../../providers/theme-provider";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { colors, isDark, setDarkMode } = useAppTheme();
 
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(true);
-  const [isDarkModeEnabled, setIsDarkModeEnabled] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const userInfo = useMemo(
     () => ({
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      phone: '+1 (555) 123-4567',
-      joinDate: 'January 2024',
-      miningLevel: 'Advanced Miner',
-      memberSince: 'Member since January 2024',
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "+1 (555) 123-4567",
+      joinDate: "January 2024",
+      miningLevel: "Advanced Miner",
+      memberSince: "Member since January 2024",
     }),
-    []
+    [],
   );
 
   const initials =
     userInfo.name
-      .split(' ')
+      .split(" ")
       .filter(Boolean)
       .slice(0, 2)
       .map((s) => s[0]?.toUpperCase())
-      .join('') || 'U';
+      .join("") || "U";
 
   const handleLogout = () => {
     setShowLogoutModal(false);
-    router.replace('/login');
+    router.replace("/(auth)/login");
   };
 
   const Row = ({
@@ -57,7 +57,7 @@ export default function ProfileScreen() {
     right,
   }: {
     title: string;
-    leftIcon: any;
+    leftIcon: React.ComponentProps<typeof Ionicons>["name"];
     leftBg: string;
     leftColor: string;
     onPress?: () => void;
@@ -70,21 +70,23 @@ export default function ProfileScreen() {
       activeOpacity={onPress ? 0.85 : 1}
       onPress={onPress}
       disabled={!onPress}
-      className={[
-        'flex-row justify-between items-center py-3.5 px-3 bg-white',
-        !isLast ? 'border-b border-gray-100' : '',
-      ].join(' ')}
+      className="flex-row justify-between items-center py-3.5 px-3"
+      style={{
+        backgroundColor: colors.surface,
+        borderBottomWidth: isLast ? 0 : 1,
+        borderBottomColor: colors.borderSoft,
+      }}
     >
       <View className="flex-row items-center flex-1">
-        <View className={`w-9 h-9 rounded-xl items-center justify-center mr-3 ${leftBg}`}>
+        <View
+          className={`w-9 h-9 rounded-xl items-center justify-center mr-3 ${leftBg}`}
+        >
           <Ionicons name={leftIcon} size={20} color={leftColor} />
         </View>
 
         <Text
-          className={[
-            'text-[15px] font-medium',
-            danger ? 'text-[#FF3B30]' : 'text-[#111827]',
-          ].join(' ')}
+          className="text-[15px] font-medium"
+          style={{ color: danger ? colors.danger : colors.text }}
           numberOfLines={1}
         >
           {title}
@@ -93,61 +95,111 @@ export default function ProfileScreen() {
 
       <View className="flex-row items-center">
         {badge ? (
-          <Text className="text-xs font-semibold px-2 py-0.5 rounded-[10px] mr-2 min-w-[24px] text-center bg-[#FFC000] text-black">
+          <Text className="text-xs font-semibold px-2 py-0.5 rounded-[10px] mr-2 min-w-[24px] text-center bg-om-accent text-black">
             {badge}
           </Text>
         ) : null}
 
         {right}
 
-        {onPress ? <Ionicons name="chevron-forward" size={18} color="#C7C7CC" /> : null}
+        {onPress ? (
+          <Ionicons name="chevron-forward" size={18} color={colors.subtext} />
+        ) : null}
       </View>
     </TouchableOpacity>
   );
 
-  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <View className="bg-white rounded-2xl p-4 mb-4">
-      <Text className="text-base font-bold mb-3 text-[#111827]">{title}</Text>
+  const Section = ({
+    title,
+    children,
+  }: {
+    title: string;
+    children: React.ReactNode;
+  }) => (
+    <View
+      className="rounded-2xl p-4 mb-4"
+      style={{ backgroundColor: colors.surface }}
+    >
+      <Text className="text-base font-bold mb-3" style={{ color: colors.text }}>
+        {title}
+      </Text>
       <View className="rounded-xl overflow-hidden">{children}</View>
     </View>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F9FAFB]" edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView
+      className="flex-1"
+      style={{ backgroundColor: colors.background }}
+      edges={["top", "bottom", "left", "right"]}
+    >
       {/* Header */}
-      <View className="py-3 px-5 border-b border-[#E5E7EB] flex-row items-center h-[60px] ">
-        <Text className="text-xl font-bold text-[#111827]">Profile</Text>
+      <View
+        className="flex-row items-center h-[60px] px-5 py-3 border-b"
+        style={{ borderBottomColor: colors.border }}
+      >
+        <Text className="text-xl font-bold" style={{ color: colors.text }}>
+          Profile
+        </Text>
       </View>
 
       <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {/* User Card (no shadows) */}
-        <View className="rounded-2xl p-5 mb-5 bg-white">
+        <View
+          className="rounded-2xl p-5 mb-5"
+          style={{ backgroundColor: colors.surface }}
+        >
           <View className="flex-row items-center">
-            <View className="w-[66px] h-[66px] rounded-full items-center justify-center mr-4 bg-[#FFC000]/20">
-              <View className="w-[54px] h-[54px] rounded-full items-center justify-center bg-[#FFC000]">
+            <View className="w-[66px] h-[66px] rounded-full items-center justify-center mr-4 bg-om-accent/20">
+              <View className="w-[54px] h-[54px] rounded-full items-center justify-center bg-om-accent">
                 <Text className="text-xl font-bold text-black">{initials}</Text>
               </View>
             </View>
 
             <View className="flex-1">
-              <Text className="text-xl font-bold mb-1 text-[#111827]" numberOfLines={1}>
+              <Text
+                className="text-xl font-bold mb-1"
+                style={{ color: colors.text }}
+                numberOfLines={1}
+              >
                 {userInfo.name}
               </Text>
-              <Text className="text-[14px] mb-2 text-[#6B7280]" numberOfLines={1}>
+              <Text
+                className="text-[14px] mb-2"
+                style={{ color: colors.subtext }}
+                numberOfLines={1}
+              >
                 {userInfo.email}
               </Text>
 
               <View className="flex-row flex-wrap items-center">
-                <View className="flex-row items-center px-3 py-1 rounded-full mr-2 mb-2 bg-[#FFC000]/10">
-                  <Ionicons name="shield-checkmark-outline" size={14} color={COLORS.text} />
-                  <Text className="text-xs font-semibold ml-1 text-[#111827]">
+                <View className="flex-row items-center px-3 py-1 rounded-full mr-2 mb-2 bg-om-accent/10">
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={14}
+                    color={colors.text}
+                  />
+                  <Text
+                    className="text-xs font-semibold ml-1"
+                    style={{ color: colors.text }}
+                  >
                     {userInfo.miningLevel}
                   </Text>
                 </View>
 
-                <View className="flex-row items-center px-3 py-1 rounded-full mr-2 mb-2 bg-gray-100">
-                  <Ionicons name="calendar-outline" size={14} color={COLORS.text} />
-                  <Text className="text-xs font-semibold ml-1 text-[#111827]">
+                <View
+                  className="flex-row items-center px-3 py-1 rounded-full mr-2 mb-2"
+                  style={{ backgroundColor: colors.surfaceAlt }}
+                >
+                  <Ionicons
+                    name="calendar-outline"
+                    size={14}
+                    color={colors.text}
+                  />
+                  <Text
+                    className="text-xs font-semibold ml-1"
+                    style={{ color: colors.text }}
+                  >
                     {userInfo.joinDate}
                   </Text>
                 </View>
@@ -156,212 +208,226 @@ export default function ProfileScreen() {
           </View>
 
           {/* Info rows */}
-          <View className="mt-4 pt-4 border-t border-[#E5E7EB]">
+          <View
+            className="mt-4 pt-4 border-t"
+            style={{ borderTopColor: colors.border }}
+          >
             <View className="flex-row justify-between">
-              <Text className="text-sm text-[#6B7280]">Phone</Text>
-              <Text className="text-sm font-semibold text-[#111827]">{userInfo.phone}</Text>
+              <Text className="text-sm" style={{ color: colors.subtext }}>
+                Phone
+              </Text>
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: colors.text }}
+              >
+                {userInfo.phone}
+              </Text>
             </View>
 
             <View className="flex-row justify-between mt-2">
-              <Text className="text-sm text-[#6B7280]">Status</Text>
-              <Text className="text-sm font-semibold text-[#111827]">{userInfo.memberSince}</Text>
+              <Text className="text-sm" style={{ color: colors.subtext }}>
+                Status
+              </Text>
+              <Text
+                className="text-sm font-semibold"
+                style={{ color: colors.text }}
+              >
+                {userInfo.memberSince}
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Account */}
         <Section title="Account">
-          <Link href="/(essentials)/eprofile" asChild>
-            <View>
-              <Row
-                title="Edit Profile"
-                leftIcon="person-outline"
-                leftBg="bg-[#FFC000]/10"
-                leftColor={COLORS.accent}
-                onPress={() => router.push('/(essentials)/eprofile')}
-              />
-            </View>
-          </Link>
-
-          <Link href="/(essentials)/eshipping" asChild>
-            <View>
-              <Row
-                title="Shipping Addresses"
-                leftIcon="location-outline"
-                leftBg="bg-[#34C759]/10"
-                leftColor="#34C759"
-                badge="2"
-                onPress={() => router.push('/(essentials)/eshipping')}
-              />
-            </View>
-          </Link>
-
-          <Link href="/(essentials)/security" asChild>
-            <View>
-              <Row
-                title="Security"
-                leftIcon="shield-checkmark-outline"
-                leftBg="bg-[#007AFF]/10"
-                leftColor="#007AFF"
-                onPress={() => router.push('/(essentials)/security')}
-              />
-            </View>
-          </Link>
-
-          <Link href="/(essentials)/wallet-manager" asChild>
-            <View>
-              <Row
-                title="Wallet Manager"
-                leftIcon="wallet-outline"
-                leftBg="bg-[#5856D6]/10"
-                leftColor="#5856D6"
-                isLast
-                onPress={() => router.push('/(essentials)/wallet-manager')}
-              />
-            </View>
-          </Link>
+          <Row
+            title="Edit Profile"
+            leftIcon="person-outline"
+            leftBg="bg-om-accent/10"
+            leftColor={APP_COLORS.accent}
+            onPress={() => router.push("/(essentials)/eprofile")}
+          />
+          <Row
+            title="Shipping Addresses"
+            leftIcon="location-outline"
+            leftBg="bg-om-success/10"
+            leftColor={APP_COLORS.success}
+            badge="2"
+            onPress={() => router.push("/(essentials)/eshipping")}
+          />
+          <Row
+            title="Security"
+            leftIcon="shield-checkmark-outline"
+            leftBg="bg-om-info/10"
+            leftColor={APP_COLORS.info}
+            onPress={() => router.push("/(essentials)/security")}
+          />
+          <Row
+            title="Wallet Manager"
+            leftIcon="wallet-outline"
+            leftBg="bg-om-purple/10"
+            leftColor={APP_COLORS.purple}
+            isLast
+            onPress={() => router.push("/(essentials)/wallet-manager")}
+          />
         </Section>
 
         {/* Mining Operations */}
         <Section title="Mining Operations">
-          <Link href="/(shop)/orders" asChild>
-            <View>
-              <Row
-                title="Orders"
-                leftIcon="cart-outline"
-                leftBg="bg-[#FF9500]/10"
-                leftColor="#FF9500"
-                badge="12"
-                onPress={() => router.push('/(shop)/orders')}
-              />
-            </View>
-          </Link>
-
-          <Link href="/(essentials)/repairs" asChild>
-            <View>
-              <Row
-                title="Repairs"
-                leftIcon="build-outline"
-                leftBg="bg-[#FF2D55]/10"
-                leftColor="#FF2D55"
-                badge="3"
-                onPress={() => router.push('/(essentials)/repairs')}
-              />
-            </View>
-          </Link>
-
-          <Link href="/(essentials)/referral" asChild>
-            <View>
-              <Row
-                title="Referrals"
-                leftIcon="people-outline"
-                leftBg="bg-[#32D74B]/10"
-                leftColor="#32D74B"
-                badge="8"
-                isLast
-                onPress={() => router.push('/(essentials)/referral')}
-              />
-            </View>
-          </Link>
+          <Row
+            title="Orders"
+            leftIcon="cart-outline"
+            leftBg="bg-om-warning/10"
+            leftColor={APP_COLORS.warning}
+            badge="12"
+            onPress={() => router.push("/(shop)/orders")}
+          />
+          <Row
+            title="Repairs"
+            leftIcon="build-outline"
+            leftBg="bg-om-rose/10"
+            leftColor={APP_COLORS.rose}
+            badge="3"
+            onPress={() => router.push("/(essentials)/repairs")}
+          />
+          <Row
+            title="Referrals"
+            leftIcon="people-outline"
+            leftBg="bg-om-lime/10"
+            leftColor={APP_COLORS.lime}
+            badge="8"
+            isLast
+            onPress={() => router.push("/(essentials)/referral")}
+          />
         </Section>
 
         {/* Preferences */}
-        <View className="bg-white rounded-2xl p-4 mb-4">
-          <Text className="text-base font-bold mb-3 text-[#111827]">Preferences</Text>
+        <View
+          className="rounded-2xl p-4 mb-4"
+          style={{ backgroundColor: colors.surface }}
+        >
+          <Text
+            className="text-base font-bold mb-3"
+            style={{ color: colors.text }}
+          >
+            Preferences
+          </Text>
 
           <View className="rounded-xl overflow-hidden">
-            <View className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+            <View
+              className="flex-row justify-between items-center py-3.5 px-3 border-b"
+              style={{
+                backgroundColor: colors.surface,
+                borderBottomColor: colors.borderSoft,
+              }}
+            >
               <View className="flex-row items-center flex-1">
-                <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-[#007AFF]/10">
-                  <Ionicons name="notifications-outline" size={20} color="#007AFF" />
+                <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-om-info/10">
+                  <Ionicons
+                    name="notifications-outline"
+                    size={20}
+                    color={APP_COLORS.info}
+                  />
                 </View>
-                <Text className="text-[15px] text-[#111827] font-medium">Notifications</Text>
+                <Text
+                  className="text-[15px] font-medium"
+                  style={{ color: colors.text }}
+                >
+                  Notifications
+                </Text>
               </View>
 
               <Switch
                 value={isNotificationsEnabled}
                 onValueChange={setIsNotificationsEnabled}
-                trackColor={{ false: '#F2F2F7', true: COLORS.accent }}
-                thumbColor="#FFFFFF"
+                trackColor={{ false: colors.borderSoft, true: colors.accent }}
+                thumbColor={APP_COLORS.white}
               />
             </View>
 
-            <View className="flex-row justify-between items-center py-3.5 px-3 bg-white border-b border-gray-100">
+            <View
+              className="flex-row justify-between items-center py-3.5 px-3 border-b"
+              style={{
+                backgroundColor: colors.surface,
+                borderBottomColor: colors.borderSoft,
+              }}
+            >
               <View className="flex-row items-center flex-1">
-                <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-[#111827]/10">
-                  <Ionicons name="moon-outline" size={20} color="#111827" />
+                <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-om-text/10">
+                  <Ionicons name="moon-outline" size={20} color={colors.text} />
                 </View>
-                <Text className="text-[15px] text-[#111827] font-medium">Dark Mode</Text>
+                <Text
+                  className="text-[15px] font-medium"
+                  style={{ color: colors.text }}
+                >
+                  Dark Mode
+                </Text>
               </View>
 
               <Switch
-                value={isDarkModeEnabled}
-                onValueChange={setIsDarkModeEnabled}
-                trackColor={{ false: '#F2F2F7', true: COLORS.accent }}
-                thumbColor="#FFFFFF"
+                value={isDark}
+                onValueChange={setDarkMode}
+                trackColor={{ false: colors.borderSoft, true: colors.accent }}
+                thumbColor={APP_COLORS.white}
               />
             </View>
 
-            <Link href="/(essentials)/settings" asChild>
-              <View>
-                <Row
-                  title="Settings"
-                  leftIcon="settings-outline"
-                  leftBg="bg-[#5856D6]/10"
-                  leftColor="#5856D6"
-                  isLast
-                  onPress={() => router.push('/(essentials)/settings')}
-                />
-              </View>
-            </Link>
+            <Row
+              title="Settings"
+              leftIcon="settings-outline"
+              leftBg="bg-om-purple/10"
+              leftColor={APP_COLORS.purple}
+              isLast
+              onPress={() => router.push("/(essentials)/settings")}
+            />
           </View>
         </View>
 
         {/* Support */}
         <Section title="Support">
-          <Link href="/(essentials)/support" asChild>
-            <View>
-              <Row
-                title="Customer Support"
-                leftIcon="headset-outline"
-                leftBg="bg-[#32D74B]/10"
-                leftColor="#32D74B"
-                onPress={() => router.push('/(essentials)/support')}
-              />
-            </View>
-          </Link>
-
-          <Link href="/(essentials)/terms" asChild>
-            <View>
-              <Row
-                title="Terms & Privacy"
-                leftIcon="document-text-outline"
-                leftBg="bg-[#BF5AF2]/10"
-                leftColor="#BF5AF2"
-                isLast
-                onPress={() => router.push('/(essentials)/terms')}
-              />
-            </View>
-          </Link>
+          <Row
+            title="Customer Support"
+            leftIcon="headset-outline"
+            leftBg="bg-om-lime/10"
+            leftColor={APP_COLORS.lime}
+            onPress={() => router.push("/(essentials)/support")}
+          />
+          <Row
+            title="Terms & Privacy"
+            leftIcon="document-text-outline"
+            leftBg="bg-om-pink/10"
+            leftColor={APP_COLORS.pink}
+            isLast
+            onPress={() => router.push("/(essentials)/terms")}
+          />
         </Section>
 
         {/* Logout */}
         <TouchableOpacity
           activeOpacity={0.9}
-          className="rounded-2xl p-4 mb-5 bg-white"
+          className="rounded-2xl p-4 mb-5"
+          style={{ backgroundColor: colors.surface }}
           onPress={() => setShowLogoutModal(true)}
         >
           <View className="flex-row items-center">
-            <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-[#FF3B30]/10">
-              <Ionicons name="log-out-outline" size={20} color={COLORS.danger} />
+            <View className="w-9 h-9 rounded-xl items-center justify-center mr-3 bg-om-danger/10">
+              <Ionicons
+                name="log-out-outline"
+                size={20}
+                color={colors.danger}
+              />
             </View>
-            <Text className="text-[15px] font-medium text-[#FF3B30]">Logout</Text>
+            <Text className="text-[15px] font-medium text-om-danger">
+              Logout
+            </Text>
           </View>
         </TouchableOpacity>
 
         {/* Version */}
         <View className="items-center pb-[30px]">
-          <Text className="text-[13px] text-[#6B7280]">Oneminers v1.2.4</Text>
+          <Text className="text-[13px]" style={{ color: colors.subtext }}>
+            Oneminers v1.2.4
+          </Text>
         </View>
       </ScrollView>
 
@@ -372,30 +438,56 @@ export default function ProfileScreen() {
         animationType="fade"
         onRequestClose={() => setShowLogoutModal(false)}
       >
-        <View className="flex-1 bg-black/50 justify-center items-center p-5">
-          <View className="bg-white rounded-[20px] p-6 w-full max-w-[340px] items-center border border-[#E5E7EB]">
-            <View className="w-20 h-20 rounded-full justify-center items-center mb-4 bg-[#FFC000]/10">
-              <Ionicons name="log-out" size={44} color={COLORS.accent} />
+        <View
+          className="flex-1 justify-center items-center p-5"
+          style={{ backgroundColor: colors.overlay }}
+        >
+          <View
+            className="rounded-[20px] p-6 w-full max-w-[340px] items-center border"
+            style={{
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            }}
+          >
+            <View className="w-20 h-20 rounded-full justify-center items-center mb-4 bg-om-accent/10">
+              <Ionicons name="log-out" size={44} color={colors.accent} />
             </View>
 
-            <Text className="text-2xl font-bold mb-3 text-[#111827]">Logout</Text>
+            <Text
+              className="text-2xl font-bold mb-3"
+              style={{ color: colors.text }}
+            >
+              Logout
+            </Text>
 
-            <Text className="text-base text-center mb-6 leading-[22px] text-[#6B7280]">
+            <Text
+              className="text-base text-center mb-6 leading-[22px]"
+              style={{ color: colors.subtext }}
+            >
               Are you sure you want to logout from your account?
             </Text>
 
             <View className="flex-row gap-3 w-full">
               <TouchableOpacity
                 activeOpacity={0.9}
-                className="flex-1 py-4 rounded-xl items-center border border-[#E5E7EB] bg-[#F9FAFB]"
+                className="flex-1 py-4 rounded-xl items-center border"
+                style={{
+                  borderColor: colors.border,
+                  backgroundColor: colors.background,
+                }}
                 onPress={() => setShowLogoutModal(false)}
               >
-                <Text className="text-base font-semibold text-[#6B7280]">Cancel</Text>
+                <Text
+                  className="text-base font-semibold"
+                  style={{ color: colors.subtext }}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 activeOpacity={0.9}
-                className="flex-1 py-4 rounded-xl items-center bg-[#FFC000]"
+                className="flex-1 py-4 rounded-xl items-center bg-om-accent"
                 onPress={handleLogout}
               >
                 <Text className="text-base font-bold text-black">Logout</Text>

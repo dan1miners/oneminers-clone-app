@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -9,73 +9,75 @@ import {
   Switch,
   Modal,
   Pressable,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import Svg, { Path, Rect, G, Text as SvgText } from 'react-native-svg';
-import { Link } from 'expo-router';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import Svg, { Path, Rect, G, Text as SvgText } from "react-native-svg";
+import { Link } from "expo-router";
+import { APP_COLORS } from "../../constants/colors";
+import { useAppTheme } from "../../providers/theme-provider";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 // Mock data
 const REVENUE_DATA = [42.3, 51.2, 48.5, 62.8, 59.1, 71.4, 68.2];
 const HASH_RATE_DATA = [1200, 1250, 1180, 1320, 1280, 1350, 1290];
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const MOCK_DATA = {
-  hashrate: '1,284.5',
-  hashrateUnit: 'TH/s',
-  dailyEarnings: '0.002154',
-  earningsUnit: 'BTC',
-  usdValue: '$45.30',
+  hashrate: "1,284.5",
+  hashrateUnit: "TH/s",
+  dailyEarnings: "0.002154",
+  earningsUnit: "BTC",
+  usdValue: "$45.30",
   activeMiners: 8,
   totalMiners: 12,
-  uptime: '99.2',
-  temperature: '68°C',
-  powerConsumption: '2.4',
-  powerUnit: 'kWh',
+  uptime: "99.2",
+  temperature: "68°C",
+  powerConsumption: "2.4",
+  powerUnit: "kWh",
   aiBoost: true,
   dailyCheckin: false,
   streak: 5,
-  referralCode: 'MINER2024',
-  totalRevenue: '$2,847',
-  monthlyGrowth: '+12.5%',
+  referralCode: "MINER2024",
+  totalRevenue: "$2,847",
+  monthlyGrowth: "+12.5%",
 };
 
 // News data
 const NEWS_DATA = [
   {
-    id: '1',
-    title: 'Bitcoin Mining Difficulty Reaches All-Time High',
+    id: "1",
+    title: "Bitcoin Mining Difficulty Reaches All-Time High",
     summary:
-      'Network difficulty increases by 6.5% as more miners join the network',
-    category: 'Market News',
-    date: '2 hours ago',
-    image: '📈',
+      "Network difficulty increases by 6.5% as more miners join the network",
+    category: "Market News",
+    date: "2 hours ago",
+    image: "📈",
   },
   {
-    id: '2',
-    title: 'New ASIC Miner Releases: What to Expect in 2024',
-    summary: 'Major manufacturers announce next-generation mining hardware',
-    category: 'Technology',
-    date: '5 hours ago',
-    image: '⚡',
+    id: "2",
+    title: "New ASIC Miner Releases: What to Expect in 2024",
+    summary: "Major manufacturers announce next-generation mining hardware",
+    category: "Technology",
+    date: "5 hours ago",
+    image: "⚡",
   },
   {
-    id: '3',
-    title: 'Energy Efficiency Breakthrough in Mining Operations',
-    summary: 'New cooling technology reduces power consumption by 25%',
-    category: 'Innovation',
-    date: '1 day ago',
-    image: '🌱',
+    id: "3",
+    title: "Energy Efficiency Breakthrough in Mining Operations",
+    summary: "New cooling technology reduces power consumption by 25%",
+    category: "Innovation",
+    date: "1 day ago",
+    image: "🌱",
   },
   {
-    id: '4',
-    title: 'Regulatory Updates: Mining Operations in Europe',
-    summary: 'New guidelines for sustainable crypto mining practices',
-    category: 'Regulation',
-    date: '2 days ago',
-    image: '📝',
+    id: "4",
+    title: "Regulatory Updates: Mining Operations in Europe",
+    summary: "New guidelines for sustainable crypto mining practices",
+    category: "Regulation",
+    date: "2 days ago",
+    image: "📝",
   },
 ];
 
@@ -89,7 +91,7 @@ type LineChartProps = {
 
 const LineChart: React.FC<LineChartProps> = ({
   data,
-  color = '#FFC000',
+  color = APP_COLORS.accent,
   height = 150,
   width: chartWidth = width - 80,
 }) => {
@@ -104,7 +106,7 @@ const LineChart: React.FC<LineChartProps> = ({
         height - ((value - minValue) / range) * height * 0.8 - height * 0.1;
       return `${x},${y}`;
     })
-    .join(' ');
+    .join(" ");
 
   return (
     <Svg height={height} width={chartWidth}>
@@ -134,7 +136,7 @@ type BarChartProps = {
 
 const BarChart: React.FC<BarChartProps> = ({
   data,
-  color = '#FFC000',
+  color = APP_COLORS.accent,
   height = 120,
   width: chartWidth = width - 80,
 }) => {
@@ -162,7 +164,7 @@ const BarChart: React.FC<BarChartProps> = ({
               x={x + (barWidth - 8) / 2}
               y={height - 2}
               fontSize="10"
-              fill="#8E8E93"
+              fill={APP_COLORS.muted}
               textAnchor="middle"
             >
               {DAYS[index]}
@@ -177,31 +179,33 @@ const BarChart: React.FC<BarChartProps> = ({
 // News Carousel Item
 const NewsItem = ({ item, index }: { item: any; index: number }) => (
   <TouchableOpacity
-    className="bg-white rounded-2xl p-4 mr-3 flex-col"
+    className="bg-white dark:bg-slate-900 rounded-2xl p-4 mr-3 flex-col"
     style={{ width: width * 0.8, ...(index === 0 && { marginLeft: 16 }) }}
   >
-    <View className="w-full h-[180px] rounded-xl bg-gray-100 items-center justify-center mb-3">
+    <View className="w-full h-[180px] rounded-xl bg-gray-100 dark:bg-slate-800 items-center justify-center mb-3">
       <Text className="text-5xl">{item.image}</Text>
     </View>
     <View className="flex-1 mt-3">
-      <View className="bg-[#FFC000]/20 px-2 py-1 rounded-md self-start mb-2">
-        <Text className="text-[10px] text-[#FFC000] font-semibold uppercase">
+      <View className="bg-om-accent/20 px-2 py-1 rounded-md self-start mb-2">
+        <Text className="text-[10px] text-om-accent font-semibold uppercase">
           {item.category}
         </Text>
       </View>
       <Text
-        className="text-base font-bold text-black mb-1 leading-5"
+        className="text-base font-bold text-black dark:text-slate-100 mb-1 leading-5"
         numberOfLines={2}
       >
         {item.title}
       </Text>
       <Text
-        className="text-xs text-gray-400 mb-2 leading-4"
+        className="text-xs text-gray-400 dark:text-slate-500 mb-2 leading-4"
         numberOfLines={2}
       >
         {item.summary}
       </Text>
-      <Text className="text-[10px] text-gray-400 font-medium">{item.date}</Text>
+      <Text className="text-[10px] text-gray-400 dark:text-slate-500 font-medium">
+        {item.date}
+      </Text>
     </View>
   </TouchableOpacity>
 );
@@ -209,12 +213,16 @@ const NewsItem = ({ item, index }: { item: any; index: number }) => (
 // Oneminers text logo component
 const OneminersLogo = () => (
   <View className="flex-row items-center">
-    <Text className="text-xl font-bold text-[#FFC000]">one</Text>
-    <Text className="text-xl font-bold text-black">miners</Text>
+    <Text className="text-xl font-bold text-om-accent">one</Text>
+    <Text className="text-xl font-bold text-black dark:text-slate-100">
+      miners
+    </Text>
   </View>
 );
 
 export default function DashboardScreen() {
+  const { colors } = useAppTheme();
+
   // AI Boost
   const [aiBoostEnabled, setAiBoostEnabled] = useState(true);
   const [showAiBoostHint, setShowAiBoostHint] = useState(false);
@@ -252,13 +260,16 @@ export default function DashboardScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50" edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView
+      className="flex-1 bg-gray-50 dark:bg-slate-950"
+      edges={["top", "bottom", "left", "right"]}
+    >
       {/* Header */}
-      <View className="py-3 px-5 border-b border-gray-200 flex-row justify-between items-center h-[60px]">
+      <View className="py-3 px-5 border-b border-gray-200 dark:border-slate-700 flex-row justify-between items-center h-[60px]">
         <OneminersLogo />
         <TouchableOpacity className="p-1">
-          <View className="w-9 h-9 rounded-full bg-gray-100 items-center justify-center border-2 border-gray-200">
-            <Ionicons name="person-outline" size={16} color="#000" />
+          <View className="w-9 h-9 rounded-full bg-gray-100 dark:bg-slate-800 items-center justify-center border-2 border-gray-200 dark:border-slate-700">
+            <Ionicons name="person-outline" size={16} color={colors.text} />
           </View>
         </TouchableOpacity>
       </View>
@@ -267,108 +278,129 @@ export default function DashboardScreen() {
         {/* Quick Stats */}
         <View className="flex-row flex-wrap justify-between mb-4">
           <View
-            className="p-4 rounded-2xl mb-3 bg-white border border-gray-100"
+            className="p-4 rounded-2xl mb-3 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700"
             style={{ width: (width - 48) / 2 }}
           >
             <View className="flex-row items-center mb-2">
-              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
-                <Ionicons name="speedometer-outline" size={20} color="#000" />
+              <View className="w-7 h-7 rounded-full bg-om-accent/20 items-center justify-center mr-2">
+                <Ionicons
+                  name="speedometer-outline"
+                  size={20}
+                  color={colors.text}
+                />
               </View>
-              <Text className="text-xs text-gray-600 font-medium">
+              <Text className="text-xs text-gray-600 dark:text-slate-300 font-medium">
                 Hash Rate
               </Text>
             </View>
-            <Text className="text-xl font-bold text-gray-900 mb-0.5">
+            <Text className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-0.5">
               {MOCK_DATA.hashrate}
             </Text>
-            <Text className="text-[11px] text-gray-500">
+            <Text className="text-[11px] text-gray-500 dark:text-slate-400">
               {MOCK_DATA.hashrateUnit}
             </Text>
           </View>
 
           <View
-            className="p-4 rounded-2xl mb-3 bg-white border border-gray-100"
+            className="p-4 rounded-2xl mb-3 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700"
             style={{ width: (width - 48) / 2 }}
           >
             <View className="flex-row items-center mb-2">
-              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
-                <Ionicons name="trending-up-outline" size={20} color="#000" />
+              <View className="w-7 h-7 rounded-full bg-om-accent/20 items-center justify-center mr-2">
+                <Ionicons
+                  name="trending-up-outline"
+                  size={20}
+                  color={colors.text}
+                />
               </View>
-              <Text className="text-xs text-gray-600 font-medium">Revenue</Text>
+              <Text className="text-xs text-gray-600 dark:text-slate-300 font-medium">
+                Revenue
+              </Text>
             </View>
-            <Text className="text-xl font-bold text-gray-900 mb-0.5">
+            <Text className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-0.5">
               {MOCK_DATA.totalRevenue}
             </Text>
-            <Text className="text-[11px] text-[#16A34A] font-semibold">
+            <Text className="text-[11px] text-om-success-700 font-semibold">
               {MOCK_DATA.monthlyGrowth}
             </Text>
           </View>
 
           <View
-            className="p-4 rounded-2xl mb-3 bg-white border border-gray-100"
+            className="p-4 rounded-2xl mb-3 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700"
             style={{ width: (width - 48) / 2 }}
           >
             <View className="flex-row items-center mb-2">
-              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
+              <View className="w-7 h-7 rounded-full bg-om-accent/20 items-center justify-center mr-2">
                 <Ionicons
                   name="hardware-chip-outline"
                   size={20}
-                  color="#000"
+                  color={colors.text}
                 />
               </View>
-              <Text className="text-xs text-gray-600 font-medium">
+              <Text className="text-xs text-gray-600 dark:text-slate-300 font-medium">
                 Active Miners
               </Text>
             </View>
-            <Text className="text-xl font-bold text-gray-900 mb-0.5">
+            <Text className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-0.5">
               {MOCK_DATA.activeMiners}/{MOCK_DATA.totalMiners}
             </Text>
-            <Text className="text-[11px] text-gray-500">Online</Text>
+            <Text className="text-[11px] text-gray-500 dark:text-slate-400">
+              Online
+            </Text>
           </View>
 
           <View
-            className="p-4 rounded-2xl mb-3 bg-white border border-gray-100"
+            className="p-4 rounded-2xl mb-3 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-700"
             style={{ width: (width - 48) / 2 }}
           >
             <View className="flex-row items-center mb-2">
-              <View className="w-7 h-7 rounded-full bg-[#FFC000]/20 items-center justify-center mr-2">
-                <Ionicons name="flash-outline" size={20} color="#000" />
+              <View className="w-7 h-7 rounded-full bg-om-accent/20 items-center justify-center mr-2">
+                <Ionicons name="flash-outline" size={20} color={colors.text} />
               </View>
-              <Text className="text-xs text-gray-600 font-medium">Uptime</Text>
+              <Text className="text-xs text-gray-600 dark:text-slate-300 font-medium">
+                Uptime
+              </Text>
             </View>
-            <Text className="text-xl font-bold text-gray-900 mb-0.5">
+            <Text className="text-xl font-bold text-gray-900 dark:text-slate-100 mb-0.5">
               {MOCK_DATA.uptime}%
             </Text>
-            <Text className="text-[11px] text-gray-500">Stable</Text>
+            <Text className="text-[11px] text-gray-500 dark:text-slate-400">
+              Stable
+            </Text>
           </View>
         </View>
 
         {/* Earnings Chart */}
-        <View className="bg-white rounded-2xl p-5 mb-4">
+        <View className="bg-white dark:bg-slate-900 rounded-2xl p-5 mb-4">
           <View className="flex-row justify-between items-center mb-4">
             <View>
-              <Text className="text-lg font-bold text-black">
+              <Text className="text-lg font-bold text-black dark:text-slate-100">
                 Daily Earnings
               </Text>
-              <Text className="text-sm text-gray-400 mt-0.5">Last 7 days</Text>
+              <Text className="text-sm text-gray-400 dark:text-slate-500 mt-0.5">
+                Last 7 days
+              </Text>
             </View>
             <Link href="/earnings" asChild>
               <TouchableOpacity className="flex-row items-center">
-                <Text className="text-[#FFC000] text-sm font-medium mr-0.5">
+                <Text className="text-om-accent text-sm font-medium mr-0.5">
                   View All
                 </Text>
-                <Ionicons name="chevron-forward" size={16} color="#FFC000" />
+                <Ionicons
+                  name="chevron-forward"
+                  size={16}
+                  color={APP_COLORS.accent}
+                />
               </TouchableOpacity>
             </Link>
-
           </View>
           <View className="items-center">
-            <LineChart data={REVENUE_DATA} color="#FFC000" />
+            <LineChart data={REVENUE_DATA} color={APP_COLORS.accent} />
             <View className="flex-row justify-between w-full mt-2">
               {DAYS.map((day) => (
                 <Text
                   key={day}
-                  className="text-xs text-gray-400 text-center flex-1"
+                  className="text-xs text-gray-400 dark:text-slate-500 text-center flex-1"
                 >
                   {day}
                 </Text>
@@ -378,91 +410,120 @@ export default function DashboardScreen() {
         </View>
 
         {/* Hash Rate Performance */}
-        <View className="bg-white rounded-2xl p-5 mb-4">
+        <View className="bg-white dark:bg-slate-900 rounded-2xl p-5 mb-4">
           <View className="flex-row justify-between items-center mb-4">
             <View>
-              <Text className="text-lg font-bold text-black">
+              <Text className="text-lg font-bold text-black dark:text-slate-100">
                 Hash Rate Overview
               </Text>
-              <Text className="text-sm text-gray-400 mt-0.5">
+              <Text className="text-sm text-gray-400 dark:text-slate-500 mt-0.5">
                 24-hour overview
               </Text>
             </View>
           </View>
           <View className="items-center">
-            <BarChart data={HASH_RATE_DATA} color="#FFC000" />
+            <BarChart data={HASH_RATE_DATA} color={APP_COLORS.accent} />
           </View>
         </View>
 
         {/* Quick Actions */}
         <View className="mb-6">
-          <Text className="text-xl font-bold text-black mb-4">
+          <Text className="text-xl font-bold text-black dark:text-slate-100 mb-4">
             Quick Actions
           </Text>
 
           {/* Daily Check-in */}
           <TouchableOpacity
             onPress={handleOpenCheckin}
-            className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100"
+            className="w-full bg-white dark:bg-slate-900 rounded-xl p-4 mb-2 flex-row items-center border border-gray-100 dark:border-slate-700"
           >
-            <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
-              <Ionicons name="calendar-outline" size={20} color="#FFC000" />
+            <View className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-slate-950 items-center justify-center mr-3">
+              <Ionicons
+                name="calendar-outline"
+                size={20}
+                color={APP_COLORS.accent}
+              />
             </View>
 
             <View className="flex-1">
-              <Text className="text-base font-semibold text-black mb-0.5">
+              <Text className="text-base font-semibold text-black dark:text-slate-100 mb-0.5">
                 Daily Check-in
               </Text>
-              <Text className="text-xs text-gray-400">
-                {checkedInToday ? "You're checked in today" : 'Claim your reward'}
+              <Text className="text-xs text-gray-400 dark:text-slate-500">
+                {checkedInToday
+                  ? "You're checked in today"
+                  : "Claim your reward"}
               </Text>
             </View>
 
             {!checkedInToday && (
-              <View className="bg-[#FF3B30] w-5 h-5 rounded-full items-center justify-center mr-3">
+              <View className="bg-om-danger w-5 h-5 rounded-full items-center justify-center mr-3">
                 <Text className="text-white text-xs font-bold">1</Text>
               </View>
             )}
 
-            <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
+            <Ionicons
+              name="chevron-forward"
+              size={16}
+              color={APP_COLORS.muted}
+            />
           </TouchableOpacity>
 
           {/* Refer & Earn */}
           <Link href="/referral" asChild>
-            <TouchableOpacity className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
-              <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
-                <Ionicons name="people-outline" size={20} color="#007AFF" />
+            <TouchableOpacity className="w-full bg-white dark:bg-slate-900 rounded-xl p-4 mb-2 flex-row items-center border border-gray-100 dark:border-slate-700">
+              <View className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-slate-950 items-center justify-center mr-3">
+                <Ionicons
+                  name="people-outline"
+                  size={20}
+                  color={APP_COLORS.info}
+                />
               </View>
               <View className="flex-1">
-                <Text className="text-base font-semibold text-black mb-0.5">
+                <Text className="text-base font-semibold text-black dark:text-slate-100 mb-0.5">
                   Refer & Earn
                 </Text>
-                <Text className="text-xs text-gray-400">Invite friends</Text>
+                <Text className="text-xs text-gray-400 dark:text-slate-500">
+                  Invite friends
+                </Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={APP_COLORS.muted}
+              />
             </TouchableOpacity>
           </Link>
 
           {/* AI Boost */}
           {/* AI Boost (fixed layout + green active switch) */}
-          <View className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
-            <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
-              <Ionicons name="rocket-outline" size={20} color="#34C759" />
+          <View className="w-full bg-white dark:bg-slate-900 rounded-xl p-4 mb-2 flex-row items-center border border-gray-100 dark:border-slate-700">
+            <View className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-slate-950 items-center justify-center mr-3">
+              <Ionicons
+                name="rocket-outline"
+                size={20}
+                color={APP_COLORS.success}
+              />
             </View>
 
             <View className="flex-1">
-              <Text className="text-base font-semibold text-black mb-0.5">
+              <Text className="text-base font-semibold text-black dark:text-slate-100 mb-0.5">
                 AI Boost
               </Text>
-              <Text className="text-xs text-gray-400">Auto optimization</Text>
+              <Text className="text-xs text-gray-400 dark:text-slate-500">
+                Auto optimization
+              </Text>
             </View>
 
             <Switch
               value={aiBoostEnabled}
               onValueChange={setAiBoostEnabled}
-              trackColor={{ false: '#D1D5DB', true: '#34C759' }}
-              thumbColor={aiBoostEnabled ? '#FFFFFF' : '#FFFFFF'}
-              ios_backgroundColor="#D1D5DB"
+              trackColor={{
+                false: colors.borderSoft,
+                true: APP_COLORS.success,
+              }}
+              thumbColor={APP_COLORS.white}
+              ios_backgroundColor={colors.borderSoft}
               style={{ marginRight: 8 }}
             />
 
@@ -470,44 +531,64 @@ export default function DashboardScreen() {
               onPress={() => setShowAiBoostHint(true)}
               className="p-1"
             >
-              <Ionicons name="help-circle-outline" size={20} color="#8E8E93" />
+              <Ionicons
+                name="help-circle-outline"
+                size={20}
+                color={APP_COLORS.muted}
+              />
             </TouchableOpacity>
           </View>
 
-
           {/* View Orders */}
           <Link href="/orders" asChild>
-            <TouchableOpacity className="w-full bg-white rounded-xl p-4 mb-2 flex-row items-center border border-gray-100">
-              <View className="w-10 h-10 rounded-lg bg-gray-50 items-center justify-center mr-3">
-                <Ionicons name="document-text-outline" size={20} color="#FF9500" />
+            <TouchableOpacity className="w-full bg-white dark:bg-slate-900 rounded-xl p-4 mb-2 flex-row items-center border border-gray-100 dark:border-slate-700">
+              <View className="w-10 h-10 rounded-lg bg-gray-50 dark:bg-slate-950 items-center justify-center mr-3">
+                <Ionicons
+                  name="document-text-outline"
+                  size={20}
+                  color={APP_COLORS.warning}
+                />
               </View>
               <View className="flex-1">
-                <Text className="text-base font-semibold text-black mb-0.5">
+                <Text className="text-base font-semibold text-black dark:text-slate-100 mb-0.5">
                   View Orders
                 </Text>
-                <Text className="text-xs text-gray-400">Manage purchases</Text>
+                <Text className="text-xs text-gray-400 dark:text-slate-500">
+                  Manage purchases
+                </Text>
               </View>
-              <Ionicons name="chevron-forward" size={16} color="#8E8E93" />
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={APP_COLORS.muted}
+              />
             </TouchableOpacity>
           </Link>
-
         </View>
 
         {/* News Section */}
         <View className="mb-6">
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-xl font-bold text-black">Latest News</Text>
+            <Text className="text-xl font-bold text-black dark:text-slate-100">
+              Latest News
+            </Text>
             <TouchableOpacity className="flex-row items-center">
-              <Text className="text-[#FFC000] text-sm font-medium mr-0.5">
+              <Text className="text-om-accent text-sm font-medium mr-0.5">
                 View All
               </Text>
-              <Ionicons name="chevron-forward" size={16} color="#FFC000" />
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={APP_COLORS.accent}
+              />
             </TouchableOpacity>
           </View>
 
           <FlatList
             data={NEWS_DATA}
-            renderItem={({ item, index }) => <NewsItem item={item} index={index} />}
+            renderItem={({ item, index }) => (
+              <NewsItem item={item} index={index} />
+            )}
             keyExtractor={(item) => item.id}
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -532,23 +613,33 @@ export default function DashboardScreen() {
           className="flex-1 bg-black/40 items-center justify-center px-5"
           onPress={() => setCheckinOpen(false)}
         >
-          <Pressable className="w-full bg-white rounded-2xl p-5" onPress={() => {}}>
+          <Pressable
+            className="w-full bg-white dark:bg-slate-900 rounded-2xl p-5"
+            onPress={() => {}}
+          >
             {/* Header */}
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
-                <View className="w-10 h-10 rounded-xl bg-[#FFC000]/20 items-center justify-center mr-3">
-                  <Ionicons name="gift-outline" size={20} color="#000" />
+                <View className="w-10 h-10 rounded-xl bg-om-accent/20 items-center justify-center mr-3">
+                  <Ionicons name="gift-outline" size={20} color={colors.text} />
                 </View>
                 <View>
-                  <Text className="text-lg font-bold text-black">Daily Check-in</Text>
-                  <Text className="text-xs text-gray-400">
-                    {checkedInToday ? 'Checked in today' : 'Check in to claim points'}
+                  <Text className="text-lg font-bold text-black dark:text-slate-100">
+                    Daily Check-in
+                  </Text>
+                  <Text className="text-xs text-gray-400 dark:text-slate-500">
+                    {checkedInToday
+                      ? "Checked in today"
+                      : "Check in to claim points"}
                   </Text>
                 </View>
               </View>
 
-              <TouchableOpacity onPress={() => setCheckinOpen(false)} className="p-2">
-                <Ionicons name="close" size={18} color="#111827" />
+              <TouchableOpacity
+                onPress={() => setCheckinOpen(false)}
+                className="p-2"
+              >
+                <Ionicons name="close" size={18} color={colors.text} />
               </TouchableOpacity>
             </View>
 
@@ -559,26 +650,38 @@ export default function DashboardScreen() {
                   key={d.day}
                   className={`w-[13%] rounded-xl py-2 items-center border ${
                     d.claimed
-                      ? 'bg-[#FFC000]/15 border-[#FFC000]/40'
-                      : 'bg-white border-gray-200'
+                      ? "bg-om-accent/15 border-om-accent/40"
+                      : "bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-700"
                   }`}
                 >
-                  <Text className="text-[10px] text-gray-500">Day {d.day}</Text>
-                  <Text className="text-sm font-bold text-black">{d.points}</Text>
+                  <Text className="text-[10px] text-gray-500 dark:text-slate-400">
+                    Day {d.day}
+                  </Text>
+                  <Text className="text-sm font-bold text-black dark:text-slate-100">
+                    {d.points}
+                  </Text>
                 </View>
               ))}
             </View>
 
             {/* Reward summary */}
-            <View className="mt-4 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+            <View className="mt-4 bg-gray-50 dark:bg-slate-950 rounded-2xl p-4 border border-gray-100 dark:border-slate-700">
               <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-sm text-gray-600">Today’s reward</Text>
-                <Text className="text-sm font-bold text-black">+{todayReward} point</Text>
+                <Text className="text-sm text-gray-600 dark:text-slate-300">
+                  Today’s reward
+                </Text>
+                <Text className="text-sm font-bold text-black dark:text-slate-100">
+                  +{todayReward} point
+                </Text>
               </View>
 
               <View className="flex-row items-center justify-between">
-                <Text className="text-sm text-gray-600">Total coins</Text>
-                <Text className="text-sm font-bold text-black">{currentCoins}</Text>
+                <Text className="text-sm text-gray-600 dark:text-slate-300">
+                  Total coins
+                </Text>
+                <Text className="text-sm font-bold text-black dark:text-slate-100">
+                  {currentCoins}
+                </Text>
               </View>
             </View>
 
@@ -587,27 +690,27 @@ export default function DashboardScreen() {
               onPress={handleCheckin}
               disabled={checkedInToday}
               className={`mt-4 rounded-xl py-4 items-center ${
-                checkedInToday ? 'bg-gray-100' : 'bg-[#FFC000]'
+                checkedInToday
+                  ? "bg-gray-100 dark:bg-slate-800"
+                  : "bg-om-accent"
               }`}
               activeOpacity={0.9}
             >
               <Text
                 className={`text-base font-bold ${
-                  checkedInToday ? 'text-gray-400' : 'text-black'
+                  checkedInToday
+                    ? "text-gray-400 dark:text-slate-500"
+                    : "text-black dark:text-slate-100"
                 }`}
               >
-                {checkedInToday ? 'Already Checked In' : 'Check In Now'}
+                {checkedInToday ? "Already Checked In" : "Check In Now"}
               </Text>
             </TouchableOpacity>
 
             {/* ✅ Link to points page (no router) */}
-            <Link
-              href="/points"
-              onPress={() => setCheckinOpen(false)}
-              asChild
-            >
+            <Link href="/points" onPress={() => setCheckinOpen(false)} asChild>
               <TouchableOpacity className="mt-4 items-center">
-                <Text className="text-sm font-semibold text-[#FFC000]">
+                <Text className="text-sm font-semibold text-om-accent">
                   See how points work
                 </Text>
               </TouchableOpacity>
@@ -622,11 +725,11 @@ export default function DashboardScreen() {
           onPress={() => setShowAiBoostHint(false)}
         >
           <View className="absolute bottom-24 left-5 right-5">
-            <View className="bg-white rounded-xl p-4 shadow-lg">
-              <Text className="text-sm font-bold text-black mb-2">
+            <View className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-lg">
+              <Text className="text-sm font-bold text-black dark:text-slate-100 mb-2">
                 AI Boost
               </Text>
-              <Text className="text-xs text-gray-600 leading-4">
+              <Text className="text-xs text-gray-600 dark:text-slate-300 leading-4">
                 Automatically switches to the most profitable mining pools using
                 real-time performance data.
               </Text>
@@ -634,7 +737,7 @@ export default function DashboardScreen() {
                 onPress={() => setShowAiBoostHint(false)}
                 className="mt-3 self-end"
               >
-                <Text className="text-xs font-semibold text-[#FFC000]">
+                <Text className="text-xs font-semibold text-om-accent">
                   Got it
                 </Text>
               </TouchableOpacity>
@@ -642,7 +745,6 @@ export default function DashboardScreen() {
           </View>
         </Pressable>
       </Modal>
-      
     </SafeAreaView>
   );
 }

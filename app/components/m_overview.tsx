@@ -1,6 +1,6 @@
 // app/components/AnimatedStatusDot.tsx
-import React, { useEffect, useRef } from 'react';
-import { Animated } from 'react-native';
+import React, { useEffect, useRef } from "react";
+import { Animated } from "react-native";
 
 interface AnimatedStatusDotProps {
   color: string;
@@ -27,7 +27,7 @@ export default function AnimatedStatusDot({
             duration: 600,
             useNativeDriver: true,
           }),
-        ])
+        ]),
       ).start();
     } else {
       Animated.timing(scaleAnim, {
